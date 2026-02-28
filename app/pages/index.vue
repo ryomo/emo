@@ -43,7 +43,19 @@ const config = useRuntimeConfig().public
 const { messages, isLoading, error, sendMessage, clearHistory } = useChatApi()
 const { isSpeaking, speak, stop: stopTts } = useTtsApi()
 const { isListening, transcript, start: startSpeech, stop: stopSpeech } = useRealtimeSpeech()
-const { emotionState, setEmotion } = useAiEmotion()
+const { emotionState, detectEmotionFromText } = useAiEmotion()
+
+// assistant の応答テキストから絵文字を検出して感情を更新
+watch(
+  () => messages.value.length,
+  () => {
+    if (messages.value.length === 0) return
+    const lastMsg = messages.value.at(-1)
+    if (lastMsg?.role === 'assistant' && lastMsg.content) {
+      detectEmotionFromText(lastMsg.content)
+    }
+  },
+)
 
 function handleSend(message: string) {
   sendMessage(message)

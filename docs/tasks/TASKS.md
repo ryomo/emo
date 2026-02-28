@@ -11,14 +11,14 @@ Lemonade Server をバックエンドとした、Nuxt3 製 AI チャット・音
 | [03](./03-tts-api.md) | テキスト音声合成 (TTS) | `/api/v1/audio/speech` を用いた AI 応答の読み上げ | 未着手 |
 | [04](./04-realtime-speech.md) | リアルタイム音声認識 | `/realtime` WebSocket を用いたユーザー発話のテキスト化 | 未着手 |
 | [05](./05-ui-layout.md) | UI レイアウト | チャット画面・表情エリア・音声ボタン等の画面構築 | 未着手 |
-| [06](./06-ai-emotion.md) | AI 感情表現 (Tool Calling) | LLM の Tool Calling で AI の表情を動的に切り替える | 未着手 |
+| [06](./06-ai-emotion.md) | AI 感情表現 | システムプロンプト指示による絵文字で AI の表情を動的に切り替える | 完了 |
 
 ## 依存関係
 
 ```
 01 (セットアップ)
  ├─ 02 (チャット API)
- │   └─ 06 (AI 感情表現)  ← Tool Calling は 02 の拡張
+ │   └─ 06 (AI 感情表現)  ← 02 の拡張（応答絵文字による感情検出）
  ├─ 03 (TTS)
  ├─ 04 (リアルタイム音声認識)
  └─ 05 (UI レイアウト)    ← 02〜04・06 の UI を統合
@@ -28,4 +28,3 @@ Lemonade Server をバックエンドとした、Nuxt3 製 AI チャット・音
 
 - Lemonade Server がローカルで起動していること（デフォルト: `http://localhost:8000`）
 - 使用モデル例: `Gemma-3-4b-it-GGUF`
-  - Tool Calling の動作確認が必要（[詳細は Task 06](./tasks/06-ai-emotion.md) 参照）

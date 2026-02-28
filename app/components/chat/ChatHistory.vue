@@ -20,7 +20,7 @@
             : 'bg-gray-700 text-gray-100 rounded-bl-sm'
         "
       >
-        {{ msg.content }}
+        {{ displayContent(msg) }}
       </div>
     </div>
 
@@ -40,11 +40,18 @@
 <script setup lang="ts">
 import type { DeepReadonly } from 'vue'
 import type { ChatMessage } from '~/types/chat'
+import { stripEmotionEmoji } from '~/types/emotion'
 
 const props = defineProps<{
   messages: readonly ChatMessage[] | DeepReadonly<ChatMessage[]>
   isLoading: boolean
 }>()
+
+/** assistant メッセージから感情絵文字を除去して表示用テキストを返す */
+function displayContent(msg: { role: string; content: string | null }): string {
+  const text = msg.content ?? ''
+  return msg.role === 'assistant' ? stripEmotionEmoji(text) : text
+}
 
 const scrollContainer = ref<HTMLElement | null>(null)
 
