@@ -15,8 +15,8 @@
     </header>
 
     <!-- エラー表示 -->
-    <div v-if="error" class="bg-red-900/50 border border-red-700 text-red-200 px-4 py-2 text-sm">
-      {{ error }}
+    <div v-if="chatError || speechError" class="bg-red-900/50 border border-red-700 text-red-200 px-4 py-2 text-sm">
+      {{ chatError || speechError }}
     </div>
 
     <!-- メインコンテンツ -->
@@ -30,8 +30,13 @@
       <!-- サイドバー: 表情 + 音声 -->
       <aside class="w-64 border-l border-gray-700 flex flex-col items-center gap-4 p-4">
         <EmotionDisplay :emotion="emotionState.current" />
-        <VoiceButton :is-listening="isListening" @toggle="toggleVoice" />
-        <VoiceTranscriptArea :transcript="transcript" />
+        <VoiceButton :is-listening="isListening" :disabled="isLoading" @toggle="toggleVoice" />
+        <VoiceTranscriptArea
+          :transcript="transcript"
+          :is-speaking="isUserSpeaking"
+          :is-active="isListening"
+          :error="speechError"
+        />
       </aside>
     </div>
   </div>
@@ -40,9 +45,21 @@
 <script setup lang="ts">
 const config = useRuntimeConfig().public
 
-const { messages, isLoading, error, sendMessage, clearHistory } = useChatApi()
+const { messages, isLoading, error: chatError, sendMessage, clearHistory } = useChatApi()
 const { isSpeaking, speak, stop: stopTts } = useTtsApi()
-const { isListening, transcript, start: startSpeech, stop: stopSpeech } = useRealtimeSpeech()
+const {
+  isListening,
+  isSpeaking: isUserSpeaking,
+  transcript,
+  error: speechError,
+  start: startSpeech,
+  stop: stopSpeech,
+} = useRealtimeSpeech({
+  onTranscriptComplete: (text) => {
+    console.log('[index] 音声認識テキスト確定 → チャット API 送信:', text)
+    sendMessage(text)
+  },
+})
 const { emotionState, detectEmotionFromText } = useAiEmotion()
 
 // assistant の応答テキストから絵文字を検出して感情を更新

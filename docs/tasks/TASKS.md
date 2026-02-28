@@ -9,7 +9,7 @@ Lemonade Server をバックエンドとした、Nuxt3 製 AI チャット・音
 | [01](./01-project-setup.md) | プロジェクトセットアップ | ディレクトリ構成・依存ライブラリ・環境変数の整備 | 完了 |
 | [02](./02-chat-api.md) | チャット API 連携 | `/api/v1/chat/completions` を用いた会話機能 | 完了 |
 | [03](./03-tts-api.md) | テキスト音声合成 (TTS) | `/api/v1/audio/speech` を用いた AI 応答の読み上げ | 未着手 |
-| [04](./04-realtime-speech.md) | リアルタイム音声認識 | `/realtime` WebSocket を用いたユーザー発話のテキスト化 | 未着手 |
+| [04](./04-realtime-speech.md) | リアルタイム音声認識 | `/realtime` WebSocket を用いたユーザー発話のテキスト化 | 完了 |
 | [05](./05-ui-layout.md) | UI レイアウト | チャット画面・表情エリア・音声ボタン等の画面構築 | 未着手 |
 | [06](./06-ai-emotion.md) | AI 感情表現 | システムプロンプト指示による絵文字で AI の表情を動的に切り替える | 完了 |
 
