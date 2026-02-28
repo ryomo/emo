@@ -50,6 +50,7 @@ export function useTtsApi() {
             model: config.public.lemonadeTtsModel,
             input: text,
             voice: 'af_heart',
+            response_format: 'wav',
           }),
         },
       )
@@ -58,7 +59,23 @@ export function useTtsApi() {
         throw new Error(`TTS API error: ${response.status} ${response.statusText}`)
       }
 
-      const blob = await response.blob()
+      const rawBlob = await response.blob()
+
+      // サーバーがエラーを 200 で返した場合に空/極小 blob になるのをガード
+      if (rawBlob.size < 100) {
+        console.warn(TTS_LOG_PREFIX, `⚠️ Response blob too small (${rawBlob.size} bytes), skipping playback`)
+        return
+      }
+
+      // Content-Type が正しくない場合があるので明示的に audio MIME を設定
+      const contentType = response.headers.get('Content-Type') || ''
+      const isAudioMime = contentType.startsWith('audio/')
+      const blob = isAudioMime
+        ? rawBlob
+        : new Blob([rawBlob], { type: 'audio/wav' })
+
+      console.log(TTS_LOG_PREFIX, `📦 Audio blob: ${blob.size} bytes, type=${blob.type} (original: ${contentType})`)
+
       const objectUrl = URL.createObjectURL(blob)
       currentObjectUrl = objectUrl
 
