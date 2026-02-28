@@ -10,6 +10,7 @@ export default defineNuxtConfig({
       lemonadeWsUrl: '',   // .env の NUXT_PUBLIC_LEMONADE_WS_URL で上書き
       lemonadeModel: '',   // .env の NUXT_PUBLIC_LEMONADE_MODEL で上書き
       lemonadeWhisperModel: '', // .env の NUXT_PUBLIC_LEMONADE_WHISPER_MODEL で上書き
+      lemonadeTtsModel: '',      // .env の NUXT_PUBLIC_LEMONADE_TTS_MODEL で上書き
     },
   },
 })

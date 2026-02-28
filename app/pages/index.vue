@@ -30,7 +30,12 @@
       <!-- サイドバー: 表情 + 音声 -->
       <aside class="w-64 border-l border-gray-700 flex flex-col items-center gap-4 p-4">
         <EmotionDisplay :emotion="emotionState.current" />
-        <VoiceButton :is-listening="isListening" :disabled="isLoading" @toggle="toggleVoice" />
+        <VoiceButton
+          :is-listening="isListening"
+          :is-tts-speaking="isSpeaking"
+          :disabled="isLoading"
+          @toggle="toggleVoice"
+        />
         <VoiceTranscriptArea
           :transcript="transcript"
           :is-speaking="isUserSpeaking"
@@ -62,7 +67,7 @@ const {
 })
 const { emotionState, detectEmotionFromText } = useAiEmotion()
 
-// assistant の応答テキストから絵文字を検出して感情を更新
+// assistant の応答テキストから絵文字を検出して感情を更新し、ボイスモード中は TTS で読み上げ
 watch(
   () => messages.value.length,
   () => {
@@ -70,6 +75,10 @@ watch(
     const lastMsg = messages.value.at(-1)
     if (lastMsg?.role === 'assistant' && lastMsg.content) {
       detectEmotionFromText(lastMsg.content)
+      // ボイスモードが有効なときだけ TTS で読み上げ
+      if (isListening.value) {
+        speak(lastMsg.content)
+      }
     }
   },
 )
@@ -80,6 +89,7 @@ function handleSend(message: string) {
 
 function toggleVoice() {
   if (isListening.value) {
+    stopTts()
     stopSpeech()
   } else {
     startSpeech()
