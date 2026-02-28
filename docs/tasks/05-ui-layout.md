@@ -8,7 +8,7 @@
 
 ```
 ┌─────────────────────────────────────────┐
-│  チャットウィンドウ (ChatWindow)          │
+│  チャット履歴 (ChatHistory)               │
 │  ┌─────────────────────────────────┐    │
 │  │ [assistant] こんにちは！         │    │
 │  │              [user] ありがとう   │    │
@@ -40,7 +40,7 @@
 - 上記レイアウトを実装するメインページ
 - 各 composable（`useChatApi`, `useTtsApi`, `useRealtimeSpeech`, `useAiEmotion`）をここで呼び出して、各コンポーネントに props / emit で繋ぐ
 
-### 5-2. チャットウィンドウ (`app/components/chat/ChatWindow.vue`)
+### 5-2. チャット履歴 (`app/components/chat/ChatHistory.vue`)
 
 - `messages` を受け取り、user / assistant のバブルを表示
 - 最新メッセージに自動スクロール

@@ -63,7 +63,7 @@ interface ToolCall {
 
 ### 2-4. チャット UI コンポーネントへの組み込み
 
-- `ChatWindow.vue`: メッセージ一覧を表示（user / assistant を区別）
+- `ChatHistory.vue`: メッセージ一覧を表示（user / assistant を区別）
 - `ChatInput.vue`: テキスト送信フォーム。`sendMessage` を呼び出す
 
 ## 完了条件

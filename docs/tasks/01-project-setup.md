@@ -27,7 +27,7 @@ app/
     index.vue          # チャット・音声会話メイン画面
   components/
     chat/
-      ChatWindow.vue   # チャットメッセージ表示
+      ChatHistory.vue   # チャットメッセージ表示
       ChatInput.vue    # テキスト入力フォーム
     voice/
       VoiceButton.vue  # 音声会話 開始/停止ボタン

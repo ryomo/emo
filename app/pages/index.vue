@@ -3,15 +3,28 @@
     <!-- ヘッダー -->
     <header class="flex items-center justify-between px-4 py-3 border-b border-gray-700">
       <h1 class="text-lg font-bold">AI Chat</h1>
-      <span class="text-sm text-gray-400">{{ config.lemonadeModel }}</span>
+      <div class="flex items-center gap-3">
+        <span class="text-sm text-gray-400">{{ config.lemonadeModel }}</span>
+        <button
+          class="text-xs text-gray-400 hover:text-white border border-gray-600 rounded px-2 py-1 transition-colors"
+          @click="clearHistory"
+        >
+          履歴クリア
+        </button>
+      </div>
     </header>
+
+    <!-- エラー表示 -->
+    <div v-if="error" class="bg-red-900/50 border border-red-700 text-red-200 px-4 py-2 text-sm">
+      {{ error }}
+    </div>
 
     <!-- メインコンテンツ -->
     <div class="flex flex-1 overflow-hidden">
       <!-- チャットエリア -->
       <main class="flex flex-col flex-1">
-        <ChatWindow class="flex-1" />
-        <ChatInput @send="handleSend" />
+        <ChatHistory class="flex-1" :messages="messages" :is-loading="isLoading" />
+        <ChatInput :is-loading="isLoading" @send="handleSend" />
       </main>
 
       <!-- サイドバー: 表情 + 音声 -->
@@ -27,7 +40,7 @@
 <script setup lang="ts">
 const config = useRuntimeConfig().public
 
-const { messages, isLoading, sendMessage } = useChatApi()
+const { messages, isLoading, error, sendMessage, clearHistory } = useChatApi()
 const { isSpeaking, speak, stop: stopTts } = useTtsApi()
 const { isListening, transcript, start: startSpeech, stop: stopSpeech } = useRealtimeSpeech()
 const { emotionState, setEmotion } = useAiEmotion()
