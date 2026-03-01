@@ -1,16 +1,16 @@
 <template>
-  <form class="flex items-center gap-2 p-3 border-t border-gray-700" @submit.prevent="handleSubmit">
+  <form class="flex items-center gap-2" @submit.prevent="handleSubmit">
     <input
       ref="inputEl"
       v-model="text"
       type="text"
       placeholder="メッセージを入力..."
-      class="flex-1 bg-gray-800 text-white rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+      class="flex-1 bg-gray-800 text-white rounded-lg px-3 py-2 sm:px-4 text-sm outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
       :disabled="isLoading"
     />
     <button
       type="submit"
-      class="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2 transition-colors disabled:opacity-50"
+      class="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-3 py-2 sm:px-4 text-sm transition-colors disabled:opacity-50 whitespace-nowrap"
       :disabled="!text.trim() || isLoading"
     >
       送信
