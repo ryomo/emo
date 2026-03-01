@@ -1,5 +1,13 @@
 const TTS_LOG_PREFIX = '[TTS]'
 
+/** Normalize input text for TTS */
+function normalizeText(text: string): string {
+  return text
+    // Remove emojis and pictographic characters
+    .replaceAll(/\p{Extended_Pictographic}/gu, '')
+    .trim()
+}
+
 /**
  * Composable for TTS API calls
  *
@@ -33,12 +41,13 @@ export function useTtsApi() {
    * If called consecutively, stops the previous audio before playing the next.
    */
   async function speak(text: string) {
-    if (!text.trim()) return
+    const normalized = normalizeText(text)
+    if (!normalized.trim()) return
 
     // Stop previous audio
     stop()
 
-    console.log(TTS_LOG_PREFIX, '🔊 Requesting speech for:', text.slice(0, 50))
+    console.log(TTS_LOG_PREFIX, '🔊 Requesting speech for:', normalized.slice(0, 50))
 
     try {
       const response = await fetch(
@@ -48,7 +57,7 @@ export function useTtsApi() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             model: config.public.lemonadeTtsModel,
-            input: text,
+            input: normalized,
             voice: 'af_heart',
             response_format: 'wav',
           }),
