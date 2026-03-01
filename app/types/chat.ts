@@ -1,20 +1,20 @@
-/** チャットメッセージのロール */
+/** Chat message role */
 export type ChatRole = 'system' | 'user' | 'assistant' | 'tool'
 
-/** Tool Call の関数情報 */
+/** Tool call function info */
 export interface ToolFunction {
   name: string
-  arguments: string // JSON 文字列
+  arguments: string // JSON string
 }
 
-/** Tool Call */
+/** Tool call */
 export interface ToolCall {
   id: string
   type: 'function'
   function: ToolFunction
 }
 
-/** チャットメッセージ */
+/** Chat message */
 export interface ChatMessage {
   role: ChatRole
   content: string | null
@@ -22,21 +22,21 @@ export interface ChatMessage {
   tool_call_id?: string
 }
 
-/** Chat Completions API レスポンスの choice */
+/** Chat Completions API response choice */
 export interface ChatChoice {
   index: number
   message: ChatMessage
   finish_reason: string | null
 }
 
-/** Chat Completions API レスポンスの usage */
+/** Chat Completions API response usage */
 export interface ChatUsage {
   prompt_tokens: number
   completion_tokens: number
   total_tokens: number
 }
 
-/** Chat Completions API レスポンス (OpenAI 互換) */
+/** Chat Completions API response (OpenAI compatible) */
 export interface ChatCompletionResponse {
   id: string
   object: string

@@ -1,4 +1,4 @@
-/** AI の感情タイプ */
+/** AI emotion type */
 export type EmotionType =
   | 'neutral'
   | 'happy'
@@ -7,7 +7,7 @@ export type EmotionType =
   | 'surprised'
   | 'thinking'
 
-/** 感情 → 絵文字マッピング */
+/** Emotion → emoji mapping */
 export const EMOTION_EMOJI: Record<EmotionType, string> = {
   neutral: '😐',
   happy: '😊',
@@ -17,12 +17,12 @@ export const EMOTION_EMOJI: Record<EmotionType, string> = {
   thinking: '🤔',
 }
 
-/** 絵文字 → 感情の逆引きマップ */
+/** Reverse lookup map: emoji → emotion */
 export const EMOJI_TO_EMOTION: Record<string, EmotionType> = Object.fromEntries(
   Object.entries(EMOTION_EMOJI).map(([emotion, emoji]) => [emoji, emotion as EmotionType]),
 ) as Record<string, EmotionType>
 
-/** テキストから EMOTION_EMOJI の絵文字を除去する */
+/** Remove EMOTION_EMOJI emojis from text */
 const EMOTION_EMOJI_REGEX = new RegExp(
   Object.values(EMOTION_EMOJI).join('|'),
   'g',
@@ -31,7 +31,7 @@ export function stripEmotionEmoji(text: string): string {
   return text.replaceAll(EMOTION_EMOJI_REGEX, '').trim()
 }
 
-/** AI の感情状態 */
+/** AI emotion state */
 export interface EmotionState {
   current: EmotionType
   previous: EmotionType

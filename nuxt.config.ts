@@ -6,11 +6,11 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      lemonadeBaseUrl: '', // .env の NUXT_PUBLIC_LEMONADE_BASE_URL で上書き
-      lemonadeWsUrl: '',   // .env の NUXT_PUBLIC_LEMONADE_WS_URL で上書き
-      lemonadeModel: '',   // .env の NUXT_PUBLIC_LEMONADE_MODEL で上書き
-      lemonadeWhisperModel: '', // .env の NUXT_PUBLIC_LEMONADE_WHISPER_MODEL で上書き
-      lemonadeTtsModel: '',      // .env の NUXT_PUBLIC_LEMONADE_TTS_MODEL で上書き
+      lemonadeBaseUrl: '', // overridden by NUXT_PUBLIC_LEMONADE_BASE_URL in .env
+      lemonadeWsUrl: '',   // overridden by NUXT_PUBLIC_LEMONADE_WS_URL in .env
+      lemonadeModel: '',   // overridden by NUXT_PUBLIC_LEMONADE_MODEL in .env
+      lemonadeWhisperModel: '', // overridden by NUXT_PUBLIC_LEMONADE_WHISPER_MODEL in .env
+      lemonadeTtsModel: '',      // overridden by NUXT_PUBLIC_LEMONADE_TTS_MODEL in .env
     },
   },
 })

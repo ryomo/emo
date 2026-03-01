@@ -1,11 +1,11 @@
 <template>
   <div ref="scrollContainer" class="flex flex-col h-full overflow-y-auto p-4 space-y-3">
-    <!-- メッセージが無い場合 -->
+    <!-- No messages -->
     <p v-if="messages.length === 0" class="text-gray-500 text-center text-sm mt-8">
-      メッセージを入力して会話を始めましょう
+      Enter a message to start the conversation
     </p>
 
-    <!-- メッセージ一覧 -->
+    <!-- Message List -->
     <div
       v-for="(msg, i) in messages"
       :key="i"
@@ -24,7 +24,7 @@
       </div>
     </div>
 
-    <!-- ローディングインジケーター -->
+    <!-- Loading Indicator -->
     <div v-if="isLoading" class="flex justify-start">
       <div class="bg-gray-700 text-gray-300 rounded-2xl rounded-bl-sm px-4 py-2 text-sm">
         <span class="inline-flex gap-1">
@@ -47,7 +47,7 @@ const props = defineProps<{
   isLoading: boolean
 }>()
 
-/** assistant メッセージから感情絵文字を除去して表示用テキストを返す */
+/** Remove emotion emoji from assistant message and return display text */
 function displayContent(msg: { role: string; content: string | null }): string {
   const text = msg.content ?? ''
   return msg.role === 'assistant' ? stripEmotionEmoji(text) : text
@@ -55,7 +55,7 @@ function displayContent(msg: { role: string; content: string | null }): string {
 
 const scrollContainer = ref<HTMLElement | null>(null)
 
-/** 新しいメッセージ追加時に自動スクロール */
+/** Auto-scroll when new message is added */
 watch(
   () => props.messages.length,
   async () => {
@@ -66,7 +66,7 @@ watch(
   },
 )
 
-/** ローディング表示時にもスクロール */
+/** Also scroll when loading indicator is shown */
 watch(
   () => props.isLoading,
   async (loading) => {

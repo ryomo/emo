@@ -2,9 +2,9 @@ import type { EmotionType, EmotionState } from '~/types/emotion'
 import { EMOTION_EMOJI, EMOJI_TO_EMOTION } from '~/types/emotion'
 
 /**
- * AI 感情状態管理コンポーザブル
+ * Composable for AI emotion state management
  *
- * AI の応答テキストに含まれる絵文字から感情を検出する。
+ * Detects emotions from emojis included in AI response text.
  */
 export function useAiEmotion() {
   const emotionState = ref<EmotionState>({
@@ -14,7 +14,7 @@ export function useAiEmotion() {
 
   const currentEmoji = computed(() => EMOTION_EMOJI[emotionState.value.current])
 
-  /** 感情を直接設定する */
+  /** Set emotion directly */
   function setEmotion(emotion: EmotionType) {
     if (emotion === emotionState.value.current) return
     emotionState.value.previous = emotionState.value.current
@@ -22,7 +22,7 @@ export function useAiEmotion() {
   }
 
   /**
-   * テキスト内の EMOTION_EMOJI 絵文字を検出し、最後に見つかった絵文字の感情を設定する。
+   * Detects EMOTION_EMOJI emojis in text and sets the emotion of the last found emoji.
    */
   function detectEmotionFromText(text: string) {
     let lastEmotion: EmotionType | null = null

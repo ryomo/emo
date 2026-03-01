@@ -1,10 +1,9 @@
 /**
- * AudioWorklet Processor: マイク入力の PCM float32 データをバッファリングして
- * メインスレッドに送信する。
+ * AudioWorklet Processor: Buffers PCM float32 data from microphone input
+ * and sends it to the main thread.
  *
- * 128 フレームごとに process() が呼ばれるため、
- * FLUSH_SIZE サンプル分バッファしてからまとめて送信し、
- * WebSocket メッセージ数を抑える。
+ * process() is called every 128 frames, so we buffer FLUSH_SIZE samples
+ * before sending them in bulk to reduce the number of WebSocket messages.
  */
 class PCMProcessor extends AudioWorkletProcessor {
   constructor() {
@@ -17,7 +16,7 @@ class PCMProcessor extends AudioWorkletProcessor {
     this._flushSize = 2048
     this._active = true
 
-    // メインスレッドから stop メッセージを受け取る
+    // Receive stop message from main thread
     this.port.onmessage = (event) => {
       if (event.data === 'stop') {
         this._active = false
@@ -34,12 +33,12 @@ class PCMProcessor extends AudioWorkletProcessor {
     const channelData = input[0]
     if (!channelData || channelData.length === 0) return true
 
-    // Float32 データをコピーして蓄積
+    // Copy and accumulate Float32 data
     this._chunks.push(new Float32Array(channelData))
     this._samplesCollected += channelData.length
 
     if (this._samplesCollected >= this._flushSize) {
-      // チャンクを結合
+      // Merge chunks
       const merged = new Float32Array(this._samplesCollected)
       let offset = 0
       for (const chunk of this._chunks) {
@@ -47,7 +46,7 @@ class PCMProcessor extends AudioWorkletProcessor {
         offset += chunk.length
       }
 
-      // メインスレッドへ転送 (transferable)
+      // Transfer to main thread (transferable)
       this.port.postMessage(merged.buffer, [merged.buffer])
 
       this._chunks = []

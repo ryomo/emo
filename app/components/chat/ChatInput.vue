@@ -4,7 +4,7 @@
       ref="inputEl"
       v-model="text"
       type="text"
-      placeholder="メッセージを入力..."
+      placeholder="Type a message..."
       class="flex-1 bg-gray-800 text-white rounded-lg px-3 py-2 sm:px-4 text-sm outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
       :disabled="isLoading"
     />
@@ -13,7 +13,7 @@
       class="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-3 py-2 sm:px-4 text-sm transition-colors disabled:opacity-50 whitespace-nowrap"
       :disabled="!text.trim() || isLoading"
     >
-      送信
+      Send
     </button>
   </form>
 </template>
@@ -35,7 +35,7 @@ function handleSubmit() {
   if (!message) return
   emit('send', message)
   text.value = ''
-  // 送信後にフォーカスを戻す
+  // Return focus after sending
   nextTick(() => inputEl.value?.focus())
 }
 </script>

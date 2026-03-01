@@ -1,13 +1,13 @@
 <template>
   <div class="relative flex flex-col items-center justify-center p-4 rounded-xl bg-gray-800/60">
-    <!-- 絵文字表示 -->
+    <!-- Emoji Display -->
     <Transition name="emotion" mode="out-in">
       <div :key="emotion" class="text-9xl sm:text-[10rem] select-none drop-shadow-lg">
         {{ emotionEmoji }}
       </div>
     </Transition>
 
-    <!-- AI 応答テキスト (オーバーレイ) -->
+    <!-- AI Response Text (Overlay) -->
     <Transition name="overlay-fade">
       <div
         v-if="responseText"
@@ -29,7 +29,7 @@ import { EMOTION_EMOJI } from '~/types/emotion'
 
 const props = defineProps<{
   emotion: EmotionType
-  /** AI の最新応答テキスト（感情絵文字除去済み） */
+  /** Latest AI response text (emotion emoji removed) */
   responseText?: string
 }>()
 

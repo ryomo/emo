@@ -32,9 +32,9 @@ const buttonIcon = computed(() => {
 })
 
 const label = computed(() => {
-  if (props.isListening && props.isTtsSpeaking) return '読み上げ中...'
-  if (props.isListening) return '停止'
-  return 'ボイス'
+  if (props.isListening && props.isTtsSpeaking) return 'Speaking...'
+  if (props.isListening) return 'Stop'
+  return 'Voice'
 })
 
 const labelClass = computed(() => {

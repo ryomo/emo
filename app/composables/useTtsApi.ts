@@ -1,10 +1,10 @@
 const TTS_LOG_PREFIX = '[TTS]'
 
 /**
- * TTS API 呼び出し用コンポーザブル
+ * Composable for TTS API calls
  *
- * Lemonade Server の POST /api/v1/audio/speech を使い、
- * テキストを音声に変換して再生する。
+ * Uses Lemonade Server's POST /api/v1/audio/speech
+ * to convert text to speech and play it.
  */
 export function useTtsApi() {
   const config = useRuntimeConfig()
@@ -13,7 +13,7 @@ export function useTtsApi() {
   let currentAudio: HTMLAudioElement | null = null
   let currentObjectUrl: string | null = null
 
-  /** 再生中の音声を停止し、リソースを解放する */
+  /** Stop currently playing audio and release resources */
   function stop() {
     if (currentAudio) {
       currentAudio.pause()
@@ -29,13 +29,13 @@ export function useTtsApi() {
   }
 
   /**
-   * テキストを TTS API で音声に変換して再生する。
-   * 連続呼び出し時は前の音声を停止してから次を再生する。
+   * Convert text to speech via TTS API and play it.
+   * If called consecutively, stops the previous audio before playing the next.
    */
   async function speak(text: string) {
     if (!text.trim()) return
 
-    // 前の音声を停止
+    // Stop previous audio
     stop()
 
     console.log(TTS_LOG_PREFIX, '🔊 Requesting speech for:', text.slice(0, 50))
@@ -61,13 +61,13 @@ export function useTtsApi() {
 
       const rawBlob = await response.blob()
 
-      // サーバーがエラーを 200 で返した場合に空/極小 blob になるのをガード
+      // Guard against empty/tiny blob when server returns an error with status 200
       if (rawBlob.size < 100) {
         console.warn(TTS_LOG_PREFIX, `⚠️ Response blob too small (${rawBlob.size} bytes), skipping playback`)
         return
       }
 
-      // Content-Type が正しくない場合があるので明示的に audio MIME を設定
+      // Explicitly set audio MIME type in case Content-Type is incorrect
       const contentType = response.headers.get('Content-Type') || ''
       const isAudioMime = contentType.startsWith('audio/')
       const blob = isAudioMime
@@ -87,7 +87,7 @@ export function useTtsApi() {
 
       audio.onended = () => {
         console.log(TTS_LOG_PREFIX, '✅ Playback finished')
-        // 別の再生に差し替わっていなければクリーンアップ
+        // Clean up only if not replaced by another playback
         if (currentAudio === audio) {
           stop()
         }

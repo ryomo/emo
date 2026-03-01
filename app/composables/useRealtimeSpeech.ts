@@ -1,25 +1,25 @@
 /**
- * WebSocket リアルタイム音声認識コンポーザブル (Task 04)
+ * WebSocket realtime speech recognition composable (Task 04)
  *
- * Lemonade Server の /realtime エンドポイント (OpenAI Realtime API 互換) を使い、
- * マイク入力をリアルタイムでテキスト化する。
+ * Uses the Lemonade Server's /realtime endpoint (OpenAI Realtime API compatible)
+ * to transcribe microphone input in real time.
  *
- * 音声フォーマット: PCM 16kHz mono 16bit → Base64 エンコードして送信
+ * Audio format: PCM 16kHz mono 16bit → Base64 encoded and sent
  */
 
 const LOG_PREFIX = '[RealtimeSpeech]'
 
-/** マイク入力の増幅倍率 (1 = そのまま、2 = 2倍に増幅) */
+/** Microphone input gain multiplier (1 = no change, 2 = 2x amplification) */
 const MIC_GAIN = 1
 
 interface RealtimeSpeechOptions {
-  /** 確定テキストが得られたときのコールバック */
+  /** Callback called when finalized transcript text is available */
   onTranscriptComplete?: (text: string) => void
 }
 
 // --------------- Utility (outer scope) ---------------
 
-/** ArrayBuffer → Base64 エンコード */
+/** ArrayBuffer → Base64 encode */
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer)
   let binary = ''
@@ -58,11 +58,11 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
 
   // --------------- Audio → WebSocket ---------------
 
-  /** Float32 PCM データをダウンサンプリング → Int16 → Base64 変換して WebSocket で送信 */
+  /** Downsample Float32 PCM data → Int16 → Base64 encode and send via WebSocket */
   function sendAudioData(float32Buffer: Float32Array) {
     if (ws?.readyState !== WebSocket.OPEN || !sessionReady) return
 
-    // ネイティブレートから 16kHz へダウンサンプリング
+    // Downsample from native rate to 16kHz
     const targetRate = 16000
     const ratio = nativeSampleRate / targetRate
     const outputLength = Math.floor(float32Buffer.length / ratio)
@@ -93,7 +93,7 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
 
   // --------------- WebSocket ---------------
 
-  /** session.update イベントを送信 */
+  /** Send session.update event */
   function sendSessionUpdate() {
     if (ws?.readyState !== WebSocket.OPEN) return
 
@@ -114,7 +114,7 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
     ws.send(JSON.stringify(sessionUpdate))
   }
 
-  /** 受信した WebSocket メッセージを処理 */
+  /** Handle received WebSocket messages */
   function handleWsMessage(msgEvent: MessageEvent) {
     try {
       const data = JSON.parse(msgEvent.data as string)
@@ -167,7 +167,7 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
 
         case 'error':
           console.error(LOG_PREFIX, '❌ Server error:', data.error)
-          error.value = data.error?.message || JSON.stringify(data.error) || 'WebSocket サーバーエラー'
+          error.value = data.error?.message || JSON.stringify(data.error) || 'WebSocket server error'
           break
 
         default:
@@ -179,7 +179,7 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
     }
   }
 
-  /** WebSocket 接続を確立 */
+  /** Establish WebSocket connection */
   function setupWebSocket(): Promise<void> {
     return new Promise((resolve, reject) => {
       const url = getWsUrl()
@@ -203,7 +203,7 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
 
       ws.onerror = (event) => {
         console.error(LOG_PREFIX, '❌ WebSocket error:', event)
-        error.value = 'WebSocket 接続エラーが発生しました。サーバーが起動しているか確認してください。'
+        error.value = 'WebSocket connection error. Please check that the server is running.'
         reject(new Error('WebSocket connection error'))
       }
 
@@ -218,7 +218,7 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
 
   // --------------- Audio Capture ---------------
 
-  /** マイク入力を取得し AudioWorklet パイプラインを構築 */
+  /** Acquire microphone input and build AudioWorklet pipeline */
   async function setupAudio() {
     console.log(LOG_PREFIX, '🎤 Requesting microphone access...')
 
@@ -233,11 +233,11 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
     } catch (e: any) {
       console.error(LOG_PREFIX, '❌ Microphone access failed:', e.name, e.message)
       if (e.name === 'NotAllowedError') {
-        error.value = 'マイクへのアクセスが拒否されました。ブラウザの設定を確認してください。'
+        error.value = 'Microphone access denied. Please check your browser settings.'
       } else if (e.name === 'NotFoundError') {
-        error.value = 'マイクデバイスが見つかりません。'
+        error.value = 'Microphone device not found.'
       } else {
-        error.value = `マイクアクセスエラー: ${e.message}`
+        error.value = `Microphone access error: ${e.message}`
       }
       throw e
     }
@@ -248,7 +248,7 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
       console.log(LOG_PREFIX, '🎤 Audio track settings:', JSON.stringify(track.getSettings()))
     }
 
-    // AudioContext 作成 (ネイティブレートを使用し、送信時にダウンサンプリング)
+    // Create AudioContext (use native rate; downsample when sending)
     audioContext = new AudioContext()
     nativeSampleRate = audioContext.sampleRate
     console.log(LOG_PREFIX, `🔊 AudioContext: sampleRate=${nativeSampleRate}, state=${audioContext.state}`)
@@ -258,15 +258,15 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
       console.log(LOG_PREFIX, '🔊 AudioContext resumed')
     }
 
-    // パイプライン: Mic → Source → Gain(増幅) → AudioWorklet → 無音出力
+    // Pipeline: Mic → Source → Gain(amplify) → AudioWorklet → Silent output
     sourceNode = audioContext.createMediaStreamSource(mediaStream)
 
-    // マイク入力を増幅する GainNode
+    // GainNode to amplify microphone input
     gainNode = audioContext.createGain()
     gainNode.gain.value = MIC_GAIN
     console.log(LOG_PREFIX, `🔊 Mic gain set to ${MIC_GAIN}x`)
 
-    // AudioWorklet を読み込み
+    // Load AudioWorklet
     await audioContext.audioWorklet.addModule('/audio-worklet-processor.js')
     console.log(LOG_PREFIX, '✅ AudioWorklet module loaded')
 
@@ -275,7 +275,7 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
       sendAudioData(new Float32Array(event.data))
     }
 
-    // 無音 GainNode (パイプラインをアクティブに保つが音は鳴らさない)
+    // Silent GainNode (keeps pipeline active but produces no sound)
     const silentNode = audioContext.createGain()
     silentNode.gain.value = 0
 
@@ -307,7 +307,7 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
       console.log(LOG_PREFIX, '✅ ===== Realtime speech started =====')
     } catch (e: any) {
       console.error(LOG_PREFIX, '❌ ===== Failed to start =====', e)
-      error.value = error.value ?? 'リアルタイム音声認識の開始に失敗しました'
+      error.value = error.value ?? 'Failed to start realtime speech recognition'
       cleanup()
     }
   }
