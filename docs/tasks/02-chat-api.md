@@ -1,28 +1,28 @@
-# Task 02: チャット API 連携
+# Task 02: Chat API Integration
 
-## 概要
+## Overview
 
-Lemonade Server の `/api/v1/chat/completions` エンドポイントを使い、LLM との会話機能を実装する。
-本タスクは Task 06 (AI 感情表現) の前提となる。
+Implement chat with an LLM using Lemonade Server's `/api/v1/chat/completions` endpoint.
+This task is a prerequisite for Task 06 (AI emotion display).
 
-## API 仕様
+## API Spec
 
-- **エンドポイント**: `POST /api/v1/chat/completions`
-- **リクエスト例**:
+- **Endpoint**: `POST /api/v1/chat/completions`
+- **Request example**:
   ```json
   {
     "model": "Gemma-3-4b-it-GGUF",
     "messages": [
       { "role": "system", "content": "You are a helpful assistant." },
-      { "role": "user", "content": "こんにちは" }
+      { "role": "user", "content": "Hello" }
     ]
   }
   ```
-- **レスポンス**: OpenAI Chat Completions API 互換形式
+- **Response**: OpenAI Chat Completions API-compatible format
 
-## サブタスク
+## Subtasks
 
-### 2-1. 型定義 (`app/types/chat.ts`)
+### 2-1. Types (`app/types/chat.ts`)
 
 ```ts
 type ChatRole = 'system' | 'user' | 'assistant' | 'tool'
@@ -30,8 +30,8 @@ type ChatRole = 'system' | 'user' | 'assistant' | 'tool'
 interface ChatMessage {
   role: ChatRole
   content: string
-  tool_calls?: ToolCall[]  // assistant からの Tool Call
-  tool_call_id?: string    // tool ロールのときに使用
+  tool_calls?: ToolCall[]  // Tool calls from the assistant
+  tool_call_id?: string    // Used when role is 'tool'
 }
 
 interface ToolCall {
@@ -39,35 +39,35 @@ interface ToolCall {
   type: 'function'
   function: {
     name: string
-    arguments: string  // JSON 文字列
+    arguments: string  // JSON string
   }
 }
 ```
 
-### 2-2. composable の実装 (`app/composables/useChatApi.ts`)
+### 2-2. Composable (`app/composables/useChatApi.ts`)
 
-以下の機能を持つ composable を実装する。
+Implement a composable with the following.
 
-- `messages`: 会話履歴（`ref<ChatMessage[]>`）
-- `isLoading`: API 呼び出し中フラグ
-- `sendMessage(userText: string)`: ユーザーメッセージを追加して API 呼び出し
-- `clearHistory()`: 会話履歴をリセット
-- システムプロンプトで「応答は短くする」よう指示する
+- `messages`: conversation history (`ref<ChatMessage[]>`)
+- `isLoading`: request-in-flight flag
+- `sendMessage(userText: string)`: append a user message and call the API
+- `clearHistory()`: reset the conversation
+- In the system prompt, instruct the model to keep responses short
 
-### 2-3. システムプロンプトの設定
+### 2-3. System prompt
 
-音声会話を想定し、以下の方針でシステムプロンプトを設定する。
+For voice-first interactions, configure the system prompt with the following guidelines.
 
-- 応答は 1〜3 文程度に収める
-- Tool Calling のツール定義を含める（Task 06 で追加）
+- Keep responses to around 1–3 sentences
+- Include tool definitions for tool calling (added in Task 06)
 
-### 2-4. チャット UI コンポーネントへの組み込み
+### 2-4. Wire into chat UI components
 
-- `ChatHistory.vue`: メッセージ一覧を表示（user / assistant を区別）
-- `ChatInput.vue`: テキスト送信フォーム。`sendMessage` を呼び出す
+- `ChatHistory.vue`: render the message list (distinguish user vs assistant)
+- `ChatInput.vue`: text send form; calls `sendMessage`
 
-## 完了条件
+## Done Criteria
 
-- テキストを入力して送信すると、AI の応答がチャット画面に表示される
-- 会話履歴が正しく積み上がり、文脈を保って会話できる
-- ローディング中は入力を無効化する
+- When you send text, the AI response appears in the chat UI
+- Conversation history accumulates correctly and preserves context
+- Disable input while loading

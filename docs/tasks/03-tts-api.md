@@ -1,52 +1,52 @@
-# Task 03: テキスト音声合成 (TTS) API 連携
+# Task 03: Text-to-Speech (TTS) API Integration
 
-## 概要
+## Overview
 
-Lemonade Server の `/api/v1/audio/speech` エンドポイントを使い、AI の応答テキストを音声に変換して再生する。
+Use Lemonade Server's `/api/v1/audio/speech` endpoint to convert the AI's response text into audio and play it back.
 
-## API 仕様
+## API Spec
 
-- **エンドポイント**: `POST /api/v1/audio/speech`
-- **リクエスト例**:
+- **Endpoint**: `POST /api/v1/audio/speech`
+- **Request example**:
   ```json
   {
     "model": "…",
-    "input": "こんにちは、元気ですか？",
+    "input": "Hello — how are you?",
     "voice": "…"
   }
   ```
-- **レスポンス**: 音声データ（バイナリ）。Content-Type は `audio/mpeg` 等を想定
+- **Response**: audio binary data (e.g. `audio/mpeg`)
 
-> 詳細なリクエスト仕様は [Lemonade Server Docs](https://lemonade-server.ai/docs/server/server_spec/#endpoints-overview) を参照して確定させること。
+> Confirm the detailed request schema using the [Lemonade Server Docs](https://lemonade-server.ai/docs/server/server_spec/#endpoints-overview).
 
-## サブタスク
+## Subtasks
 
-### 3-1. composable の実装 (`app/composables/useTtsApi.ts`)
+### 3-1. Composable (`app/composables/useTtsApi.ts`)
 
-以下の機能を持つ composable を実装する。
+Implement a composable with the following.
 
-- `speak(text: string)`: テキストを受け取り、音声に変換して再生する
-- `isSpeaking`: 音声再生中フラグ
-- `stop()`: 再生中の音声を停止する
-- Web Audio API または `<audio>` 要素を使った音声再生
+- `speak(text: string)`: convert text to audio and play it
+- `isSpeaking`: playback-in-progress flag
+- `stop()`: stop the currently playing audio
+- Use either the Web Audio API or an `<audio>` element
 
-実装の流れ:
-1. API へ `fetch` でリクエスト
-2. レスポンスを `Blob` として受け取る
-3. `URL.createObjectURL(blob)` で再生用 URL を生成
-4. `Audio` オブジェクトで再生、終了後に URL を revoke
+Implementation flow:
+1. Send a request via `fetch`
+2. Receive the response as a `Blob`
+3. Create a playback URL via `URL.createObjectURL(blob)`
+4. Play with an `Audio` object, and revoke the URL after playback ends
 
-### 3-2. チャット API との連携
+### 3-2. Integrate with the chat API
 
-- Task 02 の `sendMessage` が正常にレスポンスを受け取ったら、自動的に `speak()` を呼び出す
-- AI の応答テキスト（`choices[0].message.content`）を渡す
+- After Task 02's `sendMessage` receives a response successfully, call `speak()` automatically
+- Pass the AI response text (`choices[0].message.content`)
 
-### 3-3. 音声再生中の UI フィードバック
+### 3-3. UI feedback during playback
 
-- 音声再生中は何らかの視覚的フィードバックを表示する（例: アイコンのアニメーション）
+- Show some visual feedback while audio is playing (e.g. an animated icon)
 
-## 完了条件
+## Done Criteria
 
-- AI の応答が返ったとき、自動的に音声が再生される
-- `stop()` で途中停止できる
-- 連続して `speak()` が呼ばれた場合、前の音声を停止してから次を再生する
+- When an AI response arrives, audio plays automatically
+- You can stop mid-playback via `stop()`
+- If `speak()` is called repeatedly, stop the previous audio before starting the next

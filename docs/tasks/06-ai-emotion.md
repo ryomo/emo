@@ -1,27 +1,27 @@
-# Task 06: AI 感情表現
+# Task 06: AI Emotion Display
 
-## 概要
+## Overview
 
-システムプロンプトで AI に感情絵文字を応答に含めるよう指示し、応答テキスト内の絵文字を検出して画面上の表情を動的に切り替える。
+Instruct the AI (via the system prompt) to include an emotion emoji in each response. Detect the emoji in the response text and dynamically switch the on-screen emotion.
 
-> **実装方針について**
-> 当初は Tool Calling による感情設定を検討したが、Lemonade Server + `Gemma-3-4b-it-GGUF` の組み合わせでは Tool Calling が安定しなかったため、
-> システムプロンプト指示 + 応答テキスト内の絵文字検出方式を採用した。
+> **Implementation note**
+> We initially considered setting emotions via tool calling. However, tool calling was not stable with Lemonade Server + `Gemma-3-4b-it-GGUF`,
+> so we chose the system-prompt + emoji-detection approach.
 
-## 感情の定義
+## Emotion Definitions
 
-| 感情 ID | 表示絵文字 | 説明 |
+| Emotion ID | Emoji | Description |
 |--------|-----------|------|
-| `happy` | 😊 | 喜び・うれしい |
-| `sad` | 😢 | 悲しみ |
-| `angry` | 😠 | 怒り |
-| `surprised` | 😲 | 驚き |
-| `thinking` | 🤔 | 考え中・思案 |
-| `neutral` | 😐 | 通常・特になし |
+| `happy` | 😊 | Happy / joyful |
+| `sad` | 😢 | Sad |
+| `angry` | 😠 | Angry |
+| `surprised` | 😲 | Surprised |
+| `thinking` | 🤔 | Thinking |
+| `neutral` | 😐 | Neutral |
 
-## サブタスク
+## Subtasks
 
-### 6-1. 型定義 (`app/types/emotion.ts`)
+### 6-1. Types (`app/types/emotion.ts`)
 
 ```ts
 type EmotionType = 'happy' | 'sad' | 'angry' | 'surprised' | 'thinking' | 'neutral'
@@ -31,36 +31,36 @@ const EMOTION_EMOJI: Record<EmotionType, string> = {
   surprised: '😲', thinking: '🤔', neutral: '😐',
 }
 
-// 絵文字 → 感情の逆引きマップ
+// Emoji → emotion reverse map
 const EMOJI_TO_EMOTION: Record<string, EmotionType>
 
-// テキストから感情絵文字を除去するユーティリティ
+// Utility: remove emotion emojis from text
 function stripEmotionEmoji(text: string): string
 ```
 
-### 6-2. システムプロンプトによる絵文字指示
+### 6-2. Emoji instruction in the system prompt
 
-`useChatApi.ts` のシステムプロンプトに、`EMOTION_EMOJI` に含まれる絵文字を毎回応答の先頭に付けるよう指示を追加する。
+In the system prompt in `useChatApi.ts`, instruct the model to prefix every response with one emoji from `EMOTION_EMOJI`.
 
-### 6-3. composable の実装 (`app/composables/useAiEmotion.ts`)
+### 6-3. Composable (`app/composables/useAiEmotion.ts`)
 
-- `emotionState`: 現在・前回の感情（`ref<EmotionState>`）
-- `currentEmoji`: 現在の絵文字（`computed`）
-- `detectEmotionFromText(text: string)`: テキスト内の `EMOTION_EMOJI` 絵文字を検出し、最後に見つかった絵文字の感情を設定する
+- `emotionState`: current and previous emotions (`ref<EmotionState>`)
+- `currentEmoji`: current emoji (`computed`)
+- `detectEmotionFromText(text: string)`: detect emojis from `EMOTION_EMOJI` in text and set the emotion to the **last** emoji found
 
-### 6-4. チャット履歴での絵文字除去
+### 6-4. Strip emojis in chat history
 
-- `ChatHistory.vue` で assistant メッセージを表示する際、`stripEmotionEmoji()` で感情絵文字を除去する
-- 感情絵文字は `EmotionDisplay.vue` のみに表示される
+- When rendering assistant messages in `ChatHistory.vue`, remove emotion emojis via `stripEmotionEmoji()`
+- Emotion emojis should be displayed only in `EmotionDisplay.vue`
 
-### 6-5. 表情エリアとの接続
+### 6-5. Wire into the emotion area
 
-- `EmotionDisplay.vue` が `emotionState.current` を受け取り表示
-- 感情が変わるときに Vue `<Transition>` によるフェードアニメーション
-- `index.vue` で `messages.length` を watch し、assistant の新着メッセージから `detectEmotionFromText()` を呼び出す
+- `EmotionDisplay.vue` receives `emotionState.current` and renders it
+- Fade animation via Vue `<Transition>` when the emotion changes
+- In `index.vue`, watch `messages.length` and call `detectEmotionFromText()` on new assistant messages
 
-## 完了条件
+## Done Criteria
 
-- AI の返答に応じて表情絵文字が自動的に切り替わる ✅
-- 感情絵文字はチャット履歴には表示されない ✅
-- 感情切り替え時にアニメーションが付く ✅
+- The emotion emoji switches automatically based on AI responses ✅
+- Emotion emojis do not appear in chat history ✅
+- Emotion changes are animated ✅

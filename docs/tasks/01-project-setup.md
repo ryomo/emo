@@ -1,78 +1,78 @@
-# Task 01: プロジェクトセットアップ
+# Task 01: Project Setup
 
-## 概要
+## Overview
 
-Nuxt3 プロジェクトとしての基盤を整える。依存ライブラリの追加、ディレクトリ構成の整備、環境変数の設定を行う。
+Set up the foundation of the Nuxt 4 project: add dependencies, organize the directory structure, and configure environment variables.
 
-## サブタスク
+## Subtasks
 
-### 1-1. 依存ライブラリの追加
+### 1-1. Add dependencies
 
-以下のライブラリの追加を検討する。
+Consider adding one of the following styling libraries.
 
-| ライブラリ | 用途 | 備考 |
+| Library | Purpose | Notes |
 |-----------|------|------|
-| `@nuxtjs/tailwindcss` または `unocss` | スタイリング | どちらか選択 |
+| `@nuxtjs/tailwindcss` or `unocss` | Styling | Choose one |
 
-> その他のライブラリは各タスクで必要に応じて追加する。Nuxt3 の組み込み機能（`useFetch`, `useWebSocket` 等）をできる限り活用する方針とする。
+> Add other libraries as needed per task. Prefer Nuxt 4 built-ins (e.g. `useFetch`, `useWebSocket`) whenever possible.
 
-### 1-2. ディレクトリ構成の整備
+### 1-2. Organize the directory structure
 
-以下の構成を目安に `app/` 配下を整備する。
+Use the following structure as a guideline under `app/`.
 
 ```
 app/
   app.vue
   pages/
-    index.vue          # チャット・音声会話メイン画面
+    index.vue          # Main chat + voice conversation page
   components/
     chat/
-      ChatHistory.vue   # チャットメッセージ表示
-      ChatInput.vue    # テキスト入力フォーム
+      ChatHistory.vue   # Chat message list
+      ChatInput.vue    # Text input form
     voice/
-      VoiceButton.vue  # 音声会話 開始/停止ボタン
-      TranscriptArea.vue # 音声認識テキスト表示エリア
+      VoiceButton.vue  # Start/stop voice conversation button
+      TranscriptArea.vue # Speech transcription display area
     emotion/
-      EmotionDisplay.vue # AI 表情表示エリア
+      EmotionDisplay.vue # AI emotion display area
   composables/
-    useChatApi.ts        # チャット API 呼び出し (Task 02)
-    useTtsApi.ts         # TTS API 呼び出し (Task 03)
-    useRealtimeSpeech.ts # WebSocket 音声認識 (Task 04)
-    useAiEmotion.ts      # AI 感情状態管理 (Task 06)
+    useChatApi.ts        # Chat API integration (Task 02)
+    useTtsApi.ts         # TTS API integration (Task 03)
+    useRealtimeSpeech.ts # WebSocket speech recognition (Task 04)
+    useAiEmotion.ts      # AI emotion state management (Task 06)
   types/
-    chat.ts              # メッセージ型・Tool Call 型等
-    emotion.ts           # 感情の型定義
+    chat.ts              # Message types, tool call types, etc.
+    emotion.ts           # Emotion type definitions
 ```
 
-### 1-3. 環境変数の設定
+### 1-3. Configure environment variables
 
-`.env` ファイルを作成し、以下の変数を定義する。
+Create a `.env` file and define the following variables.
 
 ```env
 NUXT_PUBLIC_LEMONADE_BASE_URL=http://localhost:8000
 NUXT_PUBLIC_LEMONADE_MODEL=Gemma-3-4b-it-GGUF
 ```
 
-`nuxt.config.ts` で `runtimeConfig.public` に読み込む設定を追加する。
+In `nuxt.config.ts`, add the variables under `runtimeConfig.public`.
 
 ```ts
 runtimeConfig: {
   public: {
-    lemonadeBaseUrl: '',  // .env の NUXT_PUBLIC_LEMONADE_BASE_URL で上書き
+    lemonadeBaseUrl: '',  // Overridden by NUXT_PUBLIC_LEMONADE_BASE_URL in .env
     lemonadeModel: '',
   }
 }
 ```
 
-### 1-4. TypeScript 型定義の作成
+### 1-4. Create TypeScript type definitions
 
-`app/types/` に共通型を定義する。
+Define shared types under `app/types/`.
 
-- `ChatMessage` / `ChatRole` / `ToolCall` / `ToolFunction` など（Task 02 で詳細化）
-- `EmotionType`（Task 06 で詳細化）
+- `ChatMessage` / `ChatRole` / `ToolCall` / `ToolFunction`, etc. (detailed in Task 02)
+- `EmotionType` (detailed in Task 06)
 
-## 完了条件
+## Done Criteria
 
-- `npm run dev` でエラーなく起動する
-- `http://localhost:3000` にアクセスして画面が表示される
-- 環境変数が `useRuntimeConfig()` から参照できる
+- `npm run dev` starts without errors
+- The app renders at `http://localhost:3000`
+- Environment variables are accessible via `useRuntimeConfig()`

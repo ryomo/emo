@@ -1,80 +1,80 @@
-# Task 05: UI レイアウト
+# Task 05: UI Layout
 
-## 概要
+## Overview
 
-チャット画面・音声認識エリア・AI 表情エリア・音声ボタンを組み合わせたメイン画面を構築する。各機能コンポーネント（Task 02〜06）を統合する。
+Build the main page by combining the chat area, speech transcription area, AI emotion area, and the voice button. This task integrates the components from Tasks 02–06.
 
-## 画面構成
+## Layout
 
 ```
 ┌─────────────────────────────────────────┐
-│  チャット履歴 (ChatHistory)               │
+│  Chat history (ChatHistory)              │
 │  ┌─────────────────────────────────┐    │
-│  │ [assistant] こんにちは！         │    │
-│  │              [user] ありがとう   │    │
+│  │ [assistant] Hello!               │    │
+│  │              [user] Thanks       │    │
 │  └─────────────────────────────────┘    │
 │                                         │
 │  ┌──────────────────────────────────┐   │
-│  │  AI 表情エリア (EmotionDisplay)   │   │
+│  │  AI emotion area (EmotionDisplay) │   │
 │  │  ┌──────────────────────────┐    │   │
-│  │  │     😊  (絵文字)          │    │   │
+│  │  │     😊  (emoji)           │    │   │
 │  │  └──────────────────────────┘    │   │
 │  │  ┌──────────────────────────┐    │   │
-│  │  │ AI 応答テキスト (overlay) │    │   │
+│  │  │ AI response text (overlay)│    │   │
 │  │  └──────────────────────────┘    │   │
 │  └──────────────────────────────────┘   │
 │                                         │
-│  音声認識テキスト (TranscriptArea)        │
-│  [  暫定テキストがここに表示される...  ]   │
+│  Speech transcript (TranscriptArea)      │
+│  [  Interim text appears here...      ]  │
 │                                         │
 │  ┌──────────┐  ┌───────────────────┐   │
-│  │ 🎤 音声  │  │  テキスト入力フォーム │  │
+│  │ 🎤 Voice │  │  Text input form   │   │
 │  └──────────┘  └───────────────────┘   │
 └─────────────────────────────────────────┘
 ```
 
-## サブタスク
+## Subtasks
 
-### 5-1. ページの作成 (`app/pages/index.vue`)
+### 5-1. Create the page (`app/pages/index.vue`)
 
-- 上記レイアウトを実装するメインページ
-- 各 composable（`useChatApi`, `useTtsApi`, `useRealtimeSpeech`, `useAiEmotion`）をここで呼び出して、各コンポーネントに props / emit で繋ぐ
+- Main page implementing the above layout
+- Use composables (`useChatApi`, `useTtsApi`, `useRealtimeSpeech`, `useAiEmotion`) here and connect them to components via props / emits
 
-### 5-2. チャット履歴 (`app/components/chat/ChatHistory.vue`)
+### 5-2. Chat history (`app/components/chat/ChatHistory.vue`)
 
-- `messages` を受け取り、user / assistant のバブルを表示
-- 最新メッセージに自動スクロール
-- ローディング中はスケルトンまたはタイピングインジケーターを表示
+- Accept `messages` and render user/assistant bubbles
+- Auto-scroll to the newest message
+- Show a skeleton or typing indicator while loading
 
-### 5-3. チャット入力フォーム (`app/components/chat/ChatInput.vue`)
+### 5-3. Chat input form (`app/components/chat/ChatInput.vue`)
 
-- テキスト入力 + 送信ボタン
-- Enter キーでも送信
-- `isLoading` 中は無効化
+- Text input + send button
+- Send on Enter as well
+- Disable while `isLoading`
 
-### 5-4. AI 表情エリア (`app/components/emotion/EmotionDisplay.vue`)
+### 5-4. AI emotion area (`app/components/emotion/EmotionDisplay.vue`)
 
-- 現在の感情に応じた絵文字を大きく表示
-- AI 応答テキストをオーバーレイ表示（半透明の背景など）
-- 感情切り替え時にトランジションアニメーションを付ける
+- Display a large emoji for the current emotion
+- Overlay the AI response text (e.g. semi-transparent background)
+- Add a transition animation when the emotion changes
 
-### 5-5. 音声認識テキストエリア (`app/components/voice/TranscriptArea.vue`)
+### 5-5. Transcript area (`app/components/voice/TranscriptArea.vue`)
 
-- 暫定テキストをリアルタイム表示
-- 認識中はパルスアニメーション等で視覚的に示す
+- Display interim text in real time
+- Indicate active recognition with a pulse animation, etc.
 
-### 5-6. 音声会話ボタン (`app/components/voice/VoiceButton.vue`)
+### 5-6. Voice button (`app/components/voice/VoiceButton.vue`)
 
-- `isActive` に応じてアクティブ/非アクティブのスタイルを切り替え
-- アイコン（マイクのオン/オフ）を使う
+- Switch active/inactive styles based on `isActive`
+- Use icons (mic on/off)
 
-### 5-7. レスポンシブ対応
+### 5-7. Responsive design
 
-- PC・タブレット・スマートフォンで崩れないレイアウト
-- 表情エリアはモバイルでも見やすいサイズにする
+- Keep the layout stable across desktop/tablet/mobile
+- Ensure the emotion area remains readable on mobile
 
-## 完了条件
+## Done Criteria
 
-- 全コンポーネントが 1 ページに配置されている
-- テキストチャット・音声会話の両モードが同一画面で動作する
-- AI 表情エリアに AI の応答テキストがオーバーレイ表示される
+- All components are placed on a single page
+- Both text chat and voice conversation work on the same screen
+- The AI response text is shown as an overlay in the emotion area

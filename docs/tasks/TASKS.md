@@ -1,30 +1,30 @@
-# 実装タスク一覧
+# Implementation Task List
 
-Lemonade Server をバックエンドとした、Nuxt3 製 AI チャット・音声会話フロントエンドの実装タスク。
+Implementation tasks for a Nuxt 4 AI chat + voice-conversation frontend that uses Lemonade Server as the backend.
 
-## タスク概要
+## Task Summary
 
-| # | タスク名 | 説明 | 状態 |
-|---|---------|------|------|
-| [01](./01-project-setup.md) | プロジェクトセットアップ | ディレクトリ構成・依存ライブラリ・環境変数の整備 | 完了 |
-| [02](./02-chat-api.md) | チャット API 連携 | `/api/v1/chat/completions` を用いた会話機能 | 完了 |
-| [03](./03-tts-api.md) | テキスト音声合成 (TTS) | `/api/v1/audio/speech` を用いた AI 応答の読み上げ | 完了 |
-| [04](./04-realtime-speech.md) | リアルタイム音声認識 | `/realtime` WebSocket を用いたユーザー発話のテキスト化 | 完了 |
-| [05](./05-ui-layout.md) | UI レイアウト | チャット画面・表情エリア・音声ボタン等の画面構築 | 完了 |
-| [06](./06-ai-emotion.md) | AI 感情表現 | システムプロンプト指示による絵文字で AI の表情を動的に切り替える | 完了 |
+| # | Task | Description | Status |
+|---|------|-------------|--------|
+| [01](./01-project-setup.md) | Project setup | Set up directory structure, dependencies, and environment variables | Done |
+| [02](./02-chat-api.md) | Chat API integration | Conversation via `/api/v1/chat/completions` | Done |
+| [03](./03-tts-api.md) | Text-to-speech (TTS) | Read AI responses via `/api/v1/audio/speech` | Done |
+| [04](./04-realtime-speech.md) | Real-time speech recognition | Transcribe user speech via `/realtime` WebSocket | Done |
+| [05](./05-ui-layout.md) | UI layout | Build the main UI (chat, emotion area, voice button, etc.) | Done |
+| [06](./06-ai-emotion.md) | AI emotion display | Dynamically switch emotions using emojis instructed by the system prompt | Done |
 
-## 依存関係
+## Dependencies
 
 ```
-01 (セットアップ)
- ├─ 02 (チャット API)
- │   └─ 06 (AI 感情表現)  ← 02 の拡張（応答絵文字による感情検出）
+01 (Setup)
+ ├─ 02 (Chat API)
+ │   └─ 06 (AI emotion display)  ← Extension of 02 (detect emotion from response emojis)
  ├─ 03 (TTS)
- ├─ 04 (リアルタイム音声認識)
- └─ 05 (UI レイアウト)    ← 02〜04・06 の UI を統合
+ ├─ 04 (Real-time speech recognition)
+ └─ 05 (UI layout)              ← Integrates the UI for 02–04 and 06
 ```
 
-## 前提条件
+## Prerequisites
 
-- Lemonade Server がローカルで起動していること（デフォルト: `http://localhost:8000`）
-- 使用モデル例: `Gemma-3-4b-it-GGUF`
+- Lemonade Server is running locally (default: `http://localhost:8000`)
+- Example model: `Gemma-3-4b-it-GGUF`
