@@ -11,7 +11,7 @@ Emo is an expressive AI chatbot built with Nuxt on the frontend and [Lemonade Se
 - Runs entirely on your local machine via Lemonade Server — no data sent to the cloud
 - Real-time speech recognition and transcription
 - Dynamic emotion display driven by AI responses
-- Thanks to Lemonade Server, you can use a GPU (NVIDIA/AMD), a Ryzen AI NPU (AI 300 series and later), or Apple Silicon for better performance
+- Thanks to Lemonade Server, you can use a GPU (NVIDIA/AMD) or a Ryzen AI NPU (AI 300 series and later) for better performance
 
 **Limitations:**
 
