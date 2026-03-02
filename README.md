@@ -50,3 +50,7 @@ Open <http://localhost:3000/> in your browser.
 ## Troubleshooting
 
 **WSL networking issue:** If you run Lemonade Server on Windows and Emo inside WSL, Emo may not be able to reach the server. To fix this, open **WSL Settings** and set **Networking Mode** to `Mirrored`.
+
+## What's Next?
+
+- Make Emo recognize its own name and the pronunciation.
