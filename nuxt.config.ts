@@ -1,7 +1,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+// Tauri: https://tauri.app/start/frontend/nuxt/#update-nuxt-configuration
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
+  ssr: false,
   telemetry: false,
   modules: ['@nuxtjs/tailwindcss'],
 
@@ -14,4 +16,21 @@ export default defineNuxtConfig({
       lemonadeTtsModel: '',      // overridden by NUXT_PUBLIC_LEMONADE_TTS_MODEL in .env
     },
   },
+
+  // Tauri
+  devServer: {
+    host: '0',
+  },
+
+  vite: {
+    // Tauri
+    clearScreen: false,
+    envPrefix: ['VITE_', 'TAURI_'],
+    server: {
+      strictPort: true,
+    },
+  },
+
+  // Tauri
+  ignore: ['**/src-tauri/**'],
 })
