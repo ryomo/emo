@@ -49,6 +49,23 @@ npm run dev
 
 Open <http://localhost:3000/> in your browser.
 
+## Build .exe (Windows)
+
+You can build a Windows executable using Tauri.
+
+First, make sure you have the [Tauri prerequisites](https://tauri.app/start/prerequisites/#windows) installed, then run:
+
+```powershell
+npm run tauri build
+```
+
+The built executable will be located in `src-tauri/target/release/`.
+
+- `app.exe` is the portable version that doesn't require installation. You can run it directly. But you may need to install the required Visual C++ Redistributable if you don't have it already.
+- `bundle/msi/*.msi` or `bundle/nsis/*.exe` are installer packages. Running one will install the app.
+
+Note: You still need to have Lemonade Server running separately.
+
 ## Troubleshooting
 
 **WSL networking issue:** If you run Lemonade Server on Windows and Emo inside WSL, Emo may not be able to reach the server. To fix this, open **WSL Settings** and set **Networking Mode** to `Mirrored`.
