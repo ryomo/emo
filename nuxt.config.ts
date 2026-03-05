@@ -17,11 +17,6 @@ export default defineNuxtConfig({
     },
   },
 
-  // Tauri
-  devServer: {
-    host: '0',
-  },
-
   vite: {
     // Tauri
     clearScreen: false,
