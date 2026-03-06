@@ -5,6 +5,12 @@
       <h1 class="text-base sm:text-lg font-bold">AI Chat</h1>
       <div class="flex items-center gap-2 sm:gap-3">
         <span class="hidden sm:inline text-sm text-gray-400">{{ config.lemonadeModel }}</span>
+        <NuxtLink
+          to="/settings"
+          class="text-xs text-gray-400 hover:text-white border border-gray-600 rounded px-2 py-1 transition-colors"
+        >
+          Settings
+        </NuxtLink>
         <button
           class="text-xs text-gray-400 hover:text-white border border-gray-600 rounded px-2 py-1 transition-colors"
           @click="clearHistory"

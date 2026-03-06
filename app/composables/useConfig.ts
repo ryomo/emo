@@ -73,6 +73,24 @@ export async function loadConfig(): Promise<void> {
   _initialized = true
 }
 
+/** Update config values and persist to Tauri Store if running in Tauri. */
+export async function updateConfig(newValues: Partial<AppConfig>): Promise<void> {
+  Object.assign(_config, newValues)
+
+  if (isTauri()) {
+    try {
+      const { load } = await import('@tauri-apps/plugin-store')
+      const store = await load(CONFIG_FILE)
+      for (const key of Object.keys(newValues) as (keyof AppConfig)[]) {
+        await store.set(key, newValues[key])
+      }
+      await store.save()
+    } catch (e) {
+      console.warn('[Config] Failed to save Tauri store:', e)
+    }
+  }
+}
+
 /** Return the reactive (read-only) application config. */
 export function useConfig(): Readonly<AppConfig> {
   return readonly(_config) as Readonly<AppConfig>
