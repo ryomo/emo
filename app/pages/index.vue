@@ -59,7 +59,7 @@
 <script setup lang="ts">
 import { stripEmotionEmoji } from '~/types/emotion'
 
-const config = useRuntimeConfig().public
+const config = useConfig()
 
 const { messages, isLoading, error: chatError, sendMessage, clearHistory } = useChatApi()
 const { isSpeaking, speak, stop: stopTts } = useTtsApi()

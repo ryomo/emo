@@ -15,7 +15,7 @@ function normalizeText(text: string): string {
  * to convert text to speech and play it.
  */
 export function useTtsApi() {
-  const config = useRuntimeConfig()
+  const config = useConfig()
   const isSpeaking = ref(false)
 
   let currentAudio: HTMLAudioElement | null = null
@@ -51,12 +51,12 @@ export function useTtsApi() {
 
     try {
       const response = await fetch(
-        `${config.public.lemonadeBaseUrl}/api/v1/audio/speech`,
+        `${config.lemonadeBaseUrl}/api/v1/audio/speech`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            model: config.public.lemonadeTtsModel,
+            model: config.lemonadeTtsModel,
             input: normalized,
             voice: 'af_heart',
             response_format: 'wav',
