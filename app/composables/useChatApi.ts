@@ -16,7 +16,7 @@ Please follow these rules when responding:
  * Composable for Chat API calls
  */
 export function useChatApi() {
-  const config = useRuntimeConfig()
+  const config = useConfig()
 
   const messages = ref<ChatMessage[]>([])
   const isLoading = ref(false)
@@ -40,11 +40,11 @@ export function useChatApi() {
 
     try {
       const response = await $fetch<ChatCompletionResponse>(
-        `${config.public.lemonadeBaseUrl}/api/v1/chat/completions`,
+        `${config.lemonadeBaseUrl}/api/v1/chat/completions`,
         {
           method: 'POST',
           body: {
-            model: config.public.lemonadeModel,
+            model: config.lemonadeModel,
             messages: buildRequestMessages(),
           },
         },

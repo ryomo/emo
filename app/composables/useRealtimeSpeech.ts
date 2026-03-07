@@ -32,7 +32,7 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
 }
 
 export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
-  const config = useRuntimeConfig()
+  const config = useConfig()
 
   // --------------- Reactive State ---------------
   const isListening = ref(false)
@@ -52,8 +52,8 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
   let nativeSampleRate = 48000
 
   function getWsUrl(): string {
-    const model = config.public.lemonadeWhisperModel
-    return `${config.public.lemonadeWsUrl}/realtime?model=${model}`
+    const model = config.lemonadeWhisperModel
+    return `${config.lemonadeWsUrl}/realtime?model=${model}`
   }
 
   // --------------- Audio → WebSocket ---------------
@@ -97,7 +97,7 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
   function sendSessionUpdate() {
     if (ws?.readyState !== WebSocket.OPEN) return
 
-    const model = config.public.lemonadeWhisperModel
+    const model = config.lemonadeWhisperModel
     const sessionUpdate = {
       type: 'session.update',
       session: {
