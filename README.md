@@ -74,12 +74,18 @@ However, Emo's configuration file is stored separately and won't be removed auto
 
 ```sh
 npm install
+
+# pnpm
+pnpm install
 ```
 
 ### Run the App in your Browser
 
 ```sh
 npm run dev
+
+# pnpm
+pnpm dev
 ```
 
 Open <http://localhost:3000/> in your browser.
@@ -94,6 +100,9 @@ First, make sure you have the [Tauri prerequisites](https://tauri.app/start/prer
 
 ```powershell
 npm run tauri dev
+
+# pnpm
+pnpm tauri dev
 ```
 
 This will launch the app in development mode with Tauri.
@@ -102,6 +111,9 @@ If everything works fine, you can proceed to build the production executable:
 
 ```powershell
 npm run tauri build
+
+# pnpm
+pnpm tauri build
 ```
 
 The built executable will be located in `src-tauri/target/release/`.
