@@ -1,3 +1,6 @@
+# Builds and publishes a release for each platform when a version tag (e.g., v1.2.3) is pushed.
+# (Only Windows is enabled; other platforms are commented out for now.)
+# The release is created as a draft for review before publishing.
 # See: https://tauri.app/distribute/pipelines/github/
 
 name: 'tauri-publish'
