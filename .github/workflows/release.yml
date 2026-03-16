@@ -1,0 +1,111 @@
+# GitHub Actions workflow for automating the release process of Emo.
+#
+# bump-version:
+# 1. Updates the version in `src-tauri/tauri.conf.json` and `src-tauri/Cargo.toml`, then creates a commit.
+# 2. Then creates a tag with the version number (e.g., `v1.2.3`) and pushes it.
+#
+# tauri-publish:
+# - Builds and publishes a release for each platform.
+#   (Only Windows is enabled; other platforms are commented out for now.)
+# - The release is created as a draft for review before publishing.
+# - See: https://tauri.app/distribute/pipelines/github/
+
+name: 'release'
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g. 1.2.3 — without the "v" prefix)'
+        required: true
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update version in tauri.conf.json
+        run: |
+          sed -i 's/"version": "[0-9]*\.[0-9]*\.[0-9]*"/"version": "${{ github.event.inputs.version }}"/' src-tauri/tauri.conf.json
+
+      - name: Update version in Cargo.toml
+        run: |
+          sed -i 's/^version = "[0-9]*\.[0-9]*\.[0-9]*"/version = "${{ github.event.inputs.version }}"/' src-tauri/Cargo.toml
+
+      - name: Commit and push tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src-tauri/tauri.conf.json src-tauri/Cargo.toml
+          git commit -m "chore: bump version to v${{ github.event.inputs.version }}"
+          git tag "v${{ github.event.inputs.version }}"
+          git push
+          git push --tags
+
+  publish-tauri:
+    needs: bump-version
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # - platform: 'macos-latest' # for Arm based macs (M1 and above).
+          #   args: '--target aarch64-apple-darwin'
+          # - platform: 'macos-latest' # for Intel based macs.
+          #   args: '--target x86_64-apple-darwin'
+          # - platform: 'ubuntu-24.04'
+          #   args: ''
+          # - platform: 'ubuntu-24.04-arm' # Only available in public repos.
+          #   args: ''
+          - platform: 'windows-latest'
+            args: ''
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: v${{ github.event.inputs.version }}
+
+      - name: install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-24.04' || matrix.platform == 'ubuntu-24.04-arm'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'pnpm'
+
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: install frontend dependencies
+        run: pnpm install
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: v${{ github.event.inputs.version }}
+          releaseName: v${{ github.event.inputs.version }}
+          releaseBody: 'See the assets to download this version and install.'
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}

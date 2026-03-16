@@ -128,8 +128,8 @@ The built executable will be located in `src-tauri/target/release/`.
 Below is the process for releasing a new version of Emo on GitHub.\
 Just a reminder for myself :smile:
 
-1. Go to **Actions** → **bump-version** → **Run workflow**, enter the version number (e.g. `1.2.3`), and run it.
+1. Go to **Actions** → **release** → **Run workflow**, enter the version number (e.g. `1.2.3`), and run it.
    - This automatically updates `src-tauri/tauri.conf.json` and `src-tauri/Cargo.toml`, commits the changes, and creates + pushes the `v*.*.*` tag.
-   - The tag push triggers the `tauri-publish` workflow, which builds the app and creates a draft release.
-2. Once both workflows complete, go to the GitHub releases page, find the draft release, review the content, and publish it.
+   - Then, the app is built and a draft release is created for each platform (currently only Windows).
+2. Once the workflow completes, go to the GitHub releases page, find the draft release, review the content, and publish it.
 3. Don't forget `git pull` to update your local repository with the new tag.
