@@ -157,7 +157,7 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
         }
 
         case 'conversation.item.input_audio_transcription.completed': {
-          const text = (data.transcript ?? '').trim()
+          const text = (data.transcript ?? '').replaceAll('[BLANK_AUDIO]', '').trim()
           console.log(LOG_PREFIX, `✅ Transcription completed: "${text}"`)
           if (text) {
             transcript.value = text
