@@ -51,9 +51,10 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
   let audioChunksSent = 0
   let nativeSampleRate = 48000
 
-  function getWsUrl(): string {
-    const model = config.lemonadeWhisperModel
-    return `${config.lemonadeWsUrl}/realtime?model=${model}`
+  async function getWsUrl(): Promise<string> {
+    const { hostname } = new URL(config.lemonadeBaseUrl)
+    const health = await $fetch<{ websocket_port: number }>(`${config.lemonadeBaseUrl}/api/v1/health`)
+    return `ws://${hostname}:${health.websocket_port}/realtime?model=${config.lemonadeWhisperModel}`
   }
 
   // --------------- Audio → WebSocket ---------------
@@ -180,9 +181,8 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
   }
 
   /** Establish WebSocket connection */
-  function setupWebSocket(): Promise<void> {
+  function setupWebSocket(url: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      const url = getWsUrl()
       console.log(LOG_PREFIX, `🔌 Connecting WebSocket to: ${url}`)
 
       try {
@@ -296,14 +296,23 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
     }
 
     console.log(LOG_PREFIX, '🚀 ===== Starting realtime speech =====')
-    console.log(LOG_PREFIX, `   WS URL: ${getWsUrl()}`)
 
     error.value = null
     transcript.value = ''
     audioChunksSent = 0
 
+    let wsUrl: string
     try {
-      await Promise.all([setupWebSocket(), setupAudio()])
+      wsUrl = await getWsUrl()
+    } catch (e: any) {
+      console.error(LOG_PREFIX, '❌ Failed to fetch WebSocket URL from health endpoint:', e)
+      error.value = 'Failed to connect: could not retrieve WebSocket port from server.'
+      return
+    }
+    console.log(LOG_PREFIX, `   WS URL: ${wsUrl}`)
+
+    try {
+      await Promise.all([setupWebSocket(wsUrl), setupAudio()])
       console.log(LOG_PREFIX, '✅ ===== Realtime speech started =====')
     } catch (e: any) {
       console.error(LOG_PREFIX, '❌ ===== Failed to start =====', e)

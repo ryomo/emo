@@ -51,7 +51,6 @@ const config = useConfig()
 
 const fields: { key: keyof AppConfig; label: string }[] = [
   { key: 'lemonadeBaseUrl', label: 'Base URL' },
-  { key: 'lemonadeWsUrl', label: 'WebSocket URL' },
   { key: 'lemonadeModel', label: 'Chat Model' },
   { key: 'lemonadeWhisperModel', label: 'Whisper Model' },
   { key: 'lemonadeTtsModel', label: 'TTS Model' },
@@ -59,7 +58,6 @@ const fields: { key: keyof AppConfig; label: string }[] = [
 
 const form = reactive<AppConfig>({
   lemonadeBaseUrl: config.lemonadeBaseUrl,
-  lemonadeWsUrl: config.lemonadeWsUrl,
   lemonadeModel: config.lemonadeModel,
   lemonadeWhisperModel: config.lemonadeWhisperModel,
   lemonadeTtsModel: config.lemonadeTtsModel,

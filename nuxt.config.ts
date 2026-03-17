@@ -11,7 +11,6 @@ export default defineNuxtConfig({
     public: {
       // These are overridden by the following environment variables. And overridden again by the Tauri Store's file which is loaded in useConfig.ts.
       lemonadeBaseUrlDefault: 'http://localhost:8000', // NUXT_PUBLIC_LEMONADE_BASE_URL_DEFAULT
-      lemonadeWsUrlDefault: 'ws://localhost:9000',     // NUXT_PUBLIC_LEMONADE_WS_URL_DEFAULT
       lemonadeModelDefault: 'Gemma-3-4b-it-GGUF',     // NUXT_PUBLIC_LEMONADE_MODEL_DEFAULT
       lemonadeWhisperModelDefault: 'Whisper-Base',     // NUXT_PUBLIC_LEMONADE_WHISPER_MODEL_DEFAULT
       lemonadeTtsModelDefault: 'kokoro-v1',            // NUXT_PUBLIC_LEMONADE_TTS_MODEL_DEFAULT

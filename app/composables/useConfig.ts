@@ -11,7 +11,6 @@ import { isTauri } from '@tauri-apps/api/core'
 
 export interface AppConfig {
   lemonadeBaseUrl: string
-  lemonadeWsUrl: string
   lemonadeModel: string
   lemonadeWhisperModel: string
   lemonadeTtsModel: string
@@ -21,7 +20,6 @@ const CONFIG_FILE = 'emo.config.json'
 
 const _config = reactive<AppConfig>({
   lemonadeBaseUrl: '',
-  lemonadeWsUrl: '',
   lemonadeModel: '',
   lemonadeWhisperModel: '',
   lemonadeTtsModel: '',
@@ -55,7 +53,6 @@ export async function loadConfig(): Promise<void> {
   const runtimeConfig = useRuntimeConfig()
   const defaults: AppConfig = {
     lemonadeBaseUrl: runtimeConfig.public.lemonadeBaseUrlDefault,
-    lemonadeWsUrl: runtimeConfig.public.lemonadeWsUrlDefault,
     lemonadeModel: runtimeConfig.public.lemonadeModelDefault,
     lemonadeWhisperModel: runtimeConfig.public.lemonadeWhisperModelDefault,
     lemonadeTtsModel: runtimeConfig.public.lemonadeTtsModelDefault,
