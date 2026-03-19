@@ -34,20 +34,20 @@ Install Emo by downloading the latest release from the [Releases](https://github
 SmartScreen on Windows may block the app since it's not signed. If that happens, click "More info" and then "Run anyway". Or it may be better to build the executable yourself by following the instructions in the [Development](#development) section below :smirk:
 
 - `emo_***_portable.exe` is the portable version that doesn't require installation. You can run it directly. But you may need to install the required Visual C++ Redistributable if you don't have it already.
-- `emo_***-setup.exe` and `emo_***_en-US.msi` are the installer versions. The difference between them is just the installer format.
+- `emo_***-setup.exe` is the installer version.
 </details>
 
 <details>
   <summary>Linux users:</summary>
 
-- `emo_***_amd64.AppImage` is the portable version that doesn't require installation.
-- `emo_***_amd64.deb` is the Debian package.
+- `emo_***_amd64.AppImage` is the x64 portable version that doesn't require installation.
+- `emo_***_aarch64.AppImage` is the arm64 portable version that doesn't require installation.
 </details>
 
 <details>
   <summary>macOS users:</summary>
 
-Unfortunately, not tested yet.
+Only Arm (Apple Silicon) Macs are supported.
 
 Like Windows, macOS may block the app since it's not signed. You can bypass this by right-clicking the app, selecting "Open", and then confirming to open it.
 </details>

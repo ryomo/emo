@@ -6,7 +6,7 @@
 #
 # tauri-publish:
 # - Builds and publishes a release for each platform.
-#   (Only Windows is enabled; other platforms are commented out for now.)
+#   Artifacts: Windows portable exe, Windows NSIS installer, Arm Mac DMG, Linux x64/arm AppImage.
 # - The release is created as a draft for review before publishing.
 # - See: https://tauri.app/distribute/pipelines/github/
 
@@ -58,15 +58,13 @@ jobs:
       matrix:
         include:
           - platform: 'macos-latest' # for Arm based macs (M1 and above).
-            args: '--target aarch64-apple-darwin'
-          - platform: 'macos-latest' # for Intel based macs.
-            args: '--target x86_64-apple-darwin'
+            args: '--target aarch64-apple-darwin --bundles dmg'
           - platform: 'ubuntu-24.04'
-            args: ''
+            args: '--bundles appimage'
           - platform: 'ubuntu-24.04-arm' # Only available in public repos.
-            args: ''
+            args: '--bundles appimage'
           - platform: 'windows-latest'
-            args: ''
+            args: '--bundles nsis'
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -93,7 +91,7 @@ jobs:
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin' || '' }}
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
