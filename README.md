@@ -26,15 +26,31 @@ Due to the models currently supported by Lemonade Server, the following constrai
 
 ### Install Emo
 
-**Windows users:**
-
 Install Emo by downloading the latest release from the [Releases](https://github.com/ryomo/emo/releases) page.
 
-SmartScreen on Windows may block the installer since it's not signed. If that happens, click "More info" and then "Run anyway". Or it may be better to build the executable yourself by following the instructions in the [Development](#development) section below :smirk:
+<details>
+  <summary>Windows users:</summary>
 
-**Linux and macOS users:**
+SmartScreen on Windows may block the app since it's not signed. If that happens, click "More info" and then "Run anyway". Or it may be better to build the executable yourself by following the instructions in the [Development](#development) section below :smirk:
 
-Only Windows version available for now. If you want to run it on Linux or macOS, you can build it by following the instructions in the [Development](#development) section.
+- `emo_***_portable.exe` is the portable version that doesn't require installation. You can run it directly. But you may need to install the required Visual C++ Redistributable if you don't have it already.
+- `emo_***-setup.exe` and `emo_***_en-US.msi` are the installer versions. The difference between them is just the installer format.
+</details>
+
+<details>
+  <summary>Linux users:</summary>
+
+- `emo_***_amd64.AppImage` is the portable version that doesn't require installation.
+- `emo_***_amd64.deb` is the Debian package.
+</details>
+
+<details>
+  <summary>macOS users:</summary>
+
+Unfortunately, not tested yet.
+
+Like Windows, macOS may block the app since it's not signed. You can bypass this by right-clicking the app, selecting "Open", and then confirming to open it.
+</details>
 
 ### Start Lemonade Server
 
@@ -94,11 +110,9 @@ NOTE: In this mode, app settings do not persist. Settings changes won't be saved
 
 ### Build Executable with Tauri
 
-Below are the instructions for building a Windows executable.
+First, make sure you have the [Tauri prerequisites](https://tauri.app/start/prerequisites/) installed, then run:
 
-First, make sure you have the [Tauri prerequisites](https://tauri.app/start/prerequisites/#windows) installed, then run:
-
-```powershell
+```sh
 npm run tauri dev
 
 # pnpm
@@ -109,7 +123,7 @@ This will launch the app in development mode with Tauri.
 
 If everything works fine, you can proceed to build the production executable:
 
-```powershell
+```sh
 npm run tauri build
 
 # pnpm
@@ -117,9 +131,6 @@ pnpm tauri build
 ```
 
 The built executable will be located in `src-tauri/target/release/`.
-
-- `app.exe` is the portable version that doesn't require installation. You can run it directly. But you may need to install the required Visual C++ Redistributable if you don't have it already.
-- `bundle/msi/*.msi` or `bundle/nsis/*.exe` are installer packages. Running one will install the app.
 
 <br>
 
