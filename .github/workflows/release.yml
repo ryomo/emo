@@ -35,11 +35,15 @@ jobs:
         run: |
           sed -i 's/^version = "[0-9]*\.[0-9]*\.[0-9]*"/version = "${{ github.event.inputs.version }}"/' src-tauri/Cargo.toml
 
+      - name: Update version in Cargo.lock
+        run: |
+          sed -i '/^name = "app"$/{n; s/^version = "[0-9]*\.[0-9]*\.[0-9]*"/version = "${{ github.event.inputs.version }}"/}' src-tauri/Cargo.lock
+
       - name: Commit and push tag
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add src-tauri/tauri.conf.json src-tauri/Cargo.toml
+          git add src-tauri/tauri.conf.json src-tauri/Cargo.toml src-tauri/Cargo.lock
           git commit -m "chore: bump version to v${{ github.event.inputs.version }}"
           git tag "v${{ github.event.inputs.version }}"
           git push
