@@ -110,6 +110,8 @@ jobs:
           releaseBody: 'See the assets to download this version and install.'
           releaseDraft: true
           prerelease: false
+          # TODO: "releaseAssetNamePattern" requires "tauri-action@v1" which is not yet released.
+          # releaseAssetNamePattern: '[name]_[version]_[platform]_[arch][_setup][ext]'
           args: ${{ matrix.args }}
 
       - name: Upload Windows portable

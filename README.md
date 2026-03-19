@@ -34,7 +34,7 @@ Install Emo by downloading the latest release from the [Releases](https://github
 SmartScreen on Windows may block the app since it's not signed. If that happens, click "More info" and then "Run anyway". Or it may be better to build the executable yourself by following the instructions in the [Development](#development) section below :smirk:
 
 - `emo_***_portable.exe` is the portable version that doesn't require installation. You can run it directly. But you may need to install the required Visual C++ Redistributable if you don't have it already.
-- `emo_***-setup.exe` is the installer version.
+- `emo_***_setup.exe` is the installer version.
 </details>
 
 <details>
