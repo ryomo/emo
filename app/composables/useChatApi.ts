@@ -4,13 +4,13 @@ import { EMOTION_EMOJI } from '~/types/emotion'
 /** Generate emoji list from EMOTION_EMOJI for use in prompt */
 const EMOJI_LIST = Object.values(EMOTION_EMOJI).join(' ')
 
-/** System prompt: Assumes voice conversation and encourages short responses */
-const SYSTEM_PROMPT = `You are a helpful AI assistant.
-Please follow these rules when responding:
-- Keep responses to 1-3 sentences
-- Answer clearly and concisely
-- Avoid lengthy explanations as this is designed for voice conversation
-- Always start your response with exactly one of the following emojis to express your current emotion: ${EMOJI_LIST}`
+/** Build full system prompt from user-configured base + emotion emoji instruction */
+function buildSystemPrompt(basePrompt: string): string {
+  const emojiInstruction =
+    `- Always start your response with exactly one of the following emojis` +
+    ` to express your current emotion: ${EMOJI_LIST}`
+  return `${basePrompt}\n${emojiInstruction}`
+}
 
 /**
  * Composable for Chat API calls
@@ -25,7 +25,7 @@ export function useChatApi() {
   /** Return array including system prompt with message history */
   function buildRequestMessages(): ChatMessage[] {
     return [
-      { role: 'system', content: SYSTEM_PROMPT },
+      { role: 'system', content: buildSystemPrompt(config.systemPrompt) },
       ...messages.value,
     ]
   }

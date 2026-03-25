@@ -14,7 +14,22 @@
     <!-- Settings Form -->
     <main class="flex-1 overflow-y-auto p-4 sm:p-6">
       <div class="max-w-xl mx-auto space-y-5">
-        <h2 class="text-sm font-medium text-gray-400">Lemonade Settings</h2>
+        <h2 class="text-sm font-medium text-gray-400">General Settings</h2>
+
+        <div>
+          <label for="systemPrompt" class="block text-sm font-medium text-gray-300 mb-1">
+            System Prompt
+          </label>
+          <textarea
+            id="systemPrompt"
+            v-model="form.systemPrompt"
+            rows="6"
+            class="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+            placeholder="System Prompt"
+          />
+        </div>
+
+        <h2 class="text-sm font-medium text-gray-400 mt-6">Lemonade Settings</h2>
 
         <div v-for="field in fields" :key="field.key">
           <label :for="field.key" class="block text-sm font-medium text-gray-300 mb-1">
@@ -61,6 +76,7 @@ const form = reactive<AppConfig>({
   lemonadeModel: config.lemonadeModel,
   lemonadeWhisperModel: config.lemonadeWhisperModel,
   lemonadeTtsModel: config.lemonadeTtsModel,
+  systemPrompt: config.systemPrompt,
 })
 
 const saving = ref(false)

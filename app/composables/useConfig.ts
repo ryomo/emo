@@ -14,6 +14,7 @@ export interface AppConfig {
   lemonadeModel: string
   lemonadeWhisperModel: string
   lemonadeTtsModel: string
+  systemPrompt: string
 }
 
 const CONFIG_FILE = 'emo.config.json'
@@ -23,6 +24,7 @@ const _config = reactive<AppConfig>({
   lemonadeModel: '',
   lemonadeWhisperModel: '',
   lemonadeTtsModel: '',
+  systemPrompt: '',
 })
 let _initialized = false
 
@@ -56,6 +58,7 @@ export async function loadConfig(): Promise<void> {
     lemonadeModel: runtimeConfig.public.lemonadeModelDefault,
     lemonadeWhisperModel: runtimeConfig.public.lemonadeWhisperModelDefault,
     lemonadeTtsModel: runtimeConfig.public.lemonadeTtsModelDefault,
+    systemPrompt: runtimeConfig.public.systemPromptDefault,
   }
   Object.assign(_config, defaults)
 
