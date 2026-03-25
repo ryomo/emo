@@ -31,25 +31,39 @@ Install Emo by downloading the latest release from the [Releases](https://github
 <details>
   <summary>Windows users:</summary>
 
-SmartScreen on Windows may block the app since it's not signed. If that happens, click "More info" and then "Run anyway". Or it may be better to build the executable yourself by following the instructions in the [Development](#development) section below :smirk:
+  ---
 
-- `emo_***_portable.exe` is the portable version that doesn't require installation. You can run it directly. But you may need to install the required Visual C++ Redistributable if you don't have it already.
-- `emo_***_setup.exe` is the installer version.
+  SmartScreen on Windows may block the app since it's not signed. If that happens, click "More info" and then "Run anyway". Or it may be better to build the executable yourself by following the instructions in the [Development](#development) section below :smirk:
+
+  - `emo_***_portable.exe` is the portable version that doesn't require installation. You can run it directly. But you may need to install the required Visual C++ Redistributable if you don't have it already.
+  - `emo_***_setup.exe` is the installer version.
+
+  ---
 </details>
 
 <details>
   <summary>Linux users:</summary>
 
-- `emo_***_amd64.AppImage` is the x64 portable version that doesn't require installation.
-- `emo_***_aarch64.AppImage` is the arm64 portable version that doesn't require installation.
+  ---
+
+  - `emo_***_amd64.AppImage` is the x64 portable version that doesn't require installation.
+  - `emo_***_aarch64.AppImage` is the arm64 portable version that doesn't require installation.
+
+  ---
 </details>
 
 <details>
   <summary>macOS users:</summary>
 
-Only Arm (Apple Silicon) Macs are supported.
+  ---
 
-Like Windows, macOS may block the app since it's not signed. You can bypass this by right-clicking the app, selecting "Open", and then confirming to open it.
+  NOTE: Mac version has not been tested yet. If you have tried it and it works, please let me know :smile:
+
+  Only Arm (Apple Silicon) Macs are supported.
+
+  Like Windows, macOS may block the app since it's not signed. You can bypass this by right-clicking the app, selecting "Open", and then confirming to open it.
+
+  ---
 </details>
 
 ### Start Lemonade Server
@@ -141,6 +155,6 @@ Just a reminder for myself :smile:
 
 1. Go to **Actions** → **release** → **Run workflow**, enter the version number (e.g. `1.2.3`), and run it.
    - This automatically updates `src-tauri/tauri.conf.json` and `src-tauri/Cargo.toml`, commits the changes, and creates + pushes the `v*.*.*` tag.
-   - Then, the app is built and a draft release is created for each platform (currently only Windows).
+   - Then, the app is built and a draft release is created for each platform.
 2. Once the workflow completes, go to the GitHub releases page, find the draft release, review the content, and publish it.
 3. Don't forget `git pull` to update your local repository with the new tag.
