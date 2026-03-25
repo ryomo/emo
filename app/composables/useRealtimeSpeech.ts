@@ -51,6 +51,9 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
   let audioChunksSent = 0
   let nativeSampleRate = 48000
 
+  /** Track processed item IDs to prevent duplicate transcription callbacks */
+  const processedItemIds = new Set<string>()
+
   async function getWsUrl(): Promise<string> {
     const { hostname } = new URL(config.lemonadeBaseUrl)
     const health = await $fetch<{ websocket_port: number }>(`${config.lemonadeBaseUrl}/api/v1/health`)
@@ -157,14 +160,39 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
         }
 
         case 'conversation.item.input_audio_transcription.completed': {
+          const itemId: string | undefined = data.item_id
+          // Deduplicate: skip if this item was already processed
+          if (itemId && processedItemIds.has(itemId)) {
+            console.log(LOG_PREFIX, `⏭️ Skipping duplicate transcription for item: ${itemId}`)
+            break
+          }
+          if (itemId) processedItemIds.add(itemId)
+
           const text = (data.transcript ?? '').replaceAll('[BLANK_AUDIO]', '').trim()
-          console.log(LOG_PREFIX, `✅ Transcription completed: "${text}"`)
+          console.log(LOG_PREFIX, `✅ Transcription completed: "${text}" (item: ${itemId})`)
           if (text) {
             transcript.value = text
             options.onTranscriptComplete?.(text)
           }
           break
         }
+
+        // Cancel server-generated responses.
+        // Without cancelling, the server stays in "response generation" state and VAD stops working.
+        case 'response.created':
+          console.log(LOG_PREFIX, '🚫 Response auto-created by server — cancelling (transcription-only mode)')
+          if (ws?.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'response.cancel' }))
+          }
+          break
+
+        case 'response.cancelled':
+          console.log(LOG_PREFIX, '✅ Response cancelled')
+          break
+
+        case 'response.done':
+          console.log(LOG_PREFIX, '✅ Response done')
+          break
 
         case 'error':
           console.error(LOG_PREFIX, '❌ Server error:', data.error)
@@ -300,6 +328,7 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
     error.value = null
     transcript.value = ''
     audioChunksSent = 0
+    processedItemIds.clear()
 
     let wsUrl: string
     try {
