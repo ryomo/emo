@@ -9,6 +9,17 @@
         ← Back
       </NuxtLink>
       <h1 class="text-base sm:text-lg font-bold">Settings</h1>
+
+      <div class="ml-auto flex items-center gap-3">
+        <p v-if="saved" class="text-green-400 text-sm">Settings saved.</p>
+        <button
+          class="bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded px-4 py-2 transition-colors disabled:opacity-50"
+          :disabled="saving"
+          @click="save"
+        >
+          {{ saving ? 'Saving...' : 'Save' }}
+        </button>
+      </div>
     </header>
 
     <!-- Settings Form -->
@@ -92,16 +103,6 @@
             Enable Thinking
           </label>
         </div>
-
-        <button
-          class="bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded px-4 py-2 transition-colors disabled:opacity-50"
-          :disabled="saving"
-          @click="save"
-        >
-          {{ saving ? 'Saving...' : 'Save' }}
-        </button>
-
-        <p v-if="saved" class="text-green-400 text-sm">Settings saved.</p>
       </div>
     </main>
   </div>
@@ -151,6 +152,10 @@ const form = reactive<AppConfig>({
 
 const saving = ref(false)
 const saved = ref(false)
+
+watch(form, () => {
+  saved.value = false
+})
 
 async function save() {
   saving.value = true
