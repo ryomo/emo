@@ -94,7 +94,13 @@ However, Emo's configuration file is stored separately and won't be removed auto
 
 ## Troubleshooting
 
-**WSL networking issue:** If you run Lemonade Server on Windows and Emo inside WSL, Emo may not be able to reach the server. To fix this, open **WSL Settings** and set **Networking Mode** to `Mirrored`.
+### WSL networking issue
+
+If you run Lemonade Server on Windows and Emo inside WSL, Emo may not be able to reach the server. To fix this, open **WSL Settings** and set **Networking Mode** to `Mirrored`.
+
+### "Enable Thinking" option doesn't work
+
+If you disable "Enable Thinking" in settings, but the model still seems to be "thinking" and takes a long time to respond, set `--chat-template-kwargs '{"enable_thinking": false}'` to "LLAMACPP ARGUMENTS" in Lemonade Server's model configuration.
 
 <br>
 
