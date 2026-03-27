@@ -15,6 +15,7 @@ export interface AppConfig {
   lemonadeWhisperModel: string
   lemonadeTtsModel: string
   systemPrompt: string
+  enableThinking: boolean
 }
 
 const CONFIG_FILE = 'emo.config.json'
@@ -25,6 +26,7 @@ const _config = reactive<AppConfig>({
   lemonadeWhisperModel: '',
   lemonadeTtsModel: '',
   systemPrompt: '',
+  enableThinking: false,
 })
 let _initialized = false
 
@@ -43,8 +45,8 @@ async function loadFromTauriStore(defaults: AppConfig): Promise<void> {
   }
 
   for (const key of Object.keys(defaults) as (keyof AppConfig)[]) {
-    const value = await store.get<string>(key)
-    if (value != null) _config[key] = value
+    const value = await store.get<string | boolean>(key)
+    if (value != null) (_config as any)[key] = value
   }
 }
 
@@ -59,6 +61,7 @@ export async function loadConfig(): Promise<void> {
     lemonadeWhisperModel: runtimeConfig.public.lemonadeWhisperModelDefault,
     lemonadeTtsModel: runtimeConfig.public.lemonadeTtsModelDefault,
     systemPrompt: runtimeConfig.public.systemPromptDefault,
+    enableThinking: runtimeConfig.public.enableThinkingDefault,
   }
   Object.assign(_config, defaults)
 

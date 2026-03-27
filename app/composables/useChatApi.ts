@@ -46,6 +46,7 @@ export function useChatApi() {
           body: {
             model: config.lemonadeModel,
             messages: buildRequestMessages(),
+            enable_thinking: config.enableThinking,
           },
         },
       )

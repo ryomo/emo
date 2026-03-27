@@ -80,6 +80,19 @@
           <p v-if="sel.error.value" class="text-red-400 text-xs mt-1">{{ sel.error.value }}</p>
         </div>
 
+        <!-- Enable Thinking Toggle -->
+        <div class="flex items-center gap-3">
+          <input
+            id="enableThinking"
+            v-model="form.enableThinking"
+            type="checkbox"
+            class="w-4 h-4 rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900"
+          />
+          <label for="enableThinking" class="text-sm font-medium text-gray-300">
+            Enable Thinking
+          </label>
+        </div>
+
         <button
           class="bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded px-4 py-2 transition-colors disabled:opacity-50"
           :disabled="saving"
@@ -133,6 +146,7 @@ const form = reactive<AppConfig>({
   lemonadeWhisperModel: config.lemonadeWhisperModel,
   lemonadeTtsModel: config.lemonadeTtsModel,
   systemPrompt: config.systemPrompt,
+  enableThinking: config.enableThinking,
 })
 
 const saving = ref(false)
