@@ -70,11 +70,11 @@ Install Emo by downloading the latest release from the [Releases](https://github
 
 Launch Lemonade Server and load the following models:
 
-| Role               | Model                          |
-|--------------------|--------------------------------|
-| LLM                | `Gemma-3-4b-it-GGUF` (or any model suited to your environment) |
-| Speech Recognition | `Whisper-Base`                 |
-| TTS                | `kokoro-v1`                    |
+| Role                  | Model                                                       |
+|-----------------------|-------------------------------------------------------------|
+| LLM with tool-calling | `Qwen3.5-9B-GGUF` (or any model suited to your environment) |
+| Speech Recognition    | `Whisper-Base`                                              |
+| TTS                   | `kokoro-v1`                                                 |
 
 NOTE: If you change the model names, make sure to update "Settings" in Emo accordingly.
 

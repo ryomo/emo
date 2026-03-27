@@ -31,7 +31,7 @@
 
         <h2 class="text-sm font-medium text-gray-400 mt-6">Lemonade Settings</h2>
 
-        <div v-for="field in fields" :key="field.key">
+        <div v-for="field in textFields" :key="field.key">
           <label :for="field.key" class="block text-sm font-medium text-gray-300 mb-1">
             {{ field.label }}
           </label>
@@ -42,6 +42,42 @@
             class="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
             :placeholder="field.label"
           />
+        </div>
+
+        <!-- Model Selection Dropdowns -->
+        <div v-for="sel in modelSelectors" :key="sel.key">
+          <label :for="sel.key" class="block text-sm font-medium text-gray-300 mb-1">
+            {{ sel.label }}
+          </label>
+          <div class="flex gap-2">
+            <select
+              :id="sel.key"
+              v-model="form[sel.key]"
+              class="flex-1 bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+              :disabled="sel.loading.value"
+            >
+              <option v-if="sel.models.value.length === 0" :value="form[sel.key]">
+                {{ form[sel.key] }}
+              </option>
+              <template v-for="model in sel.models.value" :key="model.id">
+                <option
+                  :value="model.id"
+                  :disabled="!model.downloaded"
+                  :class="{ 'text-gray-500': !model.downloaded }"
+                >
+                  {{ model.id }}{{ !model.downloaded ? ' (not downloaded)' : '' }}
+                </option>
+              </template>
+            </select>
+            <button
+              class="text-xs text-gray-400 hover:text-white border border-gray-600 rounded px-2 py-1 transition-colors disabled:opacity-50"
+              :disabled="sel.loading.value"
+              @click="sel.refresh"
+            >
+              {{ sel.loading.value ? '...' : '↻' }}
+            </button>
+          </div>
+          <p v-if="sel.error.value" class="text-red-400 text-xs mt-1">{{ sel.error.value }}</p>
         </div>
 
         <button
@@ -64,12 +100,32 @@ import { updateConfig } from '~/composables/useConfig'
 
 const config = useConfig()
 
-const fields: { key: keyof AppConfig; label: string }[] = [
+const textFields: { key: keyof AppConfig; label: string }[] = [
   { key: 'lemonadeBaseUrl', label: 'Base URL' },
-  { key: 'lemonadeModel', label: 'Chat Model' },
-  { key: 'lemonadeWhisperModel', label: 'Whisper Model' },
-  { key: 'lemonadeTtsModel', label: 'TTS Model' },
 ]
+
+const chatModels = useAvailableModels('tool-calling')
+const whisperModels = useAvailableModels('transcription')
+const ttsModels = useAvailableModels('tts')
+
+const modelSelectors = [
+  { key: 'lemonadeModel' as keyof AppConfig, label: 'Chat Model', ...chatModels },
+  { key: 'lemonadeWhisperModel' as keyof AppConfig, label: 'Whisper Model', ...whisperModels },
+  { key: 'lemonadeTtsModel' as keyof AppConfig, label: 'TTS Model', ...ttsModels },
+].map((s) => ({
+  key: s.key,
+  label: s.label,
+  models: s.models,
+  loading: s.isLoading,
+  error: s.error,
+  refresh: s.fetchModels,
+}))
+
+onMounted(() => {
+  for (const sel of modelSelectors) {
+    sel.refresh()
+  }
+})
 
 const form = reactive<AppConfig>({
   lemonadeBaseUrl: config.lemonadeBaseUrl,
