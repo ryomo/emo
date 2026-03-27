@@ -12,6 +12,12 @@ const LOG_PREFIX = '[RealtimeSpeech]'
 /** Microphone input gain multiplier (1 = no change, 2 = 2x amplification) */
 const MIC_GAIN = 1
 
+/** Strings to strip from transcription results */
+const TRANSCRIPT_REMOVE_PATTERNS = [
+  '[BLANK_AUDIO]',
+  '[silence]',
+]
+
 interface RealtimeSpeechOptions {
   /** Callback called when finalized transcript text is available */
   onTranscriptComplete?: (text: string) => void
@@ -168,7 +174,8 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
           }
           if (itemId) processedItemIds.add(itemId)
 
-          const text = (data.transcript ?? '').replaceAll('[BLANK_AUDIO]', '').trim()
+          const raw = data.transcript ?? ''
+          const text = TRANSCRIPT_REMOVE_PATTERNS.reduce((s, p) => s.replaceAll(p, ''), raw).trim()
           console.log(LOG_PREFIX, `✅ Transcription completed: "${text}" (item: ${itemId})`)
           if (text) {
             transcript.value = text
