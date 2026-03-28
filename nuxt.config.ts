@@ -7,6 +7,8 @@ export default defineNuxtConfig({
   telemetry: false,
   modules: ['@nuxtjs/tailwindcss'],
 
+  css: ['~/assets/css/main.css'],
+
   runtimeConfig: {
     public: {
       // These are overridden by the following environment variables. And overridden again by the Tauri Store's file which is loaded in useConfig.ts.
