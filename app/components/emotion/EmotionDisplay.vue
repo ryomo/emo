@@ -1,5 +1,5 @@
 <template>
-  <div class="relative flex flex-col items-center justify-center p-4 rounded-xl bg-gray-800/60">
+  <div class="relative flex flex-col items-center justify-center p-4 rounded-xl">
     <!-- Emoji Display -->
     <Transition name="emotion" mode="out-in">
       <div :key="emotion" data-tauri-drag-region class="text-9xl sm:text-[10rem] select-none drop-shadow-lg cursor-grab">

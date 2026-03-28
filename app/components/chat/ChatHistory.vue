@@ -26,7 +26,7 @@
 
     <!-- Loading Indicator -->
     <div v-if="isLoading" class="flex justify-start">
-      <div class="bg-gray-700 text-gray-300 rounded-2xl rounded-bl-sm px-4 py-2 text-sm">
+      <div class="text-gray-300 rounded-2xl rounded-bl-sm px-4 py-2 text-sm">
         <span class="inline-flex gap-1">
           <span class="animate-bounce" style="animation-delay: 0ms">●</span>
           <span class="animate-bounce" style="animation-delay: 150ms">●</span>

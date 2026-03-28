@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-screen bg-gray-900 text-white">
+  <div class="flex flex-col h-screen text-white">
     <!-- Header -->
     <header class="flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3 border-b border-gray-700">
       <h1 data-tauri-drag-region class="text-base sm:text-lg font-bold cursor-grab">AI Chat</h1>
@@ -21,7 +21,7 @@
     </header>
 
     <!-- Error Display -->
-    <div v-if="chatError || speechError" class="bg-red-900/50 border border-red-700 text-red-200 px-4 py-2 text-sm">
+    <div v-if="chatError || speechError" class="border border-red-700 text-red-200 px-4 py-2 text-sm">
       {{ chatError || speechError }}
     </div>
 
