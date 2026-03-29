@@ -3,6 +3,7 @@
     <!-- Header -->
     <header class="flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3 border-b border-gray-700">
       <h1 data-tauri-drag-region class="text-base sm:text-lg font-bold cursor-grab">AI Chat</h1>
+      <div data-tauri-drag-region class="flex-1 self-stretch cursor-grab"></div>
       <div class="flex items-center gap-2 sm:gap-3">
         <span class="hidden sm:inline text-sm text-gray-400">{{ config.lemonadeModel }}</span>
         <NuxtLink
