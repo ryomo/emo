@@ -17,6 +17,7 @@ export interface AppConfig {
   systemPrompt: string
   enableThinking: boolean
   transparentBackground: boolean
+  emotionDisplay3d: boolean
 }
 
 const CONFIG_FILE = 'emo.config.json'
@@ -29,6 +30,7 @@ const _config = reactive<AppConfig>({
   systemPrompt: '',
   enableThinking: false,
   transparentBackground: false,
+  emotionDisplay3d: false,
 })
 let _initialized = false
 
@@ -65,6 +67,7 @@ export async function loadConfig(): Promise<void> {
     systemPrompt: runtimeConfig.public.systemPromptDefault,
     enableThinking: runtimeConfig.public.enableThinkingDefault,
     transparentBackground: runtimeConfig.public.transparentBackgroundDefault,
+    emotionDisplay3d: runtimeConfig.public.emotionDisplay3dDefault,
   }
   Object.assign(_config, defaults)
 

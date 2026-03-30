@@ -117,6 +117,19 @@
             Transparent Background
           </label>
         </div>
+
+        <!-- Emotion Display Mode -->
+        <div class="flex items-center gap-3">
+          <input
+            id="emotionDisplay3d"
+            v-model="form.emotionDisplay3d"
+            type="checkbox"
+            class="w-4 h-4 rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900"
+          />
+          <label for="emotionDisplay3d" class="text-sm font-medium text-gray-300">
+            3D Mode
+          </label>
+        </div>
       </div>
     </main>
   </div>
@@ -163,6 +176,7 @@ const form = reactive<AppConfig>({
   systemPrompt: config.systemPrompt,
   enableThinking: config.enableThinking,
   transparentBackground: config.transparentBackground,
+  emotionDisplay3d: config.emotionDisplay3d,
 })
 
 const saving = ref(false)

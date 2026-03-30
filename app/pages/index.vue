@@ -34,7 +34,13 @@
 
       <!-- AI Emotion Area -->
       <div class="shrink-0 px-3 py-2 sm:px-4 sm:py-3 border-t border-gray-700">
-        <EmotionDisplay
+        <EmotionDisplay2D
+          v-if="!config.emotionDisplay3d"
+          :emotion="emotionState.current"
+          :response-text="lastAssistantText"
+        />
+        <EmotionDisplay3D
+          v-else
           :emotion="emotionState.current"
           :response-text="lastAssistantText"
         />
