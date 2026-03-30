@@ -1,5 +1,5 @@
 <template>
-  <div class="p-3 rounded-lg min-h-[3rem] relative overflow-hidden">
+  <div class="p-3 bg-gray-800 rounded-lg min-h-[3rem] relative overflow-hidden">
     <!-- Speaking Pulse Animation -->
     <div
       v-if="isSpeaking"

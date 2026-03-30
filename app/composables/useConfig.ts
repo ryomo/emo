@@ -16,6 +16,7 @@ export interface AppConfig {
   lemonadeTtsModel: string
   systemPrompt: string
   enableThinking: boolean
+  transparentBackground: boolean
 }
 
 const CONFIG_FILE = 'emo.config.json'
@@ -27,6 +28,7 @@ const _config = reactive<AppConfig>({
   lemonadeTtsModel: '',
   systemPrompt: '',
   enableThinking: false,
+  transparentBackground: false,
 })
 let _initialized = false
 
@@ -62,6 +64,7 @@ export async function loadConfig(): Promise<void> {
     lemonadeTtsModel: runtimeConfig.public.lemonadeTtsModelDefault,
     systemPrompt: runtimeConfig.public.systemPromptDefault,
     enableThinking: runtimeConfig.public.enableThinkingDefault,
+    transparentBackground: runtimeConfig.public.transparentBackgroundDefault,
   }
   Object.assign(_config, defaults)
 

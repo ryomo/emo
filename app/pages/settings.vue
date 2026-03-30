@@ -1,5 +1,6 @@
 <template>
-  <div class="flex flex-col h-screen text-white">
+  <div :class="['flex flex-col h-screen text-white', { 'bg-gray-900': !config.transparentBackground }]">
+
     <!-- Header -->
     <header class="flex items-center gap-3 px-3 py-2 sm:px-4 sm:py-3 border-b border-gray-700">
       <NuxtLink
@@ -103,6 +104,19 @@
             Enable Thinking
           </label>
         </div>
+
+        <!-- Transparent Background Toggle -->
+        <div class="flex items-center gap-3">
+          <input
+            id="transparentBackground"
+            v-model="form.transparentBackground"
+            type="checkbox"
+            class="w-4 h-4 rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900"
+          />
+          <label for="transparentBackground" class="text-sm font-medium text-gray-300">
+            Transparent Background
+          </label>
+        </div>
       </div>
     </main>
   </div>
@@ -148,6 +162,7 @@ const form = reactive<AppConfig>({
   lemonadeTtsModel: config.lemonadeTtsModel,
   systemPrompt: config.systemPrompt,
   enableThinking: config.enableThinking,
+  transparentBackground: config.transparentBackground,
 })
 
 const saving = ref(false)

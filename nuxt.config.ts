@@ -17,6 +17,7 @@ export default defineNuxtConfig({
       lemonadeWhisperModelDefault: 'Whisper-Base',     // NUXT_PUBLIC_LEMONADE_WHISPER_MODEL_DEFAULT
       lemonadeTtsModelDefault: 'kokoro-v1',            // NUXT_PUBLIC_LEMONADE_TTS_MODEL_DEFAULT
       enableThinkingDefault: false,              // NUXT_PUBLIC_ENABLE_THINKING_DEFAULT
+      transparentBackgroundDefault: false,         // NUXT_PUBLIC_TRANSPARENT_BACKGROUND_DEFAULT
       // NUXT_PUBLIC_SYSTEM_PROMPT_DEFAULT
       systemPromptDefault: [
         'You are a helpful AI assistant.',
