@@ -5,7 +5,13 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   ssr: false,
   telemetry: false,
-  modules: ['@nuxtjs/tailwindcss'],
+  modules: ['@nuxtjs/tailwindcss', '@nuxt/eslint'],
+
+  eslint: {
+    config: {
+      stylistic: true,
+    },
+  },
 
   css: ['~/assets/css/main.css'],
 

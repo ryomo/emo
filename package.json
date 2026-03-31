@@ -8,9 +8,12 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "tauri": "tauri"
   },
   "dependencies": {
+    "@nuxt/eslint": "1.15.2",
     "@nuxtjs/tailwindcss": "^6.14.0",
     "@tauri-apps/api": "^2.10.1",
     "@tauri-apps/plugin-store": "^2.4.2",
@@ -21,6 +24,7 @@
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.10.1",
-    "@types/three": "^0.183.1"
+    "@types/three": "^0.183.1",
+    "typescript": "^6.0.2"
   }
 }
