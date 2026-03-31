@@ -5,6 +5,7 @@
     }
   ],
   "editor.formatOnSave": true,
+  "eslint.format.enable": true,
   // JavaScript, TypeScript, Vue
   "[javascript]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
