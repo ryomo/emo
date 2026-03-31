@@ -54,8 +54,9 @@ export function useAvailableModels(label: string) {
 
       models.value = filtered
     }
-    catch (e: any) {
-      error.value = e?.data?.message || e?.message || 'Failed to fetch models'
+    catch (e: unknown) {
+      const err = e as { data?: { message?: string }, message?: string }
+      error.value = err?.data?.message || err?.message || 'Failed to fetch models'
       console.error('Models API error:', e)
     }
     finally {

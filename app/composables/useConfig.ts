@@ -50,7 +50,7 @@ async function loadFromTauriStore(defaults: AppConfig): Promise<void> {
 
   for (const key of Object.keys(defaults) as (keyof AppConfig)[]) {
     const value = await store.get<string | boolean>(key)
-    if (value != null) (_config as any)[key] = value
+    if (value != null) (_config as Record<string, string | boolean>)[key] = value
   }
 }
 

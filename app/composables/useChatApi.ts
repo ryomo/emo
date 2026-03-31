@@ -59,8 +59,9 @@ export function useChatApi() {
         })
       }
     }
-    catch (e: any) {
-      error.value = e?.data?.message || e?.message || 'API call failed'
+    catch (e: unknown) {
+      const err = e as { data?: { message?: string }, message?: string }
+      error.value = err?.data?.message || err?.message || 'API call failed'
       console.error('Chat API error:', e)
     }
     finally {

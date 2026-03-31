@@ -268,16 +268,17 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
         },
       })
     }
-    catch (e: any) {
-      console.error(LOG_PREFIX, '❌ Microphone access failed:', e.name, e.message)
-      if (e.name === 'NotAllowedError') {
+    catch (e: unknown) {
+      const err = e instanceof Error ? e : new Error(String(e))
+      console.error(LOG_PREFIX, '❌ Microphone access failed:', err.name, err.message)
+      if (err.name === 'NotAllowedError') {
         error.value = 'Microphone access denied. Please check your browser settings.'
       }
-      else if (e.name === 'NotFoundError') {
+      else if (err.name === 'NotFoundError') {
         error.value = 'Microphone device not found.'
       }
       else {
-        error.value = `Microphone access error: ${e.message}`
+        error.value = `Microphone access error: ${err.message}`
       }
       throw e
     }
@@ -346,7 +347,7 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
     try {
       wsUrl = await getWsUrl()
     }
-    catch (e: any) {
+    catch (e: unknown) {
       console.error(LOG_PREFIX, '❌ Failed to fetch WebSocket URL from health endpoint:', e)
       error.value = 'Failed to connect: could not retrieve WebSocket port from server.'
       return
@@ -357,7 +358,7 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
       await Promise.all([setupWebSocket(wsUrl), setupAudio()])
       console.log(LOG_PREFIX, '✅ ===== Realtime speech started =====')
     }
-    catch (e: any) {
+    catch (e: unknown) {
       console.error(LOG_PREFIX, '❌ ===== Failed to start =====', e)
       error.value = error.value ?? 'Failed to start realtime speech recognition'
       cleanup()
