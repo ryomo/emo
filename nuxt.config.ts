@@ -4,9 +4,7 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss', '@nuxt/eslint'],
   ssr: false,
   devtools: { enabled: false },
-
   css: ['~/assets/css/main.css'],
-
   runtimeConfig: {
     public: {
       // These are overridden by the following environment variables. And overridden again by the Tauri Store's file which is loaded in useConfig.ts.
@@ -27,21 +25,16 @@ export default defineNuxtConfig({
       ].join('\n'),
     },
   },
-
-  // Tauri
-  ignore: ['**/src-tauri/**'],
+  ignore: ['**/src-tauri/**'], // Tauri
   compatibilityDate: '2025-07-15',
-
   vite: {
-    // Tauri
-    clearScreen: false,
+    clearScreen: false, // Better support for Tauri CLI output
     envPrefix: ['VITE_', 'TAURI_'],
     server: {
-      strictPort: true,
+      strictPort: true, // Tauri requires a consistent port
     },
   },
   telemetry: false,
-
   eslint: {
     config: {
       stylistic: true,
