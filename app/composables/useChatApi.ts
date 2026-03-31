@@ -6,9 +6,9 @@ const EMOJI_LIST = Object.values(EMOTION_EMOJI).join(' ')
 
 /** Build full system prompt from user-configured base + emotion emoji instruction */
 function buildSystemPrompt(basePrompt: string): string {
-  const emojiInstruction =
-    `- Always start your response with exactly one of the following emojis` +
-    ` to express your current emotion: ${EMOJI_LIST}`
+  const emojiInstruction
+    = `- Always start your response with exactly one of the following emojis`
+      + ` to express your current emotion: ${EMOJI_LIST}`
   return `${basePrompt}\n${emojiInstruction}`
 }
 
@@ -58,10 +58,12 @@ export function useChatApi() {
           content: assistantMessage.content,
         })
       }
-    } catch (e: any) {
+    }
+    catch (e: any) {
       error.value = e?.data?.message || e?.message || 'API call failed'
       console.error('Chat API error:', e)
-    } finally {
+    }
+    finally {
       isLoading.value = false
     }
   }

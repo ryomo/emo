@@ -1,11 +1,11 @@
 /** AI emotion type */
-export type EmotionType =
-  | 'neutral'
-  | 'happy'
-  | 'sad'
-  | 'angry'
-  | 'surprised'
-  | 'thinking'
+export type EmotionType
+  = | 'neutral'
+    | 'happy'
+    | 'sad'
+    | 'angry'
+    | 'surprised'
+    | 'thinking'
 
 /** Emotion → emoji mapping */
 export const EMOTION_EMOJI: Record<EmotionType, string> = {

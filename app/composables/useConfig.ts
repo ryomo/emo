@@ -74,7 +74,8 @@ export async function loadConfig(): Promise<void> {
   if (isTauri()) {
     try {
       await loadFromTauriStore(defaults)
-    } catch (e) {
+    }
+    catch (e) {
       console.warn('[Config] Failed to load Tauri store:', e)
     }
   }
@@ -94,7 +95,8 @@ export async function updateConfig(newValues: Partial<AppConfig>): Promise<void>
         await store.set(key, newValues[key])
       }
       await store.save()
-    } catch (e) {
+    }
+    catch (e) {
       console.warn('[Config] Failed to save Tauri store:', e)
     }
   }

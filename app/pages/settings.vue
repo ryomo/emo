@@ -1,6 +1,5 @@
 <template>
   <div :class="['flex flex-col h-screen text-white', { 'bg-gray-900': !config.transparentBackground }]">
-
     <!-- Header -->
     <header class="flex items-center gap-3 px-3 py-2 sm:px-4 sm:py-3 border-b border-gray-700">
       <NuxtLink
@@ -9,10 +8,17 @@
       >
         ← Back
       </NuxtLink>
-      <h1 class="text-base sm:text-lg font-bold">Settings</h1>
+      <h1 class="text-base sm:text-lg font-bold">
+        Settings
+      </h1>
 
       <div class="ml-auto flex items-center gap-3">
-        <p v-if="saved" class="text-green-400 text-sm">Settings saved.</p>
+        <p
+          v-if="saved"
+          class="text-green-400 text-sm"
+        >
+          Settings saved.
+        </p>
         <button
           class="bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded px-4 py-2 transition-colors disabled:opacity-50"
           :disabled="saving"
@@ -26,10 +32,15 @@
     <!-- Settings Form -->
     <main class="flex-1 overflow-y-auto p-4 sm:p-6">
       <div class="max-w-xl mx-auto space-y-5">
-        <h2 class="text-sm font-medium text-gray-400">General Settings</h2>
+        <h2 class="text-sm font-medium text-gray-400">
+          General Settings
+        </h2>
 
         <div>
-          <label for="systemPrompt" class="block text-sm font-medium text-gray-300 mb-1">
+          <label
+            for="systemPrompt"
+            class="block text-sm font-medium text-gray-300 mb-1"
+          >
             System Prompt
           </label>
           <textarea
@@ -41,10 +52,18 @@
           />
         </div>
 
-        <h2 class="text-sm font-medium text-gray-400 mt-6">Lemonade Settings</h2>
+        <h2 class="text-sm font-medium text-gray-400 mt-6">
+          Lemonade Settings
+        </h2>
 
-        <div v-for="field in textFields" :key="field.key">
-          <label :for="field.key" class="block text-sm font-medium text-gray-300 mb-1">
+        <div
+          v-for="field in textFields"
+          :key="field.key"
+        >
+          <label
+            :for="field.key"
+            class="block text-sm font-medium text-gray-300 mb-1"
+          >
             {{ field.label }}
           </label>
           <input
@@ -53,12 +72,18 @@
             type="text"
             class="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
             :placeholder="field.label"
-          />
+          >
         </div>
 
         <!-- Model Selection Dropdowns -->
-        <div v-for="sel in modelSelectors" :key="sel.key">
-          <label :for="sel.key" class="block text-sm font-medium text-gray-300 mb-1">
+        <div
+          v-for="sel in modelSelectors"
+          :key="sel.key"
+        >
+          <label
+            :for="sel.key"
+            class="block text-sm font-medium text-gray-300 mb-1"
+          >
             {{ sel.label }}
           </label>
           <div class="flex gap-2">
@@ -68,10 +93,16 @@
               class="flex-1 bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
               :disabled="sel.loading.value"
             >
-              <option v-if="sel.models.value.length === 0" :value="form[sel.key]">
+              <option
+                v-if="sel.models.value.length === 0"
+                :value="form[sel.key]"
+              >
                 {{ form[sel.key] }}
               </option>
-              <template v-for="model in sel.models.value" :key="model.id">
+              <template
+                v-for="model in sel.models.value"
+                :key="model.id"
+              >
                 <option
                   :value="model.id"
                   :disabled="!model.downloaded"
@@ -89,7 +120,12 @@
               {{ sel.loading.value ? '...' : '↻' }}
             </button>
           </div>
-          <p v-if="sel.error.value" class="text-red-400 text-xs mt-1">{{ sel.error.value }}</p>
+          <p
+            v-if="sel.error.value"
+            class="text-red-400 text-xs mt-1"
+          >
+            {{ sel.error.value }}
+          </p>
         </div>
 
         <!-- Enable Thinking Toggle -->
@@ -99,8 +135,11 @@
             v-model="form.enableThinking"
             type="checkbox"
             class="w-4 h-4 rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900"
-          />
-          <label for="enableThinking" class="text-sm font-medium text-gray-300">
+          >
+          <label
+            for="enableThinking"
+            class="text-sm font-medium text-gray-300"
+          >
             Enable Thinking
           </label>
         </div>
@@ -112,8 +151,11 @@
             v-model="form.transparentBackground"
             type="checkbox"
             class="w-4 h-4 rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900"
-          />
-          <label for="transparentBackground" class="text-sm font-medium text-gray-300">
+          >
+          <label
+            for="transparentBackground"
+            class="text-sm font-medium text-gray-300"
+          >
             Transparent Background
           </label>
         </div>
@@ -125,8 +167,11 @@
             v-model="form.emotionDisplay3d"
             type="checkbox"
             class="w-4 h-4 rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900"
-          />
-          <label for="emotionDisplay3d" class="text-sm font-medium text-gray-300">
+          >
+          <label
+            for="emotionDisplay3d"
+            class="text-sm font-medium text-gray-300"
+          >
             3D Mode
           </label>
         </div>
@@ -141,7 +186,7 @@ import { updateConfig } from '~/composables/useConfig'
 
 const config = useConfig()
 
-const textFields: { key: keyof AppConfig; label: string }[] = [
+const textFields: { key: keyof AppConfig, label: string }[] = [
   { key: 'lemonadeBaseUrl', label: 'Base URL' },
 ]
 
@@ -153,7 +198,7 @@ const modelSelectors = [
   { key: 'lemonadeModel' as keyof AppConfig, label: 'Chat Model', ...chatModels },
   { key: 'lemonadeWhisperModel' as keyof AppConfig, label: 'Whisper Model', ...whisperModels },
   { key: 'lemonadeTtsModel' as keyof AppConfig, label: 'TTS Model', ...ttsModels },
-].map((s) => ({
+].map(s => ({
   key: s.key,
   label: s.label,
   models: s.models,
@@ -192,7 +237,8 @@ async function save() {
   try {
     await updateConfig({ ...form })
     saved.value = true
-  } finally {
+  }
+  finally {
     saving.value = false
   }
 }

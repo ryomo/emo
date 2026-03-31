@@ -8,7 +8,10 @@
     >
       <span class="text-white text-xl">{{ buttonIcon }}</span>
     </button>
-    <span class="text-xs" :class="labelClass">
+    <span
+      class="text-xs"
+      :class="labelClass"
+    >
       {{ label }}
     </span>
   </div>

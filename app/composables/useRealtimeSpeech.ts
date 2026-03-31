@@ -209,7 +209,8 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
         default:
           console.log(LOG_PREFIX, `ℹ️ Unhandled event: ${data.type}`, data)
       }
-    } catch (e) {
+    }
+    catch (e) {
       console.error(LOG_PREFIX, '❌ Failed to parse WebSocket message:', e)
       console.error(LOG_PREFIX, '   Raw data:', msgEvent.data)
     }
@@ -222,7 +223,8 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
 
       try {
         ws = new WebSocket(url)
-      } catch (e) {
+      }
+      catch (e) {
         console.error(LOG_PREFIX, '❌ Failed to create WebSocket:', e)
         reject(e)
         return
@@ -265,13 +267,16 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
           noiseSuppression: true,
         },
       })
-    } catch (e: any) {
+    }
+    catch (e: any) {
       console.error(LOG_PREFIX, '❌ Microphone access failed:', e.name, e.message)
       if (e.name === 'NotAllowedError') {
         error.value = 'Microphone access denied. Please check your browser settings.'
-      } else if (e.name === 'NotFoundError') {
+      }
+      else if (e.name === 'NotFoundError') {
         error.value = 'Microphone device not found.'
-      } else {
+      }
+      else {
         error.value = `Microphone access error: ${e.message}`
       }
       throw e
@@ -340,7 +345,8 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
     let wsUrl: string
     try {
       wsUrl = await getWsUrl()
-    } catch (e: any) {
+    }
+    catch (e: any) {
       console.error(LOG_PREFIX, '❌ Failed to fetch WebSocket URL from health endpoint:', e)
       error.value = 'Failed to connect: could not retrieve WebSocket port from server.'
       return
@@ -350,7 +356,8 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
     try {
       await Promise.all([setupWebSocket(wsUrl), setupAudio()])
       console.log(LOG_PREFIX, '✅ ===== Realtime speech started =====')
-    } catch (e: any) {
+    }
+    catch (e: any) {
       console.error(LOG_PREFIX, '❌ ===== Failed to start =====', e)
       error.value = error.value ?? 'Failed to start realtime speech recognition'
       cleanup()
@@ -378,7 +385,7 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
     }
 
     if (audioContext) {
-      audioContext.close().catch((e) => console.warn(LOG_PREFIX, 'AudioContext close error:', e))
+      audioContext.close().catch(e => console.warn(LOG_PREFIX, 'AudioContext close error:', e))
       audioContext = null
     }
 

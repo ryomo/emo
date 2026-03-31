@@ -110,7 +110,8 @@ export function useTtsApi() {
       }
 
       await audio.play()
-    } catch (e: any) {
+    }
+    catch (e: any) {
       console.error(TTS_LOG_PREFIX, '❌ TTS request failed:', e)
       stop()
     }

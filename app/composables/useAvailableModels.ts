@@ -39,7 +39,7 @@ export function useAvailableModels(label: string) {
       )
 
       const filtered = (response.data ?? [])
-        .filter((m) => m.labels?.includes(label))
+        .filter(m => m.labels?.includes(label))
         .map((m): AvailableModel => ({
           id: m.id,
           labels: m.labels ?? [],
@@ -53,10 +53,12 @@ export function useAvailableModels(label: string) {
       })
 
       models.value = filtered
-    } catch (e: any) {
+    }
+    catch (e: any) {
       error.value = e?.data?.message || e?.message || 'Failed to fetch models'
       console.error('Models API error:', e)
-    } finally {
+    }
+    finally {
       isLoading.value = false
     }
   }

@@ -5,6 +5,6 @@ export default withNuxt(
   {
     ignores: [
       'src-tauri/target/**',
-    ]
-  }
+    ],
+  },
 )

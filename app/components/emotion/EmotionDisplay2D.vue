@@ -1,8 +1,15 @@
 <template>
   <div class="relative flex flex-col items-center justify-center p-4 rounded-xl bg-gray-800/60">
     <!-- Emoji Display -->
-    <Transition name="emotion" mode="out-in">
-      <div :key="emotion" data-tauri-drag-region class="text-9xl sm:text-[10rem] select-none drop-shadow-lg cursor-grab">
+    <Transition
+      name="emotion"
+      mode="out-in"
+    >
+      <div
+        :key="emotion"
+        data-tauri-drag-region
+        class="text-9xl sm:text-[10rem] select-none drop-shadow-lg cursor-grab"
+      >
         {{ emotionEmoji }}
       </div>
     </Transition>
@@ -19,7 +26,9 @@
       </div>
     </Transition>
 
-    <p class="text-xs text-gray-500 mt-2">{{ emotion }}</p>
+    <p class="text-xs text-gray-500 mt-2">
+      {{ emotion }}
+    </p>
   </div>
 </template>
 

@@ -1,10 +1,17 @@
 <template>
   <div :class="['flex flex-col h-screen text-white', { 'bg-gray-900': !config.transparentBackground }]">
-
     <!-- Header -->
     <header class="flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3 border-b border-gray-700">
-      <h1 data-tauri-drag-region class="text-base sm:text-lg font-bold cursor-grab">AI Chat</h1>
-      <div data-tauri-drag-region class="flex-1 self-stretch cursor-grab"></div>
+      <h1
+        data-tauri-drag-region
+        class="text-base sm:text-lg font-bold cursor-grab"
+      >
+        AI Chat
+      </h1>
+      <div
+        data-tauri-drag-region
+        class="flex-1 self-stretch cursor-grab"
+      />
       <div class="flex items-center gap-2 sm:gap-3">
         <span class="hidden sm:inline text-sm text-gray-400">{{ config.lemonadeModel }}</span>
         <NuxtLink
@@ -23,14 +30,21 @@
     </header>
 
     <!-- Error Display -->
-    <div v-if="chatError || speechError" class="bg-red-900/50 border border-red-700 text-red-200 px-4 py-2 text-sm">
+    <div
+      v-if="chatError || speechError"
+      class="bg-red-900/50 border border-red-700 text-red-200 px-4 py-2 text-sm"
+    >
       {{ chatError || speechError }}
     </div>
 
     <!-- Main Content (vertical stacked layout) -->
     <main class="flex flex-col flex-1 overflow-hidden">
       <!-- Chat History -->
-      <ChatHistory class="flex-1 min-h-0" :messages="messages" :is-loading="isLoading" />
+      <ChatHistory
+        class="flex-1 min-h-0"
+        :messages="messages"
+        :is-loading="isLoading"
+      />
 
       <!-- AI Emotion Area -->
       <div class="shrink-0 px-3 py-2 sm:px-4 sm:py-3 border-t border-gray-700">
@@ -47,7 +61,10 @@
       </div>
 
       <!-- Voice Recognition Text Area (shown only in voice mode) -->
-      <div v-if="isListening" class="shrink-0 px-3 pb-2 sm:px-4 sm:pb-3">
+      <div
+        v-if="isListening"
+        class="shrink-0 px-3 pb-2 sm:px-4 sm:pb-3"
+      >
         <VoiceTranscriptArea
           :transcript="transcript"
           :is-speaking="isUserSpeaking"
@@ -64,7 +81,11 @@
           :disabled="isLoading"
           @toggle="toggleVoice"
         />
-        <ChatInput class="flex-1" :is-loading="isLoading" @send="handleSend" />
+        <ChatInput
+          class="flex-1"
+          :is-loading="isLoading"
+          @send="handleSend"
+        />
       </div>
     </main>
   </div>
@@ -127,7 +148,8 @@ function toggleVoice() {
   if (isListening.value) {
     stopTts()
     stopSpeech()
-  } else {
+  }
+  else {
     startSpeech()
   }
 }

@@ -1,12 +1,22 @@
 <template>
   <div :class="['relative', 'flex', 'flex-col', 'items-center', 'justify-center', 'p-4', 'rounded-xl', { 'bg-gray-800/60': !config.transparentBackground }]">
     <!-- 3D Canvas -->
-    <div ref="containerRef" class="w-full" style="height: 280px; overflow: hidden;">
-      <canvas ref="canvasRef" class="w-full h-full" />
+    <div
+      ref="containerRef"
+      class="w-full"
+      style="height: 280px; overflow: hidden;"
+    >
+      <canvas
+        ref="canvasRef"
+        class="w-full h-full"
+      />
     </div>
 
     <!-- HTMLMesh source (rendered onto 3D box) -->
-    <div ref="emojiDomRef" class="emoji-source">
+    <div
+      ref="emojiDomRef"
+      class="emoji-source"
+    >
       <span class="emoji-text">{{ emotionEmoji }}</span>
     </div>
 
@@ -22,7 +32,9 @@
       </div>
     </Transition>
 
-    <p class="text-xs text-gray-500 mt-2">{{ emotion }}</p>
+    <p class="text-xs text-gray-500 mt-2">
+      {{ emotion }}
+    </p>
   </div>
 </template>
 

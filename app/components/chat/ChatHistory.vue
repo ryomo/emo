@@ -1,7 +1,13 @@
 <template>
-  <div ref="scrollContainer" class="flex flex-col h-full overflow-y-auto p-4 space-y-3">
+  <div
+    ref="scrollContainer"
+    class="flex flex-col h-full overflow-y-auto p-4 space-y-3"
+  >
     <!-- No messages -->
-    <p v-if="messages.length === 0" class="text-gray-500 text-center text-sm mt-8">
+    <p
+      v-if="messages.length === 0"
+      class="text-gray-500 text-center text-sm mt-8"
+    >
       Enter a message to start the conversation
     </p>
 
@@ -25,12 +31,24 @@
     </div>
 
     <!-- Loading Indicator -->
-    <div v-if="isLoading" class="flex justify-start">
+    <div
+      v-if="isLoading"
+      class="flex justify-start"
+    >
       <div class="bg-gray-700 text-gray-300 rounded-2xl rounded-bl-sm px-4 py-2 text-sm">
         <span class="inline-flex gap-1">
-          <span class="animate-bounce" style="animation-delay: 0ms">●</span>
-          <span class="animate-bounce" style="animation-delay: 150ms">●</span>
-          <span class="animate-bounce" style="animation-delay: 300ms">●</span>
+          <span
+            class="animate-bounce"
+            style="animation-delay: 0ms"
+          >●</span>
+          <span
+            class="animate-bounce"
+            style="animation-delay: 150ms"
+          >●</span>
+          <span
+            class="animate-bounce"
+            style="animation-delay: 300ms"
+          >●</span>
         </span>
       </div>
     </div>
@@ -48,7 +66,7 @@ const props = defineProps<{
 }>()
 
 /** Remove emotion emoji from assistant message and return display text */
-function displayContent(msg: { role: string; content: string | null }): string {
+function displayContent(msg: { role: string, content: string | null }): string {
   const text = msg.content ?? ''
   return msg.role === 'assistant' ? stripEmotionEmoji(text) : text
 }
