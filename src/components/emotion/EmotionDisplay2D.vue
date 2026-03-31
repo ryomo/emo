@@ -59,6 +59,7 @@ const emotionEmoji = computed(() => EMOTION_EMOJI[props.emotion] ?? '😐')
   transform: scale(0.8) translateY(-8px);
 }
 
+/* `<Transition name="overlay-fade">` */
 .overlay-fade-enter-active,
 .overlay-fade-leave-active {
   transition: opacity 0.3s ease;

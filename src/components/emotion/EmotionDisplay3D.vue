@@ -200,6 +200,7 @@ onUnmounted(() => {
   font-size: 96px;
 }
 
+/* `<Transition name="overlay-fade">` */
 .overlay-fade-enter-active,
 .overlay-fade-leave-active {
   transition: opacity 0.3s ease;
