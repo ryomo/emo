@@ -6,7 +6,7 @@
       v-if="showError"
       class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between gap-3 bg-yellow-600/90 px-4 py-3 text-sm text-white"
     >
-      <span>⚠ {{ configLoadError }}</span>
+      <span>⚠ {{ appError }}</span>
       <button
         class="shrink-0 hover:text-yellow-200"
         @click="errorDismissed = true"
@@ -19,9 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { useConfigLoadError } from '~/composables/useConfig'
-
-const configLoadError = useConfigLoadError()
+const appError = useAppError()
 const errorDismissed = ref(false)
-const showError = computed(() => !errorDismissed.value && !!configLoadError.value)
+const showError = computed(() => !errorDismissed.value && !!appError.value)
 </script>

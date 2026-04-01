@@ -101,8 +101,9 @@ There are currently no automated tests in this project.
 - If the config file fails to load, it is automatically reset to defaults and `useConfigLoadError()` returns a non-empty message.
 
 ### Global Notifications (app.vue)
-- `app.vue` subscribes to `useConfigLoadError()` and shows a dismissible banner at the top of the screen when a config error occurs on startup.
-- Future app-wide error/notification needs should follow the same pattern: expose a reactive ref from a composable, and handle display in `app.vue`.
+- `app.vue` subscribes to `useAppError()` and shows a dismissible banner at the top of the screen when an error is set.
+- Any composable can call `setAppError(message)` from `useAppError.ts` to surface an error to the user (e.g., `useConfig` calls it when the config file fails to load).
+- Future app-wide error/notification needs should use the same `setAppError()` mechanism.
 
 ### Communication with Lemonade Server
 - **Chat API**: `POST /api/v1/chat/completions` (OpenAI-compatible)

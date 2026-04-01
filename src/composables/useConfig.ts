@@ -35,7 +35,6 @@ const _config = reactive<AppConfig>({
 })
 let _initialized = false
 let _defaults: AppConfig | null = null
-const _configLoadError = ref<string>('')
 
 /** Write all default values to an open Tauri store and persist to disk. */
 async function writeDefaultsToStore(defaults: AppConfig, store: Store): Promise<void> {
@@ -97,7 +96,7 @@ export async function loadConfig(): Promise<void> {
     }
     catch (e) {
       console.warn('[Config] Failed to load Tauri store, resetting to defaults:', e)
-      _configLoadError.value = 'Config file could not be loaded and has been reset to defaults.'
+      setAppError('Config file could not be loaded and has been reset to defaults.')
       try {
         const { load } = await import('@tauri-apps/plugin-store')
         const store = await load(CONFIG_FILE)
@@ -151,9 +150,4 @@ export async function resetConfig(): Promise<void> {
 /** Return the reactive (read-only) application config. */
 export function useConfig(): Readonly<AppConfig> {
   return readonly(_config) as Readonly<AppConfig>
-}
-
-/** Return a readonly ref to the config load error message (non-empty if config was auto-reset on load error). */
-export function useConfigLoadError() {
-  return readonly(_configLoadError)
 }
