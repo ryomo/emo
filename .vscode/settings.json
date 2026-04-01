@@ -4,22 +4,24 @@
       "text": "Use concise conventional commit messages with a type prefix (e.g. fix:, feat:, docs:, chore:, refactor:, or test:)."
     }
   ],
-  "editor.formatOnSave": true,
   "eslint.format.enable": true,
   // JavaScript, TypeScript, Vue
   "[javascript]": {
+    "editor.formatOnSave": true,
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
     "editor.codeActionsOnSave": {
       "source.fixAll.eslint": "explicit"
     }
   },
   "[typescript]": {
+    "editor.formatOnSave": true,
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
     "editor.codeActionsOnSave": {
       "source.fixAll.eslint": "explicit"
     }
   },
   "[vue]": {
+    "editor.formatOnSave": true,
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
     "editor.codeActionsOnSave": {
       "source.fixAll.eslint": "explicit"
@@ -27,16 +29,20 @@
   },
   // HTML, CSS, JSON
   "[html]": {
+    "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[css]": {
+    "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[json]": {
+    "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   // Markdown
   "[markdown]": {
+    "editor.formatOnSave": true,
     "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
   }
 }
