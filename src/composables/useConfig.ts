@@ -60,6 +60,17 @@ async function loadFromTauriStore(defaults: AppConfig): Promise<void> {
     const value = await store.get<string | boolean>(key)
     if (value != null) (_config as Record<string, string | boolean>)[key] = value
   }
+
+  // Remove keys that are no longer part of AppConfig
+  const knownKeys = new Set(Object.keys(defaults))
+  const storeKeys = await store.keys()
+  const obsoleteKeys = storeKeys.filter(k => !knownKeys.has(k))
+  if (obsoleteKeys.length > 0) {
+    for (const key of obsoleteKeys) {
+      await store.delete(key)
+    }
+    await store.save()
+  }
 }
 
 /** Load configuration values (called once by the config plugin). */
