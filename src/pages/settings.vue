@@ -1,7 +1,10 @@
 <template>
   <div :class="['flex flex-col h-screen text-white', { 'bg-gray-900': !config.transparentBackground }]">
     <!-- Header -->
-    <header class="flex items-center gap-3 px-3 py-2 sm:px-4 sm:py-3 border-b border-gray-700">
+    <header
+      data-tauri-drag-region
+      class="flex items-center gap-3 px-3 py-2 sm:px-4 sm:py-3 border-b border-gray-700 bg-gray-800/50 cursor-grab"
+    >
       <NuxtLink
         to="/"
         class="text-sm text-gray-400 hover:text-white border border-gray-600 rounded px-2 py-1 transition-colors"

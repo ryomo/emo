@@ -1,19 +1,19 @@
 <template>
   <div :class="['flex flex-col h-screen text-white', { 'bg-gray-900': !config.transparentBackground }]">
     <!-- Header -->
-    <header class="flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3 border-b border-gray-700">
-      <h1
-        data-tauri-drag-region
-        class="text-base sm:text-lg font-bold cursor-grab"
-      >
-        AI Chat
+    <header
+      data-tauri-drag-region
+      class="flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3 border-b border-gray-700 bg-gray-800/50 cursor-grab"
+    >
+      <h1 class="text-base sm:text-lg font-bold">
+        Emo
       </h1>
       <div
         data-tauri-drag-region
         class="flex-1 self-stretch cursor-grab"
       />
       <div class="flex items-center gap-2 sm:gap-3">
-        <span class="hidden sm:inline text-sm text-gray-400">{{ config.lemonadeModel }}</span>
+        <span class="hidden sm:inline text-sm text-gray-400 cursor-text">{{ config.lemonadeModel }}</span>
         <NuxtLink
           to="/settings"
           class="text-xs text-gray-400 hover:text-white border border-gray-600 rounded px-2 py-1 transition-colors"
@@ -25,6 +25,12 @@
           @click="clearHistory"
         >
           Clear History
+        </button>
+        <button
+          class="text-xs text-gray-400 hover:text-red-400 border border-gray-600 rounded px-2 py-1 transition-colors"
+          @click="closeApp"
+        >
+          ✕
         </button>
       </div>
     </header>
@@ -92,6 +98,8 @@
 </template>
 
 <script setup lang="ts">
+import { isTauri } from '@tauri-apps/api/core'
+import { getCurrentWindow } from '@tauri-apps/api/window'
 import { stripEmotionEmoji } from '~/types/emotion'
 
 const config = useConfig()
@@ -142,6 +150,12 @@ watch(
 
 function handleSend(message: string) {
   sendMessage(message)
+}
+
+async function closeApp() {
+  if (isTauri()) {
+    await getCurrentWindow().close()
+  }
 }
 
 function toggleVoice() {

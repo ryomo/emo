@@ -8,6 +8,7 @@
   "permissions": [
     "core:default",
     "store:default",
-    "core:window:allow-start-dragging"
+    "core:window:allow-start-dragging",
+    "core:window:allow-close"
   ]
 }
