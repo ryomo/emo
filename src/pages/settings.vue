@@ -30,17 +30,17 @@
         </p>
         <button
           class="text-sm text-gray-400 hover:text-white border border-gray-600 rounded px-3 py-2 transition-colors disabled:opacity-50"
-          :disabled="saving || resetting"
+          :disabled="busy"
           @click="reset"
         >
-          {{ resetting ? 'Resetting...' : 'Reset to Defaults' }}
+          Reset to Defaults
         </button>
         <button
           class="bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded px-4 py-2 transition-colors disabled:opacity-50"
-          :disabled="saving || resetting"
+          :disabled="busy"
           @click="save"
         >
-          {{ saving ? 'Saving...' : 'Save' }}
+          Save
         </button>
       </div>
     </header>
@@ -241,9 +241,8 @@ const form = reactive<AppConfig>({
   emotionDisplay3d: config.emotionDisplay3d,
 })
 
-const saving = ref(false)
+const busy = ref(false)
 const saved = ref(false)
-const resetting = ref(false)
 const reset_done = ref(false)
 
 watch(form, () => {
@@ -252,14 +251,14 @@ watch(form, () => {
 })
 
 async function save() {
-  saving.value = true
+  busy.value = true
   saved.value = false
   try {
     await updateConfig({ ...form })
     saved.value = true
   }
   finally {
-    saving.value = false
+    busy.value = false
   }
 }
 
@@ -273,7 +272,7 @@ async function reset() {
     confirmed = globalThis.confirm('Reset all settings to defaults?')
   }
   if (!confirmed) return
-  resetting.value = true
+  busy.value = true
   reset_done.value = false
   try {
     await resetConfig()
@@ -281,7 +280,7 @@ async function reset() {
     reset_done.value = true
   }
   finally {
-    resetting.value = false
+    busy.value = false
   }
 }
 </script>
