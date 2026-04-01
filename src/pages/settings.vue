@@ -22,9 +22,22 @@
         >
           Settings saved.
         </p>
+        <p
+          v-if="reset_done"
+          class="text-green-400 text-sm"
+        >
+          Settings reset.
+        </p>
+        <button
+          class="text-sm text-gray-400 hover:text-white border border-gray-600 rounded px-3 py-2 transition-colors disabled:opacity-50"
+          :disabled="saving || resetting"
+          @click="reset"
+        >
+          {{ resetting ? 'Resetting...' : 'Reset to Defaults' }}
+        </button>
         <button
           class="bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded px-4 py-2 transition-colors disabled:opacity-50"
-          :disabled="saving"
+          :disabled="saving || resetting"
           @click="save"
         >
           {{ saving ? 'Saving...' : 'Save' }}
@@ -185,7 +198,8 @@
 
 <script setup lang="ts">
 import type { AppConfig } from '~/composables/useConfig'
-import { updateConfig } from '~/composables/useConfig'
+import { resetConfig, updateConfig } from '~/composables/useConfig'
+import { isTauri } from '@tauri-apps/api/core'
 
 const config = useConfig()
 
@@ -229,9 +243,12 @@ const form = reactive<AppConfig>({
 
 const saving = ref(false)
 const saved = ref(false)
+const resetting = ref(false)
+const reset_done = ref(false)
 
 watch(form, () => {
   saved.value = false
+  reset_done.value = false
 })
 
 async function save() {
@@ -243,6 +260,28 @@ async function save() {
   }
   finally {
     saving.value = false
+  }
+}
+
+async function reset() {
+  let confirmed: boolean
+  if (isTauri()) {
+    const { confirm } = await import('@tauri-apps/plugin-dialog')
+    confirmed = await confirm('Reset all settings to defaults?', { title: 'Reset Settings', kind: 'warning' })
+  }
+  else {
+    confirmed = globalThis.confirm('Reset all settings to defaults?')
+  }
+  if (!confirmed) return
+  resetting.value = true
+  reset_done.value = false
+  try {
+    await resetConfig()
+    Object.assign(form, config)
+    reset_done.value = true
+  }
+  finally {
+    resetting.value = false
   }
 }
 </script>
