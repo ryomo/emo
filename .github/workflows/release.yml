@@ -1,8 +1,9 @@
 # GitHub Actions workflow for automating the release process of Emo.
 #
-# bump-version:
-# 1. Updates the version in `src-tauri/tauri.conf.json` and `src-tauri/Cargo.toml`, then creates a commit.
-# 2. Then creates a tag with the version number (e.g., `v1.2.3`) and pushes it.
+# prepare-release:
+# 1. Generates a changelog from commits since the previous tag (feat: and fix: only).
+# 2. Updates the version in `src-tauri/tauri.conf.json` and `src-tauri/Cargo.toml`, then creates a commit.
+# 3. Creates a tag with the version number (e.g., `v1.2.3`) and pushes it.
 #
 # tauri-publish:
 # - Builds and publishes a release for each platform.
@@ -20,12 +21,66 @@ on:
         required: true
 
 jobs:
-  bump-version:
+  prepare-release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    outputs:
+      changelog: ${{ steps.changelog.outputs.changelog }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Get previous tag
+        id: prev-tag
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          echo "tag=${PREV_TAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Generate changelog
+        id: changelog
+        env:
+          PREV_TAG: ${{ steps.prev-tag.outputs.tag }}
+        run: |
+          if [ -z "$PREV_TAG" ]; then
+            COMMITS=""
+          else
+            COMMITS=$(git log --pretty=format:"%s" "${PREV_TAG}..HEAD")
+          fi
+
+          FEAT_LIST=""
+          FIX_LIST=""
+
+          # Only 'feat:' and 'fix:' are included; all other types are ignored.
+          while IFS= read -r line; do
+            [ -z "$line" ] && continue
+            if echo "$line" | grep -qE '^feat(\([^)]*\))?[!]?:'; then
+              msg=$(echo "$line" | sed -E 's/^feat(\([^)]*\))?[!]?: ?//')
+              FEAT_LIST="${FEAT_LIST}- ${msg}"$'\n'
+            elif echo "$line" | grep -qE '^fix(\([^)]*\))?[!]?:'; then
+              msg=$(echo "$line" | sed -E 's/^fix(\([^)]*\))?[!]?: ?//')
+              FIX_LIST="${FIX_LIST}- ${msg}"$'\n'
+            fi
+          done <<< "$COMMITS"
+
+          CHANGELOG=""
+          if [ -n "$FEAT_LIST" ]; then
+            CHANGELOG="${CHANGELOG}## Features"$'\n'"${FEAT_LIST}"$'\n'
+          fi
+          if [ -n "$FIX_LIST" ]; then
+            CHANGELOG="${CHANGELOG}## Bug Fixes"$'\n'"${FIX_LIST}"$'\n'
+          fi
+          if [ -z "$CHANGELOG" ]; then
+            CHANGELOG="No notable changes."$'\n'
+          fi
+          CHANGELOG="${CHANGELOG}"$'\n\n'"See the assets to download this version and install."
+
+          {
+            echo "changelog<<EOF"
+            echo "$CHANGELOG"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Update version in tauri.conf.json
         run: |
@@ -50,7 +105,7 @@ jobs:
           git push --tags
 
   publish-tauri:
-    needs: bump-version
+    needs: prepare-release
     permissions:
       contents: write
     strategy:
@@ -107,7 +162,7 @@ jobs:
         with:
           tagName: v${{ github.event.inputs.version }}
           releaseName: v${{ github.event.inputs.version }}
-          releaseBody: 'See the assets to download this version and install.'
+          releaseBody: ${{ needs.prepare-release.outputs.changelog }}
           releaseDraft: true
           prerelease: false
           # TODO: "releaseAssetNamePattern" requires "tauri-action@v1" which is not yet released.
