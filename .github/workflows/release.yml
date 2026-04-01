@@ -11,7 +11,7 @@
 # - The release is created as a draft for review before publishing.
 # - See: https://tauri.app/distribute/pipelines/github/
 
-name: 'release'
+name: "release"
 
 on:
   workflow_dispatch:
@@ -112,14 +112,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: 'macos-latest' # for Arm based macs (M1 and above).
-            args: '--target aarch64-apple-darwin --bundles dmg'
-          - platform: 'ubuntu-24.04'
-            args: '--bundles appimage'
-          - platform: 'ubuntu-24.04-arm' # Only available in public repos.
-            args: '--bundles appimage'
-          - platform: 'windows-latest'
-            args: '--bundles nsis'
+          - platform: "macos-latest" # for Arm based macs (M1 and above).
+            args: "--target aarch64-apple-darwin --bundles dmg"
+          - platform: "ubuntu-24.04"
+            args: "--bundles appimage"
+          - platform: "ubuntu-24.04-arm" # Only available in public repos.
+            args: "--bundles appimage"
+          - platform: "windows-latest"
+            args: "--bundles nsis"
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -141,7 +141,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: lts/*
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
@@ -151,7 +151,7 @@ jobs:
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
-          workspaces: './src-tauri -> target'
+          workspaces: "./src-tauri -> target"
 
       - name: install frontend dependencies
         run: pnpm install
