@@ -98,6 +98,11 @@ There are currently no automated tests in this project.
 - **Tauri environment**: Settings are persisted to `emo.config.json` via `@tauri-apps/plugin-store`. The config file location varies by OS (Windows: `%APPDATA%/com.github.ryomo.emo/`).
 - **Browser environment**: Uses default values from Nuxt's `runtimeConfig.public`, overridable via `NUXT_PUBLIC_*` environment variables.
 - The `config.client.ts` plugin loads configuration before the app mounts.
+- If the config file fails to load, it is automatically reset to defaults and `useConfigLoadError()` returns a non-empty message.
+
+### Global Notifications (app.vue)
+- `app.vue` subscribes to `useConfigLoadError()` and shows a dismissible banner at the top of the screen when a config error occurs on startup.
+- Future app-wide error/notification needs should follow the same pattern: expose a reactive ref from a composable, and handle display in `app.vue`.
 
 ### Communication with Lemonade Server
 - **Chat API**: `POST /api/v1/chat/completions` (OpenAI-compatible)
