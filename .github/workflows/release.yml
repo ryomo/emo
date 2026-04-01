@@ -74,7 +74,7 @@ jobs:
           if [ -z "$CHANGELOG" ]; then
             CHANGELOG="No notable changes."$'\n'
           fi
-          CHANGELOG="${CHANGELOG}"$'\n\n'"See the assets to download this version and install."
+          CHANGELOG="${CHANGELOG}"$'\n'"---"$'\n\n'"See the assets to download this version and install."
 
           {
             echo "changelog<<EOF"
