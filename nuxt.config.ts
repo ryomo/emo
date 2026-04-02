@@ -25,7 +25,7 @@ export default defineNuxtConfig({
       ].join('\n'),
     },
   },
-  dir: { public: 'public' },
+  dir: { public: 'src/public' },
   srcDir: 'src',
   ignore: ['**/src-tauri/**'], // Tauri
   compatibilityDate: '2025-07-15',
