@@ -9,6 +9,7 @@
       <canvas
         ref="canvasRef"
         class="w-full h-full"
+        :style="{ cursor: isDragging ? 'grabbing' : 'grab' }"
       />
     </div>
 
@@ -52,6 +53,8 @@ class EmojiBoxModel {
   mesh: HTMLMesh
   interactiveGroup!: InteractiveGroup
   group: THREE.Group
+  rotationOffsetX: number = 0
+  rotationOffsetY: number = 0
 
   constructor(element: HTMLElement, scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.Camera) {
     // Group to hold cube and HTMLMesh, so we can rotate them together
@@ -73,8 +76,8 @@ class EmojiBoxModel {
   }
 
   animate(ms: number): void {
-    this.group.rotation.x = Math.sin(ms * 0.0007) / 4
-    this.group.rotation.y = Math.sin(ms * 0.001) / 2
+    this.group.rotation.x = Math.sin(ms * 0.0007) / 4 + this.rotationOffsetX
+    this.group.rotation.y = Math.sin(ms * 0.001) / 2 + this.rotationOffsetY
   }
 
   connectGroup(scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.Camera): void {
@@ -105,6 +108,42 @@ let scene: THREE.Scene | null = null
 let camera: THREE.PerspectiveCamera | null = null
 let renderer: THREE.WebGLRenderer | null = null
 let emojiBoxModel: EmojiBoxModel | null = null
+
+const isDragging = ref(false)
+let lastPointerX = 0
+let lastPointerY = 0
+
+function onPointerDown(event: PointerEvent): void {
+  isDragging.value = true
+  lastPointerX = event.clientX
+  lastPointerY = event.clientY
+
+  // Capture pointer
+  const target = event.currentTarget
+  if (target instanceof HTMLElement) {
+    target.setPointerCapture(event.pointerId)
+  }
+}
+
+function onPointerMove(event: PointerEvent): void {
+  if (!isDragging.value || !emojiBoxModel) return
+  const deltaX = event.clientX - lastPointerX
+  const deltaY = event.clientY - lastPointerY
+  emojiBoxModel.rotationOffsetY += deltaX * 0.01
+  emojiBoxModel.rotationOffsetX += deltaY * 0.01
+  lastPointerX = event.clientX
+  lastPointerY = event.clientY
+}
+
+function onPointerUp(event: PointerEvent): void {
+  isDragging.value = false
+
+  // Release pointer capture when dragging ends
+  const target = event.currentTarget
+  if (target instanceof HTMLElement) {
+    target.releasePointerCapture(event.pointerId)
+  }
+}
 
 function init(): void {
   const container = containerRef.value!
@@ -170,11 +209,27 @@ function disposeScene(): void {
 onMounted(() => {
   init()
   startAnimationLoop()
+
   window.addEventListener('resize', handleResize)
+
+  // Add pointer event listeners to canvas
+  const canvas = canvasRef.value
+  if (canvas === null) {
+    throw new Error('Canvas element not found')
+  }
+  canvas.addEventListener('pointerdown', onPointerDown, { capture: true })
+  canvas.addEventListener('pointermove', onPointerMove, { capture: true })
+  canvas.addEventListener('pointerup', onPointerUp, { capture: true })
 })
 
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
+  const canvas = canvasRef.value
+  if (canvas) {
+    canvas.removeEventListener('pointerdown', onPointerDown, { capture: true })
+    canvas.removeEventListener('pointermove', onPointerMove, { capture: true })
+    canvas.removeEventListener('pointerup', onPointerUp, { capture: true })
+  }
   renderer?.setAnimationLoop(null)
   emojiBoxModel?.disconnectGroup()
   disposeScene()
