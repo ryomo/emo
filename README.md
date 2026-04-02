@@ -2,7 +2,9 @@
 
 ## Overview
 
-![screenshot](./screenshot-3d.png)
+<p align="center">
+  <img src="./screenshot-3d.png" width="600" alt="App Screenshot">
+</p>
 
 Emo is an expressive AI chatbot built with Nuxt on the frontend and [Lemonade Server](https://lemonade-server.ai/) on the backend. It transcribes your speech in real time and dynamically changes its facial expression based on the AI's response.
 
