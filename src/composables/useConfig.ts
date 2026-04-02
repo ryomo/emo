@@ -31,7 +31,7 @@ const _config = reactive<AppConfig>({
   systemPrompt: '',
   enableThinking: false,
   transparentBackground: false,
-  emotionDisplay3d: false,
+  emotionDisplay3d: true,
 })
 let _initialized = false
 let _defaults: AppConfig | null = null
