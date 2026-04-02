@@ -20,7 +20,8 @@
         "decorations": false,
         "transparent": true,
         "shadow": false,
-        "alwaysOnTop": true
+        "alwaysOnTop": true,
+        "additionalBrowserArgs": "--enable-features=msWebView2EnableDraggableRegions --disable-features=ElasticOverscroll"
       }
     ],
     "security": {

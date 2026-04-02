@@ -237,6 +237,10 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+canvas {
+  touch-action: none;  /* Disable default touch interactions for better dragging on touch devices */
+}
+
 .emoji-source {
   width: 128px;
   height: 128px;

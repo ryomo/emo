@@ -8,7 +8,7 @@
       <div
         :key="emotion"
         data-tauri-drag-region
-        class="text-9xl sm:text-[10rem] select-none drop-shadow-lg cursor-grab"
+        class="text-9xl sm:text-[10rem] select-none drop-shadow-lg"
       >
         {{ emotionEmoji }}
       </div>

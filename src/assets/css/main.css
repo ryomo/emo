@@ -1,0 +1,3 @@
+[data-tauri-drag-region] {
+  -webkit-app-region: drag; /* Enable touch dragging */
+}

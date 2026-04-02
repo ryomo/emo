@@ -3,7 +3,7 @@
     <!-- Header -->
     <header
       data-tauri-drag-region
-      class="flex items-center gap-3 px-3 py-2 sm:px-4 sm:py-3 border-b border-gray-700 bg-gray-800/50 cursor-grab"
+      class="flex items-center gap-3 px-3 py-2 sm:px-4 sm:py-3 border-b border-gray-700 bg-gray-800/50"
     >
       <NuxtLink
         to="/"

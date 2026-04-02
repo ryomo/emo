@@ -1,19 +1,19 @@
 <template>
   <div :class="['flex flex-col h-screen text-white', { 'bg-gray-900': !config.transparentBackground }]">
     <!-- Header -->
-    <header
-      data-tauri-drag-region
-      class="flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3 border-b border-gray-700 bg-gray-800/50 cursor-grab"
-    >
-      <h1 class="text-base sm:text-lg font-bold">
+    <header class="flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3 border-b border-gray-700 bg-gray-800/50">
+      <h1
+        data-tauri-drag-region
+        class="text-base sm:text-lg font-bold"
+      >
         Emo
       </h1>
       <div
         data-tauri-drag-region
-        class="flex-1 self-stretch cursor-grab"
+        class="flex-1 self-stretch"
       />
       <div class="flex items-center gap-2 sm:gap-3">
-        <span class="hidden sm:inline text-sm text-gray-400 cursor-text">{{ config.lemonadeModel }}</span>
+        <span class="hidden sm:inline text-sm text-gray-400">{{ config.lemonadeModel }}</span>
         <NuxtLink
           to="/settings"
           class="text-xs text-gray-400 hover:text-white border border-gray-600 rounded px-2 py-1 transition-colors"
