@@ -102,8 +102,7 @@ There are currently no automated tests in this project.
 
 ### Global Notifications (app.vue)
 - `app.vue` subscribes to `useAppError()` and shows a dismissible banner at the top of the screen when an error is set.
-- Any composable can call `setAppError(message)` from `useAppError.ts` to surface an error to the user (e.g., `useConfig` calls it when the config file fails to load).
-- Future app-wide error/notification needs should use the same `setAppError()` mechanism.
+- Any composable or page can call `setAppError(message)` from `useAppError.ts` to surface an error to the user.
 
 ### Communication with Lemonade Server
 - **Chat API**: `POST /api/v1/chat/completions` (OpenAI-compatible)

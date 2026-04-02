@@ -35,14 +35,6 @@
       </div>
     </header>
 
-    <!-- Error Display -->
-    <div
-      v-if="chatError || speechError"
-      class="bg-red-900/50 border border-red-700 text-red-200 px-4 py-2 text-sm"
-    >
-      {{ chatError || speechError }}
-    </div>
-
     <!-- Main Content (vertical stacked layout) -->
     <main class="flex flex-col flex-1 overflow-hidden">
       <!-- Chat History -->
@@ -130,6 +122,11 @@ const lastAssistantText = computed(() => {
     }
   }
   return ''
+})
+
+// Watch for errors in chat and speech APIs to display in app-level notification
+watch([chatError, speechError], ([chat, speech]) => {
+  setAppError(chat || speech || '')
 })
 
 // Detect emoji from assistant response text to update emotion; speak with TTS when in voice mode

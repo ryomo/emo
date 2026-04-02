@@ -22,4 +22,7 @@
 const appError = useAppError()
 const errorDismissed = ref(false)
 const showError = computed(() => !errorDismissed.value && !!appError.value)
+watch(appError, () => {
+  errorDismissed.value = false
+})
 </script>
