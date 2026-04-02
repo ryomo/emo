@@ -78,7 +78,7 @@ Launch Lemonade Server and load the following models:
 | Speech Recognition    | `Whisper-Base`                                              |
 | TTS                   | `kokoro-v1`                                                 |
 
-NOTE: If you change the model names, make sure to update "Settings" in Emo accordingly.
+NOTE: If you load different models in Lemonade Server, make sure to select them in Emo's **Settings**.
 
 <br>
 
