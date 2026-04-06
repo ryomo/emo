@@ -3,6 +3,9 @@
 export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss', '@nuxt/eslint'],
   ssr: false,
+  imports: {
+    dirs: ['composables/**'],
+  },
   devtools: { enabled: false },
   css: ['~/assets/css/main.css'],
   runtimeConfig: {

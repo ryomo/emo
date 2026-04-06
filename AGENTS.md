@@ -35,11 +35,12 @@ An external **Lemonade Server** handles LLM, Whisper, and TTS model inference.
 │   │   └── voice/          #   Voice UI (VoiceButton, TranscriptArea)
 │   ├── composables/        # Business logic (use*.ts)
 │   │   ├── useConfig.ts    #   App config read/write (Tauri Store / runtimeConfig)
-│   │   ├── useChatApi.ts   #   Chat Completions API calls
 │   │   ├── useAiEmotion.ts #   Emotion detection from AI responses
-│   │   ├── useRealtimeSpeech.ts  # WebSocket real-time speech recognition
-│   │   ├── useTtsApi.ts    #   TTS API calls and playback
-│   │   └── useAvailableModels.ts # Fetch model list from server
+│   │   └── lemonade/       #   Lemonade Server specific composables
+│   │       ├── useChatApi.ts          #   Chat Completions API calls
+│   │       ├── useRealtimeSpeech.ts   #   WebSocket real-time speech recognition
+│   │       ├── useTtsApi.ts           #   TTS API calls and playback
+│   │       └── useAvailableModels.ts  #   Fetch model list from server
 │   ├── types/              # TypeScript type definitions (chat.ts, emotion.ts)
 │   ├── plugins/            # Nuxt plugins (config.client.ts)
 │   ├── assets/css/         # Global CSS
