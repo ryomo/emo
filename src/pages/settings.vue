@@ -49,6 +49,30 @@
     <main class="flex-1 overflow-y-auto p-4 sm:p-6">
       <div class="max-w-xl mx-auto space-y-5">
         <h2 class="text-sm font-medium text-gray-400">
+          Backend
+        </h2>
+        <div class="flex gap-6">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input
+              v-model="form.backendMode"
+              type="radio"
+              value="webgpu"
+              class="w-4 h-4 text-blue-500 bg-gray-800 border-gray-600 focus:ring-blue-500 focus:ring-offset-gray-900"
+            >
+            <span class="text-sm text-gray-300">On-device (WebGPU)</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input
+              v-model="form.backendMode"
+              type="radio"
+              value="lemonade"
+              class="w-4 h-4 text-blue-500 bg-gray-800 border-gray-600 focus:ring-blue-500 focus:ring-offset-gray-900"
+            >
+            <span class="text-sm text-gray-300">Lemonade Server</span>
+          </label>
+        </div>
+
+        <h2 class="text-sm font-medium text-gray-400">
           General Settings
         </h2>
 
@@ -68,81 +92,83 @@
           />
         </div>
 
-        <h2 class="text-sm font-medium text-gray-400 mt-6">
-          Lemonade Settings
-        </h2>
+        <template v-if="form.backendMode === 'lemonade'">
+          <h2 class="text-sm font-medium text-gray-400 mt-6">
+            Lemonade Settings
+          </h2>
 
-        <div
-          v-for="field in textFields"
-          :key="field.key"
-        >
-          <label
-            :for="field.key"
-            class="block text-sm font-medium text-gray-300 mb-1"
+          <div
+            v-for="field in textFields"
+            :key="field.key"
           >
-            {{ field.label }}
-          </label>
-          <input
-            :id="field.key"
-            v-model="form[field.key]"
-            type="text"
-            class="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-            :placeholder="field.label"
-          >
-        </div>
-
-        <!-- Model Selection Dropdowns -->
-        <div
-          v-for="sel in modelSelectors"
-          :key="sel.key"
-        >
-          <label
-            :for="sel.key"
-            class="block text-sm font-medium text-gray-300 mb-1"
-          >
-            {{ sel.label }}
-          </label>
-          <div class="flex gap-2">
-            <select
-              :id="sel.key"
-              v-model="form[sel.key]"
-              class="flex-1 bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
-              :disabled="sel.loading.value"
+            <label
+              :for="field.key"
+              class="block text-sm font-medium text-gray-300 mb-1"
             >
-              <option
-                v-if="sel.models.value.length === 0"
-                :value="form[sel.key]"
-              >
-                {{ form[sel.key] }}
-              </option>
-              <template
-                v-for="model in sel.models.value"
-                :key="model.id"
+              {{ field.label }}
+            </label>
+            <input
+              :id="field.key"
+              v-model="form[field.key]"
+              type="text"
+              class="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+              :placeholder="field.label"
+            >
+          </div>
+
+          <!-- Model Selection Dropdowns -->
+          <div
+            v-for="sel in modelSelectors"
+            :key="sel.key"
+          >
+            <label
+              :for="sel.key"
+              class="block text-sm font-medium text-gray-300 mb-1"
+            >
+              {{ sel.label }}
+            </label>
+            <div class="flex gap-2">
+              <select
+                :id="sel.key"
+                v-model="form[sel.key]"
+                class="flex-1 bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                :disabled="sel.loading.value"
               >
                 <option
-                  :value="model.id"
-                  :disabled="!model.downloaded"
-                  :class="{ 'text-gray-500': !model.downloaded }"
+                  v-if="sel.models.value.length === 0"
+                  :value="form[sel.key]"
                 >
-                  {{ model.id }}{{ !model.downloaded ? ' (not downloaded)' : '' }}
+                  {{ form[sel.key] }}
                 </option>
-              </template>
-            </select>
-            <button
-              class="text-xs text-gray-400 hover:text-white border border-gray-600 rounded px-2 py-1 transition-colors disabled:opacity-50"
-              :disabled="sel.loading.value"
-              @click="sel.refresh"
+                <template
+                  v-for="model in sel.models.value"
+                  :key="model.id"
+                >
+                  <option
+                    :value="model.id"
+                    :disabled="!model.downloaded"
+                    :class="{ 'text-gray-500': !model.downloaded }"
+                  >
+                    {{ model.id }}{{ !model.downloaded ? ' (not downloaded)' : '' }}
+                  </option>
+                </template>
+              </select>
+              <button
+                class="text-xs text-gray-400 hover:text-white border border-gray-600 rounded px-2 py-1 transition-colors disabled:opacity-50"
+                :disabled="sel.loading.value"
+                @click="sel.refresh"
+              >
+                {{ sel.loading.value ? '...' : '↻' }}
+              </button>
+            </div>
+            <p
+              v-if="sel.error.value"
+              class="text-red-400 text-xs mt-1"
             >
-              {{ sel.loading.value ? '...' : '↻' }}
-            </button>
+              {{ sel.error.value }}
+            </p>
           </div>
-          <p
-            v-if="sel.error.value"
-            class="text-red-400 text-xs mt-1"
-          >
-            {{ sel.error.value }}
-          </p>
-        </div>
+        </template>
 
         <!-- Enable Thinking Toggle -->
         <div class="flex items-center gap-3">
@@ -231,6 +257,7 @@ onMounted(() => {
 })
 
 const form = reactive<AppConfig>({
+  backendMode: config.backendMode,
   lemonadeBaseUrl: config.lemonadeBaseUrl,
   lemonadeModel: config.lemonadeModel,
   lemonadeWhisperModel: config.lemonadeWhisperModel,

@@ -9,12 +9,12 @@
       type="text"
       placeholder="Type a message..."
       class="flex-1 bg-gray-800 text-white rounded-lg px-3 py-2 sm:px-4 text-sm outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-      :disabled="isLoading"
+      :disabled="isLoading || disabled"
     >
     <button
       type="submit"
       class="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-3 py-2 sm:px-4 text-sm transition-colors disabled:opacity-50 whitespace-nowrap"
-      :disabled="!text.trim() || isLoading"
+      :disabled="!text.trim() || isLoading || disabled"
     >
       Send
     </button>
@@ -24,6 +24,7 @@
 <script setup lang="ts">
 defineProps<{
   isLoading: boolean
+  disabled?: boolean
 }>()
 
 const text = ref('')

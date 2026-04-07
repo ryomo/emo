@@ -11,6 +11,7 @@ import { isTauri } from '@tauri-apps/api/core'
 import type { Store } from '@tauri-apps/plugin-store'
 
 export interface AppConfig {
+  backendMode: 'lemonade' | 'webgpu'
   lemonadeBaseUrl: string
   lemonadeModel: string
   lemonadeWhisperModel: string
@@ -24,6 +25,7 @@ export interface AppConfig {
 const CONFIG_FILE = 'emo.config.json'
 
 const _config = reactive<AppConfig>({
+  backendMode: 'webgpu',
   lemonadeBaseUrl: '',
   lemonadeModel: '',
   lemonadeWhisperModel: '',
@@ -78,6 +80,7 @@ export async function loadConfig(): Promise<void> {
 
   const runtimeConfig = useRuntimeConfig()
   const defaults: AppConfig = {
+    backendMode: (runtimeConfig.public.backendModeDefault || 'lemonade') as 'lemonade' | 'webgpu',
     lemonadeBaseUrl: runtimeConfig.public.lemonadeBaseUrlDefault,
     lemonadeModel: runtimeConfig.public.lemonadeModelDefault,
     lemonadeWhisperModel: runtimeConfig.public.lemonadeWhisperModelDefault,

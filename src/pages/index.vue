@@ -13,7 +13,7 @@
         class="flex-1 self-stretch"
       />
       <div class="flex items-center gap-2 sm:gap-3">
-        <span class="hidden sm:inline text-sm text-gray-400">{{ config.lemonadeModel }}</span>
+        <span class="hidden sm:inline text-sm text-gray-400">{{ activeModelName }}</span>
         <NuxtLink
           to="/settings"
           class="text-xs text-gray-400 hover:text-white border border-gray-600 rounded px-2 py-1 transition-colors"
@@ -82,6 +82,7 @@
         <ChatInput
           class="flex-1"
           :is-loading="isLoading"
+          :disabled="isListening"
           @send="handleSend"
         />
       </div>
@@ -96,21 +97,39 @@ import { stripEmotionEmoji } from '~/types/emotion'
 
 const config = useConfig()
 
-const { messages, isLoading, error: chatError, sendMessage, clearHistory } = useChatApi()
+// Both backends always initialized — Vue composables cannot be called conditionally
+const lemonadeChat = useChatApi()
+const webgpuChat = useWebGpuChatApi()
+
 const { isSpeaking, speak, stop: stopTts } = useTtsApi()
-const {
-  isListening,
-  isSpeaking: isUserSpeaking,
-  transcript,
-  error: speechError,
-  start: startSpeech,
-  stop: stopSpeech,
-} = useRealtimeSpeech({
+
+const isWebGpu = computed(() => config.backendMode === 'webgpu')
+
+function handleTranscriptComplete(text: string) {
+  console.log('[index] Transcription completed → Sending to Chat API:', text)
+  lemonadeChat.sendMessage(text)
+}
+
+const lemonadeSpeech = useRealtimeSpeech({ onTranscriptComplete: handleTranscriptComplete })
+const webgpuAsr = useWebGpuAsr({
   onTranscriptComplete: (text) => {
-    console.log('[index] Transcription completed → Sending to Chat API:', text)
-    sendMessage(text)
+    webgpuChat.sendMessage(text)
   },
 })
+
+// Unified reactive accessors that delegate to the active backend
+const messages = computed(() => isWebGpu.value ? webgpuChat.messages.value : lemonadeChat.messages.value)
+const isLoading = computed(() => isWebGpu.value ? webgpuChat.isLoading.value : lemonadeChat.isLoading.value)
+const chatError = computed(() => isWebGpu.value ? webgpuChat.error.value : lemonadeChat.error.value)
+const isListening = computed(() => isWebGpu.value ? webgpuAsr.isListening.value : lemonadeSpeech.isListening.value)
+const isUserSpeaking = computed(() => isWebGpu.value ? webgpuAsr.isSpeaking.value : lemonadeSpeech.isSpeaking.value)
+const transcript = computed(() => isWebGpu.value ? webgpuAsr.transcript.value : lemonadeSpeech.transcript.value)
+const speechError = computed(() => isWebGpu.value ? webgpuAsr.error.value : lemonadeSpeech.error.value)
+
+const activeModelName = computed(() =>
+  isWebGpu.value ? 'Gemma-4-E2B (WebGPU)' : config.lemonadeModel,
+)
+
 const { emotionState, detectEmotionFromText } = useAiEmotion()
 
 /** Pass the latest assistant response text (emotion emoji removed) to EmotionDisplay */
@@ -137,8 +156,8 @@ watch(
     const lastMsg = messages.value.at(-1)
     if (lastMsg?.role === 'assistant' && lastMsg.content) {
       detectEmotionFromText(lastMsg.content)
-      // Only speak with TTS when voice mode is active
-      if (isListening.value) {
+      // Lemonade only: speak with TTS when voice mode is active
+      if (isListening.value && !isWebGpu.value) {
         speak(lastMsg.content)
       }
     }
@@ -146,7 +165,17 @@ watch(
 )
 
 function handleSend(message: string) {
-  sendMessage(message)
+  if (isWebGpu.value) {
+    webgpuChat.sendMessage(message)
+  }
+  else {
+    lemonadeChat.sendMessage(message)
+  }
+}
+
+function clearHistory() {
+  lemonadeChat.clearHistory()
+  webgpuChat.clearHistory()
 }
 
 async function closeApp() {
@@ -157,11 +186,13 @@ async function closeApp() {
 
 function toggleVoice() {
   if (isListening.value) {
-    stopTts()
-    stopSpeech()
+    if (!isWebGpu.value) stopTts()
+    if (isWebGpu.value) webgpuAsr.stop()
+    else lemonadeSpeech.stop()
   }
   else {
-    startSpeech()
+    if (isWebGpu.value) webgpuAsr.start()
+    else lemonadeSpeech.start()
   }
 }
 </script>
