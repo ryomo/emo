@@ -9,6 +9,7 @@
 
 import { isTauri } from '@tauri-apps/api/core'
 import type { Store } from '@tauri-apps/plugin-store'
+import { detectBrowserLanguage } from '~/composables/useWhisperLanguage'
 
 export interface AppConfig {
   backendMode: 'lemonade' | 'webgpu'
@@ -20,6 +21,7 @@ export interface AppConfig {
   enableThinking: boolean
   transparentBackground: boolean
   emotionDisplay3d: boolean
+  whisperLanguage: string
 }
 
 const CONFIG_FILE = 'emo.config.json'
@@ -34,6 +36,7 @@ const _config = reactive<AppConfig>({
   enableThinking: false,
   transparentBackground: false,
   emotionDisplay3d: true,
+  whisperLanguage: 'english',
 })
 let _initialized = false
 let _defaults: AppConfig | null = null
@@ -89,6 +92,7 @@ export async function loadConfig(): Promise<void> {
     enableThinking: runtimeConfig.public.enableThinkingDefault,
     transparentBackground: runtimeConfig.public.transparentBackgroundDefault,
     emotionDisplay3d: runtimeConfig.public.emotionDisplay3dDefault,
+    whisperLanguage: runtimeConfig.public.whisperLanguageDefault || detectBrowserLanguage(),
   }
   _defaults = defaults
   Object.assign(_config, defaults)

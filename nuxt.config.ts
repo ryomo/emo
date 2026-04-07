@@ -19,6 +19,7 @@ export default defineNuxtConfig({
       enableThinkingDefault: false, // NUXT_PUBLIC_ENABLE_THINKING_DEFAULT
       transparentBackgroundDefault: false, // NUXT_PUBLIC_TRANSPARENT_BACKGROUND_DEFAULT
       emotionDisplay3dDefault: true, // NUXT_PUBLIC_EMOTION_DISPLAY_3D_DEFAULT
+      whisperLanguageDefault: '', // NUXT_PUBLIC_WHISPER_LANGUAGE_DEFAULT (empty = auto-detect from browser)
       // NUXT_PUBLIC_SYSTEM_PROMPT_DEFAULT
       systemPromptDefault: [
         'You are a helpful AI assistant.',

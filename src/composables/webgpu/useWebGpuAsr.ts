@@ -83,6 +83,7 @@ function mergeFloat32Arrays(arrays: Float32Array[]): Float32Array {
 
 export function useWebGpuAsr(options: WebGpuAsrOptions = {}) {
   const { withGpuLock } = useWebGpuModel()
+  const config = useConfig()
 
   // --------------- Reactive State ---------------
   const isListening = ref(false)
@@ -209,7 +210,7 @@ export function useWebGpuAsr(options: WebGpuAsrOptions = {}) {
           throw new Error('Whisper model is not loaded')
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const result: any = await _pipe(audioData, { language: 'english' })
+        const result: any = await _pipe(audioData, { language: config.whisperLanguage || 'english' })
         return (result.text as string).trim()
       })
 

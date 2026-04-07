@@ -92,6 +92,29 @@
           />
         </div>
 
+        <!-- Speech Recognition Language (used in WebGPU ASR) -->
+        <div>
+          <label
+            for="whisperLanguage"
+            class="block text-sm font-medium text-gray-300 mb-1"
+          >
+            Speech Recognition Language
+          </label>
+          <select
+            id="whisperLanguage"
+            v-model="form.whisperLanguage"
+            class="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+          >
+            <option
+              v-for="lang in WHISPER_LANGUAGES"
+              :key="lang"
+              :value="lang"
+            >
+              {{ lang.charAt(0).toUpperCase() + lang.slice(1) }}
+            </option>
+          </select>
+        </div>
+
         <template v-if="form.backendMode === 'lemonade'">
           <h2 class="text-sm font-medium text-gray-400 mt-6">
             Lemonade Settings
@@ -224,6 +247,7 @@
 
 <script setup lang="ts">
 import type { AppConfig } from '~/composables/useConfig'
+import { WHISPER_LANGUAGES } from '~/composables/useWhisperLanguage'
 import { resetConfig, updateConfig } from '~/composables/useConfig'
 import { isTauri } from '@tauri-apps/api/core'
 
@@ -266,6 +290,7 @@ const form = reactive<AppConfig>({
   enableThinking: config.enableThinking,
   transparentBackground: config.transparentBackground,
   emotionDisplay3d: config.emotionDisplay3d,
+  whisperLanguage: config.whisperLanguage,
 })
 
 const busy = ref(false)
