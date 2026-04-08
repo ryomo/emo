@@ -257,9 +257,9 @@ const textFields: { key: keyof AppConfig, label: string }[] = [
   { key: 'lemonadeBaseUrl', label: 'Base URL' },
 ]
 
-const chatModels = useAvailableModels('tool-calling')
-const whisperModels = useAvailableModels('transcription')
-const ttsModels = useAvailableModels('tts')
+const chatModels = useLemonadeModels('tool-calling')
+const whisperModels = useLemonadeModels('transcription')
+const ttsModels = useLemonadeModels('tts')
 
 const modelSelectors = [
   { key: 'lemonadeModel' as keyof AppConfig, label: 'Chat Model', ...chatModels },

@@ -21,7 +21,7 @@ interface ModelsApiResponse {
  * Fetch models from the server, filtered by a required label.
  * Downloaded models are sorted first, then alphabetical.
  */
-export function useAvailableModels(label: string) {
+export function useLemonadeModels(label: string) {
   const config = useConfig()
 
   const models = ref<AvailableModel[]>([])

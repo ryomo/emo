@@ -1,4 +1,4 @@
-const TTS_LOG_PREFIX = '[TTS]'
+const LOG_PREFIX = '[LemonadeSpeak]'
 
 /** Normalize input text for TTS */
 function normalizeText(text: string): string {
@@ -14,7 +14,7 @@ function normalizeText(text: string): string {
  * Uses Lemonade Server's POST /api/v1/audio/speech
  * to convert text to speech and play it.
  */
-export function useTtsApi() {
+export function useLemonadeSpeak() {
   const config = useConfig()
   const isSpeaking = ref(false)
 
@@ -47,7 +47,7 @@ export function useTtsApi() {
     // Stop previous audio
     stop()
 
-    console.log(TTS_LOG_PREFIX, '🔊 Requesting speech for:', normalized.slice(0, 50))
+    console.log(LOG_PREFIX, '🔊 Requesting speech for:', normalized.slice(0, 50))
 
     try {
       const response = await fetch(
@@ -72,7 +72,7 @@ export function useTtsApi() {
 
       // Guard against empty/tiny blob when server returns an error with status 200
       if (rawBlob.size < 100) {
-        console.warn(TTS_LOG_PREFIX, `⚠️ Response blob too small (${rawBlob.size} bytes), skipping playback`)
+        console.warn(LOG_PREFIX, `⚠️ Response blob too small (${rawBlob.size} bytes), skipping playback`)
         return
       }
 
@@ -83,7 +83,7 @@ export function useTtsApi() {
         ? rawBlob
         : new Blob([rawBlob], { type: 'audio/wav' })
 
-      console.log(TTS_LOG_PREFIX, `📦 Audio blob: ${blob.size} bytes, type=${blob.type} (original: ${contentType})`)
+      console.log(LOG_PREFIX, `📦 Audio blob: ${blob.size} bytes, type=${blob.type} (original: ${contentType})`)
 
       const objectUrl = URL.createObjectURL(blob)
       currentObjectUrl = objectUrl
@@ -92,10 +92,10 @@ export function useTtsApi() {
       currentAudio = audio
 
       isSpeaking.value = true
-      console.log(TTS_LOG_PREFIX, '▶️ Playing audio')
+      console.log(LOG_PREFIX, '▶️ Playing audio')
 
       audio.onended = () => {
-        console.log(TTS_LOG_PREFIX, '✅ Playback finished')
+        console.log(LOG_PREFIX, '✅ Playback finished')
         // Clean up only if not replaced by another playback
         if (currentAudio === audio) {
           stop()
@@ -103,7 +103,7 @@ export function useTtsApi() {
       }
 
       audio.onerror = (e) => {
-        console.error(TTS_LOG_PREFIX, '❌ Playback error:', e)
+        console.error(LOG_PREFIX, '❌ Playback error:', e)
         if (currentAudio === audio) {
           stop()
         }
@@ -112,7 +112,7 @@ export function useTtsApi() {
       await audio.play()
     }
     catch (e: unknown) {
-      console.error(TTS_LOG_PREFIX, '❌ TTS request failed:', e)
+      console.error(LOG_PREFIX, '❌ TTS request failed:', e)
       stop()
     }
   }

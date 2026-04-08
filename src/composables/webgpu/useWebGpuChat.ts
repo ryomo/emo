@@ -1,7 +1,7 @@
 /**
  * Chat API composable using WebGPU (Gemma-4-E2B-it-ONNX via transformers.js).
  *
- * Provides the same interface as useChatApi (Lemonade Server),
+ * Provides the same interface as useLemonadeChat (Lemonade Server),
  * but runs inference entirely on-device using WebGPU.
  */
 
@@ -34,7 +34,7 @@ function stripThinkingContent(text: string): string {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let _cachedKv: any = null
 
-export function useWebGpuChatApi() {
+export function useWebGpuChat() {
   const config = useConfig()
   const { isLoaded, loadModel, getProcessor, getModel, withGpuLock } = useWebGpuModel()
 

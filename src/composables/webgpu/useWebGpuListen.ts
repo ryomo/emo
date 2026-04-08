@@ -5,12 +5,12 @@
  * energy-based VAD, and transcribes finalized speech segments
  * using Whisper large-v3 on WebGPU.
  *
- * Provides the same reactive interface as useRealtimeSpeech (Lemonade Server).
+ * Provides the same reactive interface as useLemonadeListen (Lemonade Server).
  */
 
 import { pipeline } from '@huggingface/transformers'
 
-const LOG_PREFIX = '[WebGPU ASR]'
+const LOG_PREFIX = '[WebGPU Listen]'
 const MODEL_ID = 'onnx-community/whisper-large-v3-turbo'
 
 /** Target sample rate for downsampled audio */
@@ -28,7 +28,7 @@ const PREFIX_BUFFER_COUNT = 3
 /** Maximum speech duration in seconds */
 const MAX_SPEECH_SECONDS = 30
 
-interface WebGpuAsrOptions {
+interface WebGpuListenOptions {
   /** Callback called with transcribed text when a speech segment ends */
   onTranscriptComplete?: (text: string) => void
 }
@@ -81,7 +81,7 @@ function mergeFloat32Arrays(arrays: Float32Array[]): Float32Array {
   return merged
 }
 
-export function useWebGpuAsr(options: WebGpuAsrOptions = {}) {
+export function useWebGpuListen(options: WebGpuListenOptions = {}) {
   const { withGpuLock } = useWebGpuModel()
   const config = useConfig()
 

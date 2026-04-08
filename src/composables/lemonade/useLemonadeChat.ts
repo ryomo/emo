@@ -15,7 +15,7 @@ function buildSystemPrompt(basePrompt: string): string {
 /**
  * Composable for Chat API calls
  */
-export function useChatApi() {
+export function useLemonadeChat() {
   const config = useConfig()
 
   const messages = ref<ChatMessage[]>([])

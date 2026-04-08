@@ -7,7 +7,7 @@
  * Audio format: PCM 16kHz mono 16bit → Base64 encoded and sent
  */
 
-const LOG_PREFIX = '[RealtimeSpeech]'
+const LOG_PREFIX = '[LemonadeListen]'
 
 /** Microphone input gain multiplier (1 = no change, 2 = 2x amplification) */
 const MIC_GAIN = 1
@@ -18,7 +18,7 @@ const TRANSCRIPT_REMOVE_PATTERNS = [
   '[silence]',
 ]
 
-interface RealtimeSpeechOptions {
+interface LemonadeListenOptions {
   /** Callback called when finalized transcript text is available */
   onTranscriptComplete?: (text: string) => void
 }
@@ -37,7 +37,7 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
   return btoa(binary)
 }
 
-export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
+export function useLemonadeListen(options: LemonadeListenOptions = {}) {
   const config = useConfig()
 
   // --------------- Reactive State ---------------
@@ -336,7 +336,7 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
       return
     }
 
-    console.log(LOG_PREFIX, '🚀 ===== Starting realtime speech =====')
+    console.log(LOG_PREFIX, '🚀 ===== Starting listen =====' )
 
     error.value = null
     transcript.value = ''
@@ -356,11 +356,11 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
 
     try {
       await Promise.all([setupWebSocket(wsUrl), setupAudio()])
-      console.log(LOG_PREFIX, '✅ ===== Realtime speech started =====')
+      console.log(LOG_PREFIX, '✅ ===== Listen started =====' )
     }
     catch (e: unknown) {
       console.error(LOG_PREFIX, '❌ ===== Failed to start =====', e)
-      error.value = error.value ?? 'Failed to start realtime speech recognition'
+      error.value = error.value ?? 'Failed to start listen'
       cleanup()
     }
   }
@@ -410,7 +410,7 @@ export function useRealtimeSpeech(options: RealtimeSpeechOptions = {}) {
   }
 
   function stop() {
-    console.log(LOG_PREFIX, '⏹ ===== Stopping realtime speech =====')
+    console.log(LOG_PREFIX, '⏹ ===== Stopping listen =====' )
     cleanup()
   }
 

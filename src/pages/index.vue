@@ -98,10 +98,10 @@ import { stripEmotionEmoji } from '~/types/emotion'
 const config = useConfig()
 
 // Both backends always initialized — Vue composables cannot be called conditionally
-const lemonadeChat = useChatApi()
-const webgpuChat = useWebGpuChatApi()
+const lemonadeChat = useLemonadeChat()
+const webgpuChat = useWebGpuChat()
 
-const { isSpeaking, speak, stop: stopTts } = useTtsApi()
+const { isSpeaking, speak, stop: stopTts } = useLemonadeSpeak()
 
 const isWebGpu = computed(() => config.backendMode === 'webgpu')
 
@@ -110,8 +110,8 @@ function handleTranscriptComplete(text: string) {
   lemonadeChat.sendMessage(text)
 }
 
-const lemonadeSpeech = useRealtimeSpeech({ onTranscriptComplete: handleTranscriptComplete })
-const webgpuAsr = useWebGpuAsr({
+const lemonadeListen = useLemonadeListen({ onTranscriptComplete: handleTranscriptComplete })
+const webgpuListen = useWebGpuListen({
   onTranscriptComplete: (text) => {
     webgpuChat.sendMessage(text)
   },
@@ -121,10 +121,10 @@ const webgpuAsr = useWebGpuAsr({
 const messages = computed(() => isWebGpu.value ? webgpuChat.messages.value : lemonadeChat.messages.value)
 const isLoading = computed(() => isWebGpu.value ? webgpuChat.isLoading.value : lemonadeChat.isLoading.value)
 const chatError = computed(() => isWebGpu.value ? webgpuChat.error.value : lemonadeChat.error.value)
-const isListening = computed(() => isWebGpu.value ? webgpuAsr.isListening.value : lemonadeSpeech.isListening.value)
-const isUserSpeaking = computed(() => isWebGpu.value ? webgpuAsr.isSpeaking.value : lemonadeSpeech.isSpeaking.value)
-const transcript = computed(() => isWebGpu.value ? webgpuAsr.transcript.value : lemonadeSpeech.transcript.value)
-const speechError = computed(() => isWebGpu.value ? webgpuAsr.error.value : lemonadeSpeech.error.value)
+const isListening = computed(() => isWebGpu.value ? webgpuListen.isListening.value : lemonadeListen.isListening.value)
+const isUserSpeaking = computed(() => isWebGpu.value ? webgpuListen.isSpeaking.value : lemonadeListen.isSpeaking.value)
+const transcript = computed(() => isWebGpu.value ? webgpuListen.transcript.value : lemonadeListen.transcript.value)
+const speechError = computed(() => isWebGpu.value ? webgpuListen.error.value : lemonadeListen.error.value)
 
 const activeModelName = computed(() =>
   isWebGpu.value ? 'Gemma-4-E2B (WebGPU)' : config.lemonadeModel,
@@ -187,12 +187,14 @@ async function closeApp() {
 function toggleVoice() {
   if (isListening.value) {
     if (!isWebGpu.value) stopTts()
-    if (isWebGpu.value) webgpuAsr.stop()
-    else lemonadeSpeech.stop()
+    if (isWebGpu.value) webgpuListen.stop()
+    else lemonadeListen.stop()
+  }
+  else if (isWebGpu.value) {
+    webgpuListen.start()
   }
   else {
-    if (isWebGpu.value) webgpuAsr.start()
-    else lemonadeSpeech.start()
+    lemonadeListen.start()
   }
 }
 </script>

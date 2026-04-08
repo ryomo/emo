@@ -38,14 +38,14 @@ An external **Lemonade Server** handles LLM, Whisper, and TTS model inference.
 │   │   ├── useConfig.ts    #   App config read/write (Tauri Store / runtimeConfig)
 │   │   ├── useAiEmotion.ts #   Emotion detection from AI responses
 │   │   ├── lemonade/       #   Lemonade Server specific composables
-│   │   │   ├── useChatApi.ts          #   Chat Completions API calls
-│   │   │   ├── useRealtimeSpeech.ts   #   WebSocket real-time speech recognition
-│   │   │   ├── useTtsApi.ts           #   TTS API calls and playback
-│   │   │   └── useAvailableModels.ts  #   Fetch model list from server
+│   │   │   ├── useLemonadeChat.ts     #   Chat Completions API calls
+│   │   │   ├── useLemonadeListen.ts   #   WebSocket real-time speech recognition (listen)
+│   │   │   ├── useLemonadeSpeak.ts    #   TTS API calls and playback (speak)
+│   │   │   └── useLemonadeModels.ts   #   Fetch model list from server
 │   │   └── webgpu/        #   WebGPU (transformers.js) on-device composables
 │   │       ├── useWebGpuModel.ts      #   Shared model loader (Gemma-4-E2B-it-ONNX) + GPU lock
-│   │       ├── useWebGpuChatApi.ts    #   Chat via local WebGPU model (text-only)
-│   │       └── useWebGpuAsr.ts        #   Speech recognition via Whisper large-v3 (WebGPU)
+│   │       ├── useWebGpuChat.ts       #   Chat via local WebGPU model (text-only)
+│   │       └── useWebGpuListen.ts     #   Speech recognition via Whisper large-v3 (WebGPU)
 │   ├── types/              # TypeScript type definitions (chat.ts, emotion.ts)
 │   ├── plugins/            # Nuxt plugins (config.client.ts)
 │   ├── assets/css/         # Global CSS
@@ -121,17 +121,17 @@ There are currently no automated tests in this project.
 - The system prompt instructs the AI to prefix every response with one of these emotion emojis.
 - Two display modes: 2D (default) and 3D (Three.js).
 
-### Speech Recognition (useRealtimeSpeech)
+### Speech Recognition (useLemonadeListen)
 - Microphone input is captured as PCM data via an AudioWorklet (`audio-worklet-processor.js`).
 - PCM is downsampled to 16kHz, Base64-encoded, and sent over WebSocket.
 - VAD (Voice Activity Detection) is handled server-side.
 - On transcription completion, the text is automatically sent to the Chat API.
 
 ### On-device Inference via WebGPU (composables/webgpu/)
-- Uses `@huggingface/transformers` with `onnx-community/gemma-4-E2B-it-ONNX` (q4f16, WebGPU) for chat and `onnx-community/whisper-large-v3-turbo` (encoder fp16 + decoder q4, WebGPU) for ASR.
-- **useWebGpuModel**: Singleton model loader. Loads `AutoProcessor` and `Gemma4ForConditionalGeneration` once and shares them across consumers. Also provides a GPU exclusion lock (`withGpuLock`) so that ASR and Chat inference do not run concurrently on the same WebGPU device.
-- **useWebGpuChatApi**: Text-only chat composable with the same interface as `useChatApi`. Runs inference locally via `model.generate()` within `withGpuLock`. KV cache (`past_key_values`) is enabled when `enableThinking` is `false`; when thinking mode is on, the cache is disabled because thinking tokens are stripped before storage, causing token mismatch on the next turn.
-- **useWebGpuAsr**: Speech recognition composable with the same reactive interface as `useRealtimeSpeech` (Lemonade). Captures microphone audio via AudioWorklet, runs client-side energy-based VAD, and transcribes finalized speech segments using Whisper large-v3 on WebGPU within `withGpuLock`. On transcription completion, text is sent to the Chat API. During voice recognition, text input is disabled.
+- Uses `@huggingface/transformers` with `onnx-community/gemma-4-E2B-it-ONNX` (q4f16, WebGPU) for chat and `onnx-community/whisper-large-v3-turbo` (encoder fp16 + decoder q4, WebGPU) for speech recognition.
+- **useWebGpuModel**: Singleton model loader. Loads `AutoProcessor` and `Gemma4ForConditionalGeneration` once and shares them across consumers. Also provides a GPU exclusion lock (`withGpuLock`) so that listen and chat inference do not run concurrently on the same WebGPU device.
+- **useWebGpuChat**: Text-only chat composable with the same interface as `useLemonadeChat`. Runs inference locally via `model.generate()` within `withGpuLock`. KV cache (`past_key_values`) is enabled when `enableThinking` is `false`; when thinking mode is on, the cache is disabled because thinking tokens are stripped before storage, causing token mismatch on the next turn.
+- **useWebGpuListen**: Speech recognition composable with the same reactive interface as `useLemonadeListen` (Lemonade). Captures microphone audio via AudioWorklet, runs client-side energy-based VAD, and transcribes finalized speech segments using Whisper large-v3 on WebGPU within `withGpuLock`. On transcription completion, text is sent to the Chat API. During voice recognition, text input is disabled.
 - TTS is not yet supported in WebGPU mode (planned for a future model).
 - Backend selection (`lemonade` | `webgpu`) is persisted in `AppConfig.backendMode` and switchable from the Settings page.
 
