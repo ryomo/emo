@@ -118,6 +118,8 @@ export function useWebGpuAsr(options: WebGpuAsrOptions = {}) {
     try {
       console.log(LOG_PREFIX, '📦 Loading Whisper model…')
       _pipe = await pipeline('automatic-speech-recognition', MODEL_ID, {
+        // Some encoder-decoder models, like Whisper, are extremely sensitive to quantization settings: especially of the encoder.
+        // See: https://huggingface.co/docs/transformers.js/guides/dtypes#per-module-dtypes
         dtype: {
           encoder_model: 'fp16',
           decoder_model_merged: 'q4',
