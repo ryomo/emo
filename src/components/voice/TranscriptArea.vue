@@ -6,6 +6,12 @@
       class="absolute inset-0 bg-green-500/10 animate-pulse rounded-lg pointer-events-none"
     />
 
+    <!-- Transcribing Pulse Animation -->
+    <div
+      v-if="isTranscribing && !isSpeaking"
+      class="absolute inset-0 bg-blue-500/10 animate-pulse rounded-lg pointer-events-none"
+    />
+
     <!-- Speaking Indicator -->
     <div
       v-if="isSpeaking"
@@ -16,6 +22,18 @@
         <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
       </span>
       <span class="text-green-400 text-xs font-medium">Recognizing...</span>
+    </div>
+
+    <!-- Transcribing Indicator -->
+    <div
+      v-if="isTranscribing && !isSpeaking"
+      class="flex items-center gap-2 mb-2"
+    >
+      <span class="relative flex h-2.5 w-2.5">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
+        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500" />
+      </span>
+      <span class="text-blue-400 text-xs font-medium">Transcribing...</span>
     </div>
 
     <!-- Recognition Text -->
@@ -46,6 +64,7 @@
 defineProps<{
   transcript: string
   isSpeaking?: boolean
+  isTranscribing?: boolean
   isActive?: boolean
   error?: string | null
 }>()

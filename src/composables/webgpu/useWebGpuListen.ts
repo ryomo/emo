@@ -28,6 +28,9 @@ const PREFIX_BUFFER_COUNT = 3
 /** Maximum speech duration in seconds */
 const MAX_SPEECH_SECONDS = 30
 
+/** Interval (ms) between interim transcription attempts while speaking */
+const INTERIM_INTERVAL_MS = 1000
+
 interface WebGpuListenOptions {
   /** Callback called with transcribed text when a speech segment ends */
   onTranscriptComplete?: (text: string) => void
@@ -88,6 +91,7 @@ export function useWebGpuListen(options: WebGpuListenOptions = {}) {
   // --------------- Reactive State ---------------
   const isListening = ref(false)
   const isSpeaking = ref(false)
+  const isTranscribing = ref(false)
   const transcript = ref('')
   const isLoaded = ref(_pipe !== null)
   const isLoading = ref(false)
@@ -105,6 +109,10 @@ export function useWebGpuListen(options: WebGpuListenOptions = {}) {
   let prefixBuffer: Float32Array[] = []
   let silenceStartTime: number | null = null
   let totalSpeechSamples = 0
+
+  // Interim transcription state
+  let interimTimer: ReturnType<typeof setTimeout> | null = null
+  let isInterimRunning = false
 
   // --------------- Whisper Model Loading ---------------
 
@@ -139,6 +147,69 @@ export function useWebGpuListen(options: WebGpuListenOptions = {}) {
     }
   }
 
+  // --------------- Transcription ---------------
+
+  /** Run Whisper transcription on audio data within GPU lock */
+  async function transcribeAudio(audioData: Float32Array): Promise<string> {
+    return await withGpuLock(async () => {
+      if (!_pipe) {
+        await loadWhisperModel()
+      }
+      if (!_pipe) {
+        throw new Error('Whisper model is not loaded')
+      }
+      const result = await _pipe(audioData, {
+        language: config.whisperLanguage || 'english',
+      })
+      return (result.text as string).trim()
+    })
+  }
+
+  // --------------- Interim Transcription ---------------
+
+  /** Schedule the next interim transcription after a delay */
+  function scheduleInterim() {
+    cancelInterim()
+    interimTimer = setTimeout(async () => {
+      interimTimer = null
+      if (!isSpeaking.value || speechChunks.length === 0) return
+      await runInterimTranscription()
+      // Schedule next if still speaking
+      if (isSpeaking.value) {
+        scheduleInterim()
+      }
+    }, INTERIM_INTERVAL_MS)
+  }
+
+  /** Cancel pending interim transcription timer */
+  function cancelInterim() {
+    if (interimTimer !== null) {
+      clearTimeout(interimTimer)
+      interimTimer = null
+    }
+  }
+
+  /** Run a single interim transcription on the accumulated audio so far */
+  async function runInterimTranscription() {
+    if (isInterimRunning) return
+    isInterimRunning = true
+    try {
+      const audio = mergeFloat32Arrays([...speechChunks])
+      const text = await transcribeAudio(audio)
+      // Only update transcript if still speaking (avoid overwriting final result)
+      if (text && isSpeaking.value) {
+        transcript.value = text
+        console.log(LOG_PREFIX, '📝 Interim transcript:', text)
+      }
+    }
+    catch (e) {
+      console.warn(LOG_PREFIX, 'Interim transcription failed:', e)
+    }
+    finally {
+      isInterimRunning = false
+    }
+  }
+
   // --------------- VAD & Audio Processing ---------------
 
   /** Process a raw audio chunk from the AudioWorklet */
@@ -154,6 +225,7 @@ export function useWebGpuListen(options: WebGpuListenOptions = {}) {
         speechChunks = [...prefixBuffer]
         totalSpeechSamples = speechChunks.reduce((s, b) => s + b.length, 0)
         console.log(LOG_PREFIX, '🎙️ Speech started (VAD)')
+        scheduleInterim()
       }
       speechChunks.push(chunk)
       totalSpeechSamples += chunk.length
@@ -188,6 +260,7 @@ export function useWebGpuListen(options: WebGpuListenOptions = {}) {
 
   /** Merge collected speech chunks and transcribe via Whisper */
   function finalizeSpeech() {
+    cancelInterim()
     isSpeaking.value = false
     silenceStartTime = null
 
@@ -201,21 +274,12 @@ export function useWebGpuListen(options: WebGpuListenOptions = {}) {
     handleAudioComplete(audio)
   }
 
-  /** Transcribe audio segment using Whisper within GPU lock */
+  /** Run final transcription on the complete speech segment */
   async function handleAudioComplete(audioData: Float32Array) {
-    try {
-      const text = await withGpuLock(async () => {
-        if (!_pipe) {
-          await loadWhisperModel()
-        }
-        if (!_pipe) {
-          throw new Error('Whisper model is not loaded')
-        }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const result: any = await _pipe(audioData, { language: config.whisperLanguage || 'english' })
-        return (result.text as string).trim()
-      })
+    isTranscribing.value = true
 
+    try {
+      const text = await transcribeAudio(audioData)
       if (text) {
         transcript.value = text
         console.log(LOG_PREFIX, '✅ Transcript:', text)
@@ -226,6 +290,9 @@ export function useWebGpuListen(options: WebGpuListenOptions = {}) {
       const msg = e instanceof Error ? e.message : String(e)
       error.value = msg
       console.error(LOG_PREFIX, '❌ Transcription error:', e)
+    }
+    finally {
+      isTranscribing.value = false
     }
   }
 
@@ -262,6 +329,7 @@ export function useWebGpuListen(options: WebGpuListenOptions = {}) {
 
   /** Release all audio resources */
   function cleanupAudio() {
+    cancelInterim()
     if (workletNode) {
       workletNode.port.postMessage('stop')
       workletNode.disconnect()
@@ -332,6 +400,7 @@ export function useWebGpuListen(options: WebGpuListenOptions = {}) {
   return {
     isListening: readonly(isListening),
     isSpeaking: readonly(isSpeaking),
+    isTranscribing: readonly(isTranscribing),
     transcript: readonly(transcript),
     isLoaded: readonly(isLoaded),
     isLoading: readonly(isLoading),

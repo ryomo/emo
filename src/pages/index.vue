@@ -66,6 +66,7 @@
         <VoiceTranscriptArea
           :transcript="transcript"
           :is-speaking="isUserSpeaking"
+          :is-transcribing="isTranscribing"
           :is-active="isListening"
           :error="speechError"
         />
@@ -123,6 +124,7 @@ const isLoading = computed(() => isWebGpu.value ? webgpuChat.isLoading.value : l
 const chatError = computed(() => isWebGpu.value ? webgpuChat.error.value : lemonadeChat.error.value)
 const isListening = computed(() => isWebGpu.value ? webgpuListen.isListening.value : lemonadeListen.isListening.value)
 const isUserSpeaking = computed(() => isWebGpu.value ? webgpuListen.isSpeaking.value : lemonadeListen.isSpeaking.value)
+const isTranscribing = computed(() => isWebGpu.value ? webgpuListen.isTranscribing.value : false)
 const transcript = computed(() => isWebGpu.value ? webgpuListen.transcript.value : lemonadeListen.transcript.value)
 const speechError = computed(() => isWebGpu.value ? webgpuListen.error.value : lemonadeListen.error.value)
 
