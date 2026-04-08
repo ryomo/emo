@@ -21,7 +21,7 @@
         "transparent": true,
         "shadow": false,
         "alwaysOnTop": true,
-        "additionalBrowserArgs": "--enable-features=msWebView2EnableDraggableRegions --disable-features=ElasticOverscroll"
+        "additionalBrowserArgs": "--enable-features=msWebView2EnableDraggableRegions --disable-features=ElasticOverscroll --force-high-performance-gpu"
       }
     ],
     "security": {
