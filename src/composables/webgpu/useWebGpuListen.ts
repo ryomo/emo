@@ -141,6 +141,7 @@ export function useWebGpuListen(options: WebGpuListenOptions = {}) {
       const msg = e instanceof Error ? e.message : String(e)
       error.value = `Failed to load Whisper model: ${msg}`
       console.error(LOG_PREFIX, '❌ Failed to load Whisper model:', e)
+      throw e
     }
     finally {
       isLoading.value = false
@@ -382,8 +383,8 @@ export function useWebGpuListen(options: WebGpuListenOptions = {}) {
       else if (err.name === 'NotFoundError') {
         error.value = 'Microphone device not found.'
       }
-      else {
-        error.value = `Microphone error: ${err.message}`
+      else if (!error.value) {
+        error.value = `Failed to start: ${err.message}`
       }
       console.error(LOG_PREFIX, '❌ Start failed:', e)
     }
