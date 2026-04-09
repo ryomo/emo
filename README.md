@@ -114,7 +114,7 @@ If you disable "Enable Thinking" in settings, but the model still seems to be "t
 npm install
 
 # pnpm
-pnpm install
+pnpm install --frozen-lockfile
 ```
 
 ### Run the App in your Browser
