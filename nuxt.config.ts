@@ -1,3 +1,5 @@
+const host = process.env.TAURI_DEV_HOST
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 // Tauri: https://tauri.app/start/frontend/nuxt/#update-nuxt-configuration
 export default defineNuxtConfig({
@@ -33,6 +35,10 @@ export default defineNuxtConfig({
   dir: { public: 'src/public' },
   srcDir: 'src',
   ignore: ['**/src-tauri/**'], // Tauri
+  devServer: {
+    // Tauri mobile needs this
+    host: host ?? undefined,
+  },
   compatibilityDate: '2025-07-15',
   vite: {
     clearScreen: false, // Better support for Tauri CLI output
@@ -42,6 +48,18 @@ export default defineNuxtConfig({
     },
   },
   telemetry: false,
+  // HMR on Tauri mobile: https://github.com/tauri-apps/tauri/issues/11165
+  hooks: {
+    'vite:extend': host
+      ? ({ config }) => {
+          if (config.server?.hmr && config.server.hmr !== true) {
+            config.server.hmr.protocol = 'ws'
+            config.server.hmr.host = host
+            config.server.hmr.port = 3000
+          }
+        }
+      : undefined,
+  },
   eslint: {
     config: {
       stylistic: true,
