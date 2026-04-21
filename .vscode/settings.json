@@ -48,5 +48,7 @@
   "[markdown]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
-  }
+  },
+  // For Android development
+  "java.configuration.updateBuildConfiguration": "automatic"
 }
