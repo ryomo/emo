@@ -20,6 +20,7 @@
     "@tauri-apps/plugin-dialog": "~2.7.0",
     "@tauri-apps/plugin-store": "^2.4.2",
     "nuxt": "^4.4.2",
+    "tauri-plugin-serialplugin-api": "^2.22.0",
     "three": "^0.184.0",
     "vue": "^3.5.32",
     "vue-router": "^5.0.4"
