@@ -20,14 +20,14 @@
     "@tauri-apps/plugin-dialog": "~2.7.0",
     "@tauri-apps/plugin-store": "^2.4.2",
     "nuxt": "^4.4.2",
-    "three": "^0.183.2",
+    "three": "^0.184.0",
     "vue": "^3.5.32",
     "vue-router": "^5.0.4"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.10.1",
-    "@types/three": "^0.183.1",
-    "eslint": "^10.2.0",
-    "typescript": "^6.0.2"
+    "@types/three": "^0.184.0",
+    "eslint": "^10.2.1",
+    "typescript": "^6.0.3"
   }
 }
