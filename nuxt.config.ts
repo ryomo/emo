@@ -46,6 +46,19 @@ export default defineNuxtConfig({
     server: {
       strictPort: true, // Tauri requires a consistent port
     },
+    optimizeDeps: {
+      include: [
+        '@huggingface/transformers',
+        '@tauri-apps/api/core',
+        '@tauri-apps/api/window',
+        '@tauri-apps/plugin-dialog',
+        '@tauri-apps/plugin-store',
+        'tauri-plugin-serialplugin-api',
+        'three',
+        'three/addons/interactive/HTMLMesh.js',
+        'three/addons/interactive/InteractiveGroup.js',
+      ],
+    },
   },
   telemetry: false,
   // HMR on Tauri mobile: https://github.com/tauri-apps/tauri/issues/11165
