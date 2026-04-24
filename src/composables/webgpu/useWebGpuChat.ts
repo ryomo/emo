@@ -44,9 +44,11 @@ export function useWebGpuChat() {
 
   /** Return array including system prompt with message history */
   function buildRequestMessages(): { role: string, content: string }[] {
+    const maxMessagesToInclude = 10 // Limit number of recent messages to include in prompt for performance
+    const recentMessages = messages.value.slice(-maxMessagesToInclude)
     return [
       { role: 'system', content: buildSystemPrompt(config.systemPrompt) },
-      ...messages.value
+      ...recentMessages
         .filter(m => m.content != null)
         .map(m => ({ role: m.role, content: m.content! })),
     ]
