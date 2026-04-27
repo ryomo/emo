@@ -58,6 +58,9 @@
         />
       </div>
 
+      <!-- Serial Control Panel (Debug) -->
+      <DebugSerialControlPanel v-if="config.debugSerialEnabled" />
+
       <!-- Voice Recognition Text Area (shown only in voice mode) -->
       <div
         v-if="isListening"

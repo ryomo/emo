@@ -240,6 +240,27 @@
             3D Mode
           </label>
         </div>
+
+        <!-- Debug Section -->
+        <h2 class="text-sm font-medium text-gray-400 mt-6">
+          Debug
+        </h2>
+
+        <!-- Debug Serial Communication Toggle -->
+        <div class="flex items-center gap-3">
+          <input
+            id="debugSerialEnabled"
+            v-model="form.debugSerialEnabled"
+            type="checkbox"
+            class="w-4 h-4 rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900"
+          >
+          <label
+            for="debugSerialEnabled"
+            class="text-sm font-medium text-gray-300"
+          >
+            Debug Serial Communication
+          </label>
+        </div>
       </div>
     </main>
   </div>
@@ -291,6 +312,7 @@ const form = reactive<AppConfig>({
   transparentBackground: config.transparentBackground,
   emotionDisplay3d: config.emotionDisplay3d,
   whisperLanguage: config.whisperLanguage,
+  debugSerialEnabled: config.debugSerialEnabled,
 })
 
 const busy = ref(false)

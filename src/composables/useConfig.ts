@@ -22,6 +22,7 @@ export interface AppConfig {
   transparentBackground: boolean
   emotionDisplay3d: boolean
   whisperLanguage: string
+  debugSerialEnabled: boolean
 }
 
 const CONFIG_FILE = 'emo.config.json'
@@ -37,6 +38,7 @@ const _config = reactive<AppConfig>({
   transparentBackground: false,
   emotionDisplay3d: true,
   whisperLanguage: 'english',
+  debugSerialEnabled: false,
 })
 let _initialized = false
 let _defaults: AppConfig | null = null
@@ -93,6 +95,7 @@ export async function loadConfig(): Promise<void> {
     transparentBackground: runtimeConfig.public.transparentBackgroundDefault,
     emotionDisplay3d: runtimeConfig.public.emotionDisplay3dDefault,
     whisperLanguage: runtimeConfig.public.whisperLanguageDefault || detectBrowserLanguage(),
+    debugSerialEnabled: runtimeConfig.public.debugSerialEnabledDefault,
   }
   _defaults = defaults
   Object.assign(_config, defaults)
