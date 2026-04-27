@@ -21,7 +21,7 @@
     <!-- Servo Sliders -->
     <div class="flex flex-col gap-1">
       <div
-        v-for="servo in (['a', 'b', 'c'] as const)"
+        v-for="servo in (['A', 'B', 'C'] as const)"
         :key="servo"
         class="flex items-center gap-2"
       >

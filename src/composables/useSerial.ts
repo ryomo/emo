@@ -12,7 +12,7 @@ const _isLedOn = ref(false)
 const _isSerialSending = ref(false)
 const _isSerialConnected = ref(false)
 
-const _servoAngles = reactive({ a: 90, b: 90, c: 90 })
+const _servoAngles = reactive({ A: 90, B: 90, C: 90 })
 
 let _serialPort: SerialPort | null = null
 
@@ -49,14 +49,14 @@ async function disconnect(): Promise<void> {
 export function useSerial() {
   async function toggleLed() {
     const next = !_isLedOn.value
-    await _sendCommand(next ? 'ON' : 'OFF')
+    await _sendCommand(next ? 'LED ON' : 'LED OFF')
     // Update the state
     _isLedOn.value = next
   }
 
-  async function setServo(servo: 'a' | 'b' | 'c', angle: number) {
+  async function setServo(servo: 'A' | 'B' | 'C', angle: number) {
     const clamped = Math.round(Math.max(0, Math.min(180, angle)))
-    await _sendCommand(`${servo} ${clamped}`)
+    await _sendCommand(`SRV ${servo} ${clamped}`)
     _servoAngles[servo] = clamped
   }
 
