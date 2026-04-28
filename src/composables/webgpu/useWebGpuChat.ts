@@ -29,11 +29,6 @@ function stripThinkingContent(text: string): string {
 /**
  * Composable for WebGPU-based Chat API
  */
-// --------------- Module-level KV cache ---------------
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let _cachedKv: any = null
-
 export function useWebGpuChat() {
   const config = useConfig()
   const { isLoaded, loadModel, getProcessor, getModel, withGpuLock } = useWebGpuModel()
@@ -84,22 +79,16 @@ export function useWebGpuChat() {
       // Tokenize (text-only, no image/audio)
       const inputs = await processor(prompt, null, null, { add_special_tokens: false })
 
-      // KV cache is only valid when thinking is disabled
-      const canUseCache = !config.enableThinking
-
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const result: any = await withGpuLock(() => model.generate({
         ...inputs,
         return_dict_in_generate: true,
-        past_key_values: canUseCache ? (_cachedKv ?? undefined) : undefined,
         max_new_tokens: 1024,
         do_sample: true,
         temperature: 1,
         top_p: 0.95,
         top_k: 64,
       }))
-
-      _cachedKv = canUseCache ? result.past_key_values : null
 
       // Decode only generated tokens (strip prompt)
       const decoded = processor.batch_decode(
@@ -125,11 +114,10 @@ export function useWebGpuChat() {
     }
   }
 
-  /** Reset conversation history and KV cache */
+  /** Reset conversation history */
   function clearHistory() {
     messages.value = []
     error.value = null
-    _cachedKv = null
   }
 
   return {

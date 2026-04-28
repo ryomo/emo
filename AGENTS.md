@@ -130,7 +130,7 @@ There are currently no automated tests in this project.
 ### On-device Inference via WebGPU (composables/webgpu/)
 - Uses `@huggingface/transformers` with `onnx-community/gemma-4-E2B-it-ONNX` (q4f16, WebGPU) for chat and `onnx-community/whisper-large-v3-turbo` (encoder fp16 + decoder q4, WebGPU) for speech recognition.
 - **useWebGpuModel**: Singleton model loader. Loads `AutoProcessor` and `Gemma4ForConditionalGeneration` once and shares them across consumers. Also provides a GPU exclusion lock (`withGpuLock`) so that listen and chat inference do not run concurrently on the same WebGPU device.
-- **useWebGpuChat**: Text-only chat composable with the same interface as `useLemonadeChat`. Runs inference locally via `model.generate()` within `withGpuLock`. KV cache (`past_key_values`) is enabled when `enableThinking` is `false`; when thinking mode is on, the cache is disabled because thinking tokens are stripped before storage, causing token mismatch on the next turn.
+- **useWebGpuChat**: Text-only chat composable with the same interface as `useLemonadeChat`. Runs inference locally via `model.generate()` within `withGpuLock`.
 - **useWebGpuListen**: Speech recognition composable with the same reactive interface as `useLemonadeListen` (Lemonade). Captures microphone audio via AudioWorklet, runs client-side energy-based VAD, and transcribes finalized speech segments using Whisper large-v3 on WebGPU within `withGpuLock`. On transcription completion, text is sent to the Chat API. During voice recognition, text input is disabled.
 - TTS is not yet supported in WebGPU mode (planned for a future model).
 - Backend selection (`lemonade` | `webgpu`) is persisted in `AppConfig.backendMode` and switchable from the Settings page.
