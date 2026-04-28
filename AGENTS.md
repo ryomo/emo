@@ -16,7 +16,7 @@ An external **Lemonade Server** handles LLM, Whisper, and TTS model inference.
 |---|---|
 | Frontend | Nuxt 4, Vue 3 (Composition API), TypeScript |
 | UI / Styling | Tailwind CSS |
-| 3D Display | Three.js (Emotion 3D mode) |
+| 3D Display | Three.js + WebGPURenderer (Emotion 3D mode, OffscreenCanvas Worker) |
 | Desktop | Tauri 2 (Rust) |
 | Persistence | Tauri Store plugin (`emo.config.json`) |
 | Package Manager | **pnpm** (primary) |
@@ -46,6 +46,8 @@ An external **Lemonade Server** handles LLM, Whisper, and TTS model inference.
 │   │       ├── useWebGpuModel.ts      #   Shared model loader (Gemma-4-E2B-it-ONNX) + GPU lock
 │   │       ├── useWebGpuChat.ts       #   Chat via local WebGPU model (text-only)
 │   │       └── useWebGpuListen.ts     #   Speech recognition via Whisper large-v3 (WebGPU)
+│   ├── workers/            # Dedicated Web Workers
+│   │   └── emotion3d.worker.ts  #   Three.js WebGPURenderer on OffscreenCanvas
 │   ├── types/              # TypeScript type definitions (chat.ts, emotion.ts)
 │   ├── plugins/            # Nuxt plugins (config.client.ts)
 │   ├── assets/css/         # Global CSS
@@ -119,7 +121,8 @@ There are currently no automated tests in this project.
 ### Emotion Display
 - Emotions are detected from emojis (😐😊😢😠😲🤔) at the beginning of AI response text.
 - The system prompt instructs the AI to prefix every response with one of these emotion emojis.
-- Two display modes: 2D (default) and 3D (Three.js).
+- Two display modes: 2D (default) and 3D (Three.js WebGPU).
+- **3D mode** renders via `WebGPURenderer` (`three/webgpu`) on an `OffscreenCanvas` in a dedicated Worker (`src/workers/emotion3d.worker.ts`). The emoji is drawn onto a `CanvasTexture` (via OffscreenCanvas Canvas 2D API) and applied to a `PlaneGeometry` on the front face of the box. If WebGPU is unavailable, an error banner is shown via `useAppError`.
 
 ### Speech Recognition (useLemonadeListen)
 - Microphone input is captured as PCM data via an AudioWorklet (`audio-worklet-processor.js`).
