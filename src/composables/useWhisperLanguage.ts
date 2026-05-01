@@ -48,6 +48,15 @@ const LOCALE_TO_WHISPER: Record<string, string> = {
   cy: 'welsh', yi: 'yiddish', yo: 'yoruba',
 }
 
+/** Map Whisper language name to a representative BCP 47 primary subtag */
+export const WHISPER_TO_LOCALE: Record<string, string> = Object.entries(LOCALE_TO_WHISPER)
+  .reduce<Record<string, string>>((acc, [locale, whisper]) => {
+    if (!acc[whisper]) {
+      acc[whisper] = locale
+    }
+    return acc
+  }, {})
+
 /** Detect the user's language from the browser environment, mapped to a Whisper-compatible name. */
 export function detectBrowserLanguage(): string {
   if (typeof navigator === 'undefined') return 'english'

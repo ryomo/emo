@@ -75,7 +75,7 @@
         />
       </div>
 
-      <!-- Bottom Bar: Voice Button + Text Input -->
+      <!-- Bottom Bar: Voice Button + TTS Toggle + Text Input -->
       <div class="shrink-0 flex items-end gap-2 px-3 pb-3 sm:px-4 sm:pb-4 border-t border-gray-700">
         <VoiceButton
           :is-listening="isListening"
@@ -83,6 +83,14 @@
           :disabled="isLoading"
           @toggle="toggleVoice"
         />
+        <button
+          class="text-sm border rounded px-2 py-2 transition-colors flex-none"
+          :class="ttsEnabled ? 'text-blue-400 border-blue-600 hover:text-blue-300' : 'text-gray-500 border-gray-600 hover:text-gray-400'"
+          title="Toggle TTS"
+          @click="toggleTts"
+        >
+          {{ ttsEnabled ? '🔊' : '🔇' }}
+        </button>
         <ChatInput
           class="flex-1"
           :is-loading="isLoading"
@@ -105,9 +113,17 @@ const config = useConfig()
 const lemonadeChat = useLemonadeChat()
 const webgpuChat = useWebGpuChat()
 
-const { isSpeaking, speak, stop: stopTts } = useLemonadeSpeak()
+const lemonadeSpeak = useLemonadeSpeak()
+const webgpuSpeak = useWebGpuSpeak()
 
 const isWebGpu = computed(() => config.backendMode === 'webgpu')
+
+const isSpeaking = computed(() => isWebGpu.value ? webgpuSpeak.isSpeaking.value : lemonadeSpeak.isSpeaking.value)
+
+function stopTts() {
+  lemonadeSpeak.stop()
+  webgpuSpeak.stop()
+}
 
 function handleTranscriptComplete(text: string) {
   console.log('[index] Transcription completed → Sending to Chat API:', text)
@@ -130,6 +146,13 @@ const isUserSpeaking = computed(() => isWebGpu.value ? webgpuListen.isSpeaking.v
 const isTranscribing = computed(() => isWebGpu.value ? webgpuListen.isTranscribing.value : false)
 const transcript = computed(() => isWebGpu.value ? webgpuListen.transcript.value : lemonadeListen.transcript.value)
 const speechError = computed(() => isWebGpu.value ? webgpuListen.error.value : lemonadeListen.error.value)
+
+const ttsEnabled = ref(true)
+
+function toggleTts() {
+  ttsEnabled.value = !ttsEnabled.value
+  if (!ttsEnabled.value) stopTts()
+}
 
 const activeModelName = computed(() =>
   isWebGpu.value ? 'Gemma-4-E2B (WebGPU)' : config.lemonadeModel,
@@ -161,9 +184,14 @@ watch(
     const lastMsg = messages.value.at(-1)
     if (lastMsg?.role === 'assistant' && lastMsg.content) {
       detectEmotionFromText(lastMsg.content)
-      // Lemonade only: speak with TTS when voice mode is active
-      if (isListening.value && !isWebGpu.value) {
-        speak(lastMsg.content)
+      // Speak with TTS when voice mode is active and TTS is enabled
+      if (isListening.value && ttsEnabled.value) {
+        if (isWebGpu.value) {
+          webgpuSpeak.speak(lastMsg.content)
+        }
+        else {
+          lemonadeSpeak.speak(lastMsg.content)
+        }
       }
     }
   },
@@ -191,7 +219,7 @@ async function closeApp() {
 
 function toggleVoice() {
   if (isListening.value) {
-    if (!isWebGpu.value) stopTts()
+    stopTts()
     if (isWebGpu.value) webgpuListen.stop()
     else lemonadeListen.stop()
   }

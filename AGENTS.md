@@ -42,10 +42,12 @@ An external **Lemonade Server** handles LLM, Whisper, and TTS model inference.
 │   │   │   ├── useLemonadeListen.ts   #   WebSocket real-time speech recognition (listen)
 │   │   │   ├── useLemonadeSpeak.ts    #   TTS API calls and playback (speak)
 │   │   │   └── useLemonadeModels.ts   #   Fetch model list from server
-│   │   └── webgpu/        #   WebGPU (transformers.js) on-device composables
+│   │   └── webgpu/        #   WebGPU (transformers.js + Web Speech API) on-device composables
 │   │       ├── useWebGpuModel.ts      #   Shared model loader (Gemma-4-E2B-it-ONNX) + GPU lock
 │   │       ├── useWebGpuChat.ts       #   Chat via local WebGPU model (text-only)
-│   │       └── useWebGpuListen.ts     #   Speech recognition via Whisper large-v3 (WebGPU)
+│   │       ├── useWebGpuListen.ts     #   Speech recognition via Whisper large-v3 (WebGPU)
+│   │       └── useWebGpuSpeak.ts      #   TTS via Web Speech API (browser/OS voices)
+│   │   ├── useWebSpeechVoices.ts      #   Web Speech voice discovery/filter helpers
 │   ├── workers/            # Dedicated Web Workers
 │   │   └── emotion3d.worker.ts  #   Three.js WebGPURenderer on OffscreenCanvas
 │   ├── types/              # TypeScript type definitions (chat.ts, emotion.ts)
@@ -135,7 +137,10 @@ There are currently no automated tests in this project.
 - **useWebGpuModel**: Singleton model loader. Loads `AutoProcessor` and `Gemma4ForConditionalGeneration` once and shares them across consumers. Also provides a GPU exclusion lock (`withGpuLock`) so that listen and chat inference do not run concurrently on the same WebGPU device.
 - **useWebGpuChat**: Text-only chat composable with the same interface as `useLemonadeChat`. Runs inference locally via `model.generate()` within `withGpuLock`.
 - **useWebGpuListen**: Speech recognition composable with the same reactive interface as `useLemonadeListen` (Lemonade). Captures microphone audio via AudioWorklet, runs client-side energy-based VAD, and transcribes finalized speech segments using Whisper large-v3 on WebGPU within `withGpuLock`. On transcription completion, text is sent to the Chat API. During voice recognition, text input is disabled.
-- TTS is not yet supported in WebGPU mode (planned for a future model).
+- **useWebGpuSpeak**: TTS composable using the browser's Web Speech API (`speechSynthesis`). Provides the same interface as `useLemonadeSpeak` (`isSpeaking`, `speak`, `stop`).
+- **useWebSpeechVoices**: Shared helper composable for voice discovery (`voiceschanged`) and language filtering. Settings can choose a voice per language.
+- `AppConfig.speechLanguage` — voice language used by both ASR (Whisper) and Web Speech TTS.
+- `AppConfig.speechVoiceByLanguage` — persisted per-language Web Speech voice selection (keyed by Whisper language name, value is `SpeechSynthesisVoice.voiceURI`).
 - Backend selection (`lemonade` | `webgpu`) is persisted in `AppConfig.backendMode` and switchable from the Settings page.
 
 ## Coding Conventions

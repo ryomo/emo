@@ -92,17 +92,17 @@
           />
         </div>
 
-        <!-- Speech Recognition Language (used in WebGPU ASR) -->
+        <!-- Voice Language (used in WebGPU ASR and TTS) -->
         <div>
           <label
-            for="whisperLanguage"
+            for="speechLanguage"
             class="block text-sm font-medium text-gray-300 mb-1"
           >
-            Speech Recognition Language
+            Voice Language
           </label>
           <select
-            id="whisperLanguage"
-            v-model="form.whisperLanguage"
+            id="speechLanguage"
+            v-model="form.speechLanguage"
             class="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
           >
             <option
@@ -114,6 +114,47 @@
             </option>
           </select>
         </div>
+
+        <template v-if="form.backendMode === 'webgpu'">
+          <h2 class="text-sm font-medium text-gray-400 mt-6">
+            Web Speech Voice
+          </h2>
+
+          <div>
+            <label
+              for="speechVoice"
+              class="block text-sm font-medium text-gray-300 mb-1"
+            >
+              Voice (for selected language)
+            </label>
+            <select
+              id="speechVoice"
+              v-model="selectedSpeechVoice"
+              class="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+              :disabled="availableSpeechVoices.length === 0"
+            >
+              <option
+                v-if="availableSpeechVoices.length === 0"
+                value=""
+              >
+                No voice available for this language
+              </option>
+              <option
+                v-for="voice in availableSpeechVoices"
+                :key="voice.voiceURI"
+                :value="voice.voiceURI"
+              >
+                {{ voice.name }} ({{ voice.lang }}){{ voice.default ? ' (default)' : '' }}
+              </option>
+            </select>
+            <p
+              v-if="!isReady && form.backendMode === 'webgpu'"
+              class="text-gray-400 text-xs mt-1"
+            >
+              Loading available system voices...
+            </p>
+          </div>
+        </template>
 
         <template v-if="form.backendMode === 'lemonade'">
           <h2 class="text-sm font-medium text-gray-400 mt-6">
@@ -273,6 +314,7 @@ import { resetConfig, updateConfig } from '~/composables/useConfig'
 import { isTauri } from '@tauri-apps/api/core'
 
 const config = useConfig()
+const { isReady, getVoicesForSpeechLanguage, pickDefaultVoiceForSpeechLanguage } = useWebSpeechVoices()
 
 const textFields: { key: keyof AppConfig, label: string }[] = [
   { key: 'lemonadeBaseUrl', label: 'Base URL' },
@@ -307,13 +349,45 @@ const form = reactive<AppConfig>({
   lemonadeModel: config.lemonadeModel,
   lemonadeWhisperModel: config.lemonadeWhisperModel,
   lemonadeTtsModel: config.lemonadeTtsModel,
+  speechVoiceByLanguage: { ...config.speechVoiceByLanguage },
   systemPrompt: config.systemPrompt,
   enableThinking: config.enableThinking,
   transparentBackground: config.transparentBackground,
   emotionDisplay3d: config.emotionDisplay3d,
-  whisperLanguage: config.whisperLanguage,
+  speechLanguage: config.speechLanguage,
   debugSerialEnabled: config.debugSerialEnabled,
 })
+
+const availableSpeechVoices = computed(() => getVoicesForSpeechLanguage(form.speechLanguage))
+
+const selectedSpeechVoice = computed({
+  get: () => form.speechVoiceByLanguage[form.speechLanguage] || '',
+  set: (voiceId: string) => {
+    form.speechVoiceByLanguage = {
+      ...form.speechVoiceByLanguage,
+      [form.speechLanguage]: voiceId,
+    }
+  },
+})
+
+watch(
+  [() => form.speechLanguage, availableSpeechVoices],
+  ([language, voices]) => {
+    if (voices.length === 0) return
+
+    const selected = form.speechVoiceByLanguage[language]
+    const exists = voices.some(v => v.voiceURI === selected)
+    if (exists) return
+
+    const fallback = pickDefaultVoiceForSpeechLanguage(language)
+    if (!fallback) return
+    form.speechVoiceByLanguage = {
+      ...form.speechVoiceByLanguage,
+      [language]: fallback.voiceURI,
+    }
+  },
+  { immediate: true },
+)
 
 const busy = ref(false)
 const saved = ref(false)

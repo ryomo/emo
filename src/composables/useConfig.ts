@@ -17,11 +17,12 @@ export interface AppConfig {
   lemonadeModel: string
   lemonadeWhisperModel: string
   lemonadeTtsModel: string
+  speechVoiceByLanguage: Record<string, string>
   systemPrompt: string
   enableThinking: boolean
   transparentBackground: boolean
   emotionDisplay3d: boolean
-  whisperLanguage: string
+  speechLanguage: string
   debugSerialEnabled: boolean
 }
 
@@ -33,15 +34,20 @@ const _config = reactive<AppConfig>({
   lemonadeModel: '',
   lemonadeWhisperModel: '',
   lemonadeTtsModel: '',
+  speechVoiceByLanguage: {},
   systemPrompt: '',
   enableThinking: false,
   transparentBackground: false,
   emotionDisplay3d: true,
-  whisperLanguage: 'english',
+  speechLanguage: 'english',
   debugSerialEnabled: false,
 })
 let _initialized = false
 let _defaults: AppConfig | null = null
+
+function assignConfigValue<K extends keyof AppConfig>(key: K, value: AppConfig[K]) {
+  _config[key] = value
+}
 
 /** Write all default values to an open Tauri store and persist to disk. */
 async function writeDefaultsToStore(defaults: AppConfig, store: Store): Promise<void> {
@@ -63,8 +69,10 @@ async function loadFromTauriStore(defaults: AppConfig): Promise<void> {
   }
 
   for (const key of Object.keys(defaults) as (keyof AppConfig)[]) {
-    const value = await store.get<string | boolean>(key)
-    if (value != null) (_config as Record<string, string | boolean>)[key] = value
+    const value = await store.get<AppConfig[typeof key]>(key)
+    if (value != null) {
+      assignConfigValue(key, value)
+    }
   }
 
   // Remove keys that are no longer part of AppConfig
@@ -90,11 +98,12 @@ export async function loadConfig(): Promise<void> {
     lemonadeModel: runtimeConfig.public.lemonadeModelDefault,
     lemonadeWhisperModel: runtimeConfig.public.lemonadeWhisperModelDefault,
     lemonadeTtsModel: runtimeConfig.public.lemonadeTtsModelDefault,
+    speechVoiceByLanguage: {},
     systemPrompt: runtimeConfig.public.systemPromptDefault,
     enableThinking: runtimeConfig.public.enableThinkingDefault,
     transparentBackground: runtimeConfig.public.transparentBackgroundDefault,
     emotionDisplay3d: runtimeConfig.public.emotionDisplay3dDefault,
-    whisperLanguage: runtimeConfig.public.whisperLanguageDefault || detectBrowserLanguage(),
+    speechLanguage: runtimeConfig.public.speechLanguageDefault || detectBrowserLanguage(),
     debugSerialEnabled: runtimeConfig.public.debugSerialEnabledDefault,
   }
   _defaults = defaults

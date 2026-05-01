@@ -160,7 +160,7 @@ export function useWebGpuListen(options: WebGpuListenOptions = {}) {
         throw new Error('Whisper model is not loaded')
       }
       const result = await _pipe(audioData, {
-        language: config.whisperLanguage || 'english',
+        language: config.speechLanguage || 'english',
       })
       return (result.text as string).trim()
     })
