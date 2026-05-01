@@ -166,3 +166,11 @@ Just a reminder for myself :smile:
    - Then, the app is built and a draft release is created for each platform.
 2. Once the workflow completes, go to the GitHub releases page, find the draft release, review the content, and publish it.
 3. Don't forget `git pull` to update your local repository with the new tag.
+
+<br>
+
+## License
+
+### Emo
+
+Emo is licensed under the MIT License. See [LICENSE](./LICENSE) for details.
