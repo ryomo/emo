@@ -9,7 +9,7 @@
 
 import { isTauri } from '@tauri-apps/api/core'
 import type { Store } from '@tauri-apps/plugin-store'
-import { detectBrowserLanguage } from '~/composables/useWhisperLanguage'
+import { detectBrowserSpeechLanguage } from '~/composables/useSpeechLanguage'
 
 export interface AppConfig {
   speechVoiceByLanguage: Record<string, string>
@@ -85,7 +85,7 @@ export async function loadConfig(): Promise<void> {
     systemPrompt: runtimeConfig.public.systemPromptDefault,
     transparentBackground: runtimeConfig.public.transparentBackgroundDefault,
     emotionDisplay3d: runtimeConfig.public.emotionDisplay3dDefault,
-    speechLanguage: runtimeConfig.public.speechLanguageDefault || detectBrowserLanguage(),
+    speechLanguage: runtimeConfig.public.speechLanguageDefault || detectBrowserSpeechLanguage(),
     debugSerialEnabled: runtimeConfig.public.debugSerialEnabledDefault,
   }
   _defaults = defaults

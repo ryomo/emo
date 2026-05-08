@@ -36,12 +36,13 @@ LLM and speech processing run on-device using **WebGPU** and browser speech capa
 │   ├── composables/        # Business logic (use*.ts)
 │   │   ├── useConfig.ts    #   App config read/write (Tauri Store / runtimeConfig)
 │   │   ├── useAiEmotion.ts #   Emotion detection from AI responses
-│   │   └── webgpu/        #   WebGPU (transformers.js + Web Speech API) on-device composables
+│   │   ├── useSpeechLanguage.ts # Speech-language mapping/detection helpers
+│   │   ├── useWebSpeechVoices.ts # Web Speech voice discovery/filter helpers
+│   │   ├── useWebSpeechSpeak.ts # TTS via Web Speech API (browser/OS voices)
+│   │   └── webgpu/        #   WebGPU (transformers.js) on-device composables
 │   │       ├── useWebGpuModel.ts      #   Shared model loader (Gemma-4-E2B-it-ONNX) + GPU lock
 │   │       ├── useWebGpuChat.ts       #   Chat via local WebGPU model (text-only)
-│   │       ├── useWebGpuListen.ts     #   Speech recognition via Whisper large-v3 (WebGPU)
-│   │       └── useWebGpuSpeak.ts      #   TTS via Web Speech API (browser/OS voices)
-│   │   ├── useWebSpeechVoices.ts      #   Web Speech voice discovery/filter helpers
+│   │       └── useWebGpuListen.ts     #   Speech recognition via Whisper large-v3 (WebGPU)
 │   ├── workers/            # Dedicated Web Workers
 │   │   └── emotion3d.worker.ts  #   Three.js WebGPURenderer on OffscreenCanvas
 │   ├── types/              # TypeScript type definitions (chat.ts, emotion.ts)
@@ -135,10 +136,11 @@ There are currently no automated tests in this project.
 - **useWebGpuModel**: Singleton model loader. Loads `AutoProcessor` and `Gemma4ForConditionalGeneration` once and shares them across consumers. Also provides a GPU exclusion lock (`withGpuLock`) so that listen and chat inference do not run concurrently on the same WebGPU device.
 - **useWebGpuChat**: Text-only chat composable. Runs inference locally via `model.generate()` within `withGpuLock`.
 - **useWebGpuListen**: Speech recognition composable. Captures microphone audio via AudioWorklet, runs energy-based VAD, and transcribes finalized speech segments using Whisper large-v3 on WebGPU within `withGpuLock`. On transcription completion, text is sent to chat inference. During voice recognition, text input is disabled.
-- **useWebGpuSpeak**: TTS composable using the browser's Web Speech API (`speechSynthesis`). Exposes `isSpeaking`, `speak`, and `stop`.
+- **useWebSpeechSpeak** (`composables/useWebSpeechSpeak.ts`): TTS composable using the browser's Web Speech API (`speechSynthesis`). Exposes `isSpeaking`, `speak`, and `stop`.
 - **useWebSpeechVoices**: Shared helper composable for voice discovery (`voiceschanged`) and language filtering. Settings can choose a voice per language.
-- `AppConfig.speechLanguage` — voice language used by both ASR (Whisper) and Web Speech TTS.
-- `AppConfig.speechVoiceByLanguage` — persisted per-language Web Speech voice selection (keyed by Whisper language name, value is `SpeechSynthesisVoice.voiceURI`).
+- **useSpeechLanguage** (`composables/useSpeechLanguage.ts`): Shared speech-language list + locale mapping utilities for ASR/TTS.
+- `AppConfig.speechLanguage` — language key used by both ASR and Web Speech TTS.
+- `AppConfig.speechVoiceByLanguage` — persisted per-language Web Speech voice selection (keyed by speech-language name, value is `SpeechSynthesisVoice.voiceURI`).
 
 ## Coding Conventions
 

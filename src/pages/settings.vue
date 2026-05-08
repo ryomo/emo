@@ -82,7 +82,7 @@
             class="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
           >
             <option
-              v-for="lang in WHISPER_LANGUAGES"
+              v-for="lang in SUPPORTED_SPEECH_LANGUAGES"
               :key="lang"
               :value="lang"
             >
@@ -189,7 +189,7 @@
 
 <script setup lang="ts">
 import type { AppConfig } from '~/composables/useConfig'
-import { WHISPER_LANGUAGES } from '~/composables/useWhisperLanguage'
+import { SUPPORTED_SPEECH_LANGUAGES } from '~/composables/useSpeechLanguage'
 import { resetConfig, updateConfig } from '~/composables/useConfig'
 import { isTauri } from '@tauri-apps/api/core'
 

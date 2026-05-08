@@ -1,5 +1,5 @@
 /**
- * Composable for Web Speech TTS execution in WebGPU backend mode.
+ * Composable for Web Speech TTS execution.
  *
  * Uses shared voice-selection helpers from useWebSpeechVoices,
  * while handling playback state and utterance lifecycle here.
@@ -14,7 +14,7 @@ function normalizeText(text: string): string {
     .trim()
 }
 
-export function useWebGpuSpeak() {
+export function useWebSpeechSpeak() {
   const config = useConfig()
   const { getVoicesForSpeechLanguage, pickDefaultVoiceForSpeechLanguage } = useWebSpeechVoices()
   const isSpeaking = ref(false)

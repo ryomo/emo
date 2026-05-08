@@ -2,10 +2,10 @@
  * Composable for Web Speech voice catalog management.
  *
  * Keeps voice discovery/filter/default-picking in one place so
- * speech execution logic can stay focused in webgpu/useWebGpuSpeak.
+ * speech execution logic can stay focused in useWebSpeechSpeak.
  */
 
-import { WHISPER_TO_LOCALE } from '~/composables/useWhisperLanguage'
+import { SPEECH_LANGUAGE_TO_LOCALE } from '~/composables/useSpeechLanguage'
 
 const allVoices = ref<SpeechSynthesisVoice[]>([])
 const isReady = ref(false)
@@ -16,7 +16,7 @@ function normalizePrimaryTag(tag: string): string {
 }
 
 export function getLocaleForSpeechLanguage(speechLanguage: string): string {
-  return WHISPER_TO_LOCALE[speechLanguage] || 'en'
+  return SPEECH_LANGUAGE_TO_LOCALE[speechLanguage] || 'en'
 }
 
 function updateVoices() {

@@ -105,16 +105,17 @@
 <script setup lang="ts">
 import { isTauri } from '@tauri-apps/api/core'
 import { getCurrentWindow } from '@tauri-apps/api/window'
+import { useWebSpeechSpeak } from '~/composables/useWebSpeechSpeak'
 import { stripEmotionEmoji } from '~/types/emotion'
 
 const config = useConfig()
 const webgpuChat = useWebGpuChat()
-const webgpuSpeak = useWebGpuSpeak()
+const webSpeechSpeak = useWebSpeechSpeak()
 
-const isSpeaking = computed(() => webgpuSpeak.isSpeaking.value)
+const isSpeaking = computed(() => webSpeechSpeak.isSpeaking.value)
 
 function stopTts() {
-  webgpuSpeak.stop()
+  webSpeechSpeak.stop()
 }
 
 function handleTranscriptComplete(text: string) {
@@ -169,7 +170,7 @@ watch(
       detectEmotionFromText(lastMsg.content)
       // Speak with TTS when voice mode is active and TTS is enabled
       if (isListening.value && ttsEnabled.value) {
-        webgpuSpeak.speak(lastMsg.content)
+        webSpeechSpeak.speak(lastMsg.content)
       }
     }
   },

@@ -1,5 +1,5 @@
-/** Whisper-supported language names (as expected by the pipeline API) */
-export const WHISPER_LANGUAGES = [
+/** Supported speech-language names used by ASR/TTS settings and mapping helpers. */
+export const SUPPORTED_SPEECH_LANGUAGES = [
   'afrikaans', 'albanian', 'amharic', 'arabic', 'armenian', 'assamese',
   'azerbaijani', 'bashkir', 'basque', 'belarusian', 'bengali', 'bosnian',
   'breton', 'bulgarian', 'burmese', 'catalan', 'chinese', 'croatian',
@@ -19,8 +19,8 @@ export const WHISPER_LANGUAGES = [
   'vietnamese', 'welsh', 'yiddish', 'yoruba',
 ] as const
 
-/** Map BCP 47 primary subtag to Whisper language name */
-const LOCALE_TO_WHISPER: Record<string, string> = {
+/** Map BCP 47 primary subtag to a speech-language name. */
+const LOCALE_TO_SPEECH_LANGUAGE: Record<string, string> = {
   af: 'afrikaans', sq: 'albanian', am: 'amharic', ar: 'arabic',
   hy: 'armenian', as: 'assamese', az: 'azerbaijani', ba: 'bashkir',
   eu: 'basque', be: 'belarusian', bn: 'bengali', bs: 'bosnian',
@@ -48,18 +48,18 @@ const LOCALE_TO_WHISPER: Record<string, string> = {
   cy: 'welsh', yi: 'yiddish', yo: 'yoruba',
 }
 
-/** Map Whisper language name to a representative BCP 47 primary subtag */
-export const WHISPER_TO_LOCALE: Record<string, string> = Object.entries(LOCALE_TO_WHISPER)
-  .reduce<Record<string, string>>((acc, [locale, whisper]) => {
-    if (!acc[whisper]) {
-      acc[whisper] = locale
+/** Map speech-language name to a representative BCP 47 primary subtag. */
+export const SPEECH_LANGUAGE_TO_LOCALE: Record<string, string> = Object.entries(LOCALE_TO_SPEECH_LANGUAGE)
+  .reduce<Record<string, string>>((acc, [locale, speechLanguage]) => {
+    if (!acc[speechLanguage]) {
+      acc[speechLanguage] = locale
     }
     return acc
   }, {})
 
-/** Detect the user's language from the browser environment, mapped to a Whisper-compatible name. */
-export function detectBrowserLanguage(): string {
+/** Detect browser language and map it to a supported speech-language name. */
+export function detectBrowserSpeechLanguage(): string {
   if (typeof navigator === 'undefined') return 'english'
   const tag = navigator.language?.split('-')[0]?.toLowerCase() ?? ''
-  return LOCALE_TO_WHISPER[tag] ?? 'english'
+  return LOCALE_TO_SPEECH_LANGUAGE[tag] ?? 'english'
 }
