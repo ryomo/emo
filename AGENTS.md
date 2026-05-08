@@ -38,6 +38,7 @@ LLM and speech processing run on-device using **WebGPU** and browser speech capa
 │   │   ├── useConfig.ts    #   App config read/write (Tauri Store / runtimeConfig)
 │   │   ├── useCamera.ts    #   Camera start/stop + snapshot capture for multimodal chat
 │   │   ├── useAiEmotion.ts #   Emotion detection from AI responses
+│   │   ├── systemPrompt.ts #   Shared system prompt builder (emoji rule + camera instruction)
 │   │   ├── useSpeechLanguage.ts # Speech-language mapping/detection helpers
 │   │   ├── useWebSpeechVoices.ts # Web Speech voice discovery/filter helpers
 │   │   ├── useWebSpeechSpeak.ts # TTS via Web Speech API (browser/OS voices)
@@ -111,6 +112,7 @@ There are currently no automated tests in this project.
 - **Browser environment**: Uses default values from Nuxt's `runtimeConfig.public`, overridable via `NUXT_PUBLIC_*` environment variables.
 - The `config.client.ts` plugin loads configuration before the app mounts.
 - If the config file fails to load, it is automatically reset to defaults and `useConfigLoadError()` returns a non-empty message.
+- `AppConfig.cameraContextInstruction` stores the camera-specific system instruction appended only when image input is attached.
 
 ### Global Notifications (app.vue)
 - `app.vue` subscribes to `useAppError()` and shows a dismissible banner at the top of the screen when an error is set.
@@ -127,6 +129,7 @@ There are currently no automated tests in this project.
 - Captured frames are attached as image input to Gemma 4 along with user text.
 - The same behavior is used for both text submit and voice-transcript submit paths.
 - `AppConfig.cameraEnabled` controls whether camera mode starts ON at app launch.
+- `AppConfig.cameraContextInstruction` controls how the model should interpret attached camera images.
 
 ### Emotion Display
 - Emotions are detected from emojis (😐😊😢😠😲🤔) at the beginning of AI response text.
@@ -151,6 +154,7 @@ There are currently no automated tests in this project.
 - `AppConfig.speechLanguage` — language key used by both ASR and Web Speech TTS.
 - `AppConfig.speechVoiceByLanguage` — persisted per-language Web Speech voice selection (keyed by speech-language name, value is `SpeechSynthesisVoice.voiceURI`).
 - `AppConfig.cameraEnabled` — persisted startup toggle for camera mode on the chat page.
+- `AppConfig.cameraContextInstruction` — persisted instruction text appended to the system prompt only for image-attached turns.
 
 ## Coding Conventions
 

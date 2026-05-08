@@ -26,6 +26,8 @@ export default defineNuxtConfig({
         '- Answer clearly and concisely',
         '- Avoid lengthy explanations as this is designed for voice conversation',
       ].join('\n'),
+      // NUXT_PUBLIC_CAMERA_CONTEXT_INSTRUCTION_DEFAULT
+      cameraContextInstructionDefault: '- The attached image is a live image from the camera attached to you. Mention it only when it is required to answer the user\'s request.',
     },
   },
   dir: { public: 'src/public' },

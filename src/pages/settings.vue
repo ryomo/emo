@@ -68,6 +68,46 @@
           />
         </div>
 
+        <details class="rounded border border-gray-700 bg-gray-800/40">
+          <summary class="cursor-pointer select-none px-3 py-2 text-sm text-gray-300 hover:text-white">
+            Advanced Prompt Settings (preview + camera instruction)
+          </summary>
+          <div class="space-y-3 border-t border-gray-700 px-3 py-3">
+            <div>
+              <label
+                for="cameraContextInstruction"
+                class="block text-sm font-medium text-gray-300 mb-1"
+              >
+                Camera Context Instruction
+              </label>
+              <textarea
+                id="cameraContextInstruction"
+                v-model="form.cameraContextInstruction"
+                rows="3"
+                class="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                placeholder="Used only when an image is attached"
+              />
+              <p class="mt-1 text-xs text-gray-400">
+                This instruction is appended only when camera image input is attached.
+              </p>
+            </div>
+
+            <div>
+              <p class="mb-1 text-xs font-medium text-gray-400">
+                Built System Prompt Preview (no image)
+              </p>
+              <pre class="max-h-48 overflow-auto whitespace-pre-wrap rounded border border-gray-700 bg-gray-900/70 px-3 py-2 text-xs text-gray-200">{{ builtSystemPromptWithoutImage }}</pre>
+            </div>
+
+            <div>
+              <p class="mb-1 text-xs font-medium text-gray-400">
+                Built System Prompt Preview (with image)
+              </p>
+              <pre class="max-h-48 overflow-auto whitespace-pre-wrap rounded border border-gray-700 bg-gray-900/70 px-3 py-2 text-xs text-gray-200">{{ builtSystemPromptWithImage }}</pre>
+            </div>
+          </div>
+        </details>
+
         <!-- Voice Language (used in WebGPU ASR and TTS) -->
         <div>
           <label
@@ -206,6 +246,7 @@
 <script setup lang="ts">
 import type { AppConfig } from '~/composables/useConfig'
 import { SUPPORTED_SPEECH_LANGUAGES } from '~/composables/useSpeechLanguage'
+import { buildSystemPrompt } from '~/composables/systemPrompt'
 import { resetConfig, updateConfig } from '~/composables/useConfig'
 import { isTauri } from '@tauri-apps/api/core'
 
@@ -215,12 +256,21 @@ const { isReady, getVoicesForSpeechLanguage, pickDefaultVoiceForSpeechLanguage }
 const form = reactive<AppConfig>({
   speechVoiceByLanguage: { ...config.speechVoiceByLanguage },
   systemPrompt: config.systemPrompt,
+  cameraContextInstruction: config.cameraContextInstruction,
   transparentBackground: config.transparentBackground,
   emotionDisplay3d: config.emotionDisplay3d,
   speechLanguage: config.speechLanguage,
   debugSerialEnabled: config.debugSerialEnabled,
   cameraEnabled: config.cameraEnabled,
 })
+
+const builtSystemPromptWithoutImage = computed(() =>
+  buildSystemPrompt(form.systemPrompt, form.cameraContextInstruction, false),
+)
+
+const builtSystemPromptWithImage = computed(() =>
+  buildSystemPrompt(form.systemPrompt, form.cameraContextInstruction, true),
+)
 
 const availableSpeechVoices = computed(() => getVoicesForSpeechLanguage(form.speechLanguage))
 

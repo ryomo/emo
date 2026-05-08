@@ -14,6 +14,7 @@ import { detectBrowserSpeechLanguage } from '~/composables/useSpeechLanguage'
 export interface AppConfig {
   speechVoiceByLanguage: Record<string, string>
   systemPrompt: string
+  cameraContextInstruction: string
   transparentBackground: boolean
   emotionDisplay3d: boolean
   speechLanguage: string
@@ -26,6 +27,7 @@ const CONFIG_FILE = 'emo.config.json'
 const _config = reactive<AppConfig>({
   speechVoiceByLanguage: {},
   systemPrompt: '',
+  cameraContextInstruction: '',
   transparentBackground: false,
   emotionDisplay3d: true,
   speechLanguage: 'english',
@@ -85,6 +87,7 @@ export async function loadConfig(): Promise<void> {
   const defaults: AppConfig = {
     speechVoiceByLanguage: {},
     systemPrompt: runtimeConfig.public.systemPromptDefault,
+    cameraContextInstruction: runtimeConfig.public.cameraContextInstructionDefault,
     transparentBackground: runtimeConfig.public.transparentBackgroundDefault,
     emotionDisplay3d: runtimeConfig.public.emotionDisplay3dDefault,
     speechLanguage: runtimeConfig.public.speechLanguageDefault || detectBrowserSpeechLanguage(),

@@ -7,21 +7,9 @@
 import type { ChatMessage } from '~/types/chat'
 import type { Tensor } from '@huggingface/transformers'
 import { load_image } from '@huggingface/transformers'
-import { EMOTION_EMOJI } from '~/types/emotion'
+import { buildSystemPrompt } from '~/composables/systemPrompt'
 
 const LOG_PREFIX = '[WebGPU Chat]'
-const CAMERA_CONTEXT_INSTRUCTION = '- The attached image is a live image from the camera attached to you. Mention it only when it is required to answer the user\'s request.'
-
-/** Generate emoji list from EMOTION_EMOJI for use in prompt */
-const EMOJI_LIST = Object.values(EMOTION_EMOJI).join(' ')
-
-/** Build full system prompt from user-configured base + emotion emoji instruction */
-function buildSystemPrompt(basePrompt: string, hasImage: boolean): string {
-  const cameraInstruction = hasImage ? `\n${CAMERA_CONTEXT_INSTRUCTION}` : ''
-  const emojiInstruction = `\n- Always start your response with exactly one of the following emojis`
-    + ` to express your current emotion: ${EMOJI_LIST}`
-  return `${basePrompt}${cameraInstruction}${emojiInstruction}`
-}
 
 /** Strip thinking channel blocks from model output */
 function stripThinkingContent(text: string): string {
@@ -60,7 +48,10 @@ export function useWebGpuChat() {
       : userText
 
     return [
-      { role: 'system', content: buildSystemPrompt(config.systemPrompt, hasImage) },
+      {
+        role: 'system',
+        content: buildSystemPrompt(config.systemPrompt, config.cameraContextInstruction, hasImage),
+      },
       ...history,
       { role: 'user', content: currentUserContent },
     ]
