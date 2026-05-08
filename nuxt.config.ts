@@ -13,11 +13,6 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       // These are overridden by the following environment variables. And overridden again by the Tauri Store's file which is loaded in useConfig.ts.
-      backendModeDefault: 'webgpu', // NUXT_PUBLIC_BACKEND_MODE_DEFAULT
-      lemonadeBaseUrlDefault: 'http://localhost:8000', // NUXT_PUBLIC_LEMONADE_BASE_URL_DEFAULT
-      lemonadeModelDefault: 'Qwen3.5-9B-GGUF', // NUXT_PUBLIC_LEMONADE_MODEL_DEFAULT
-      lemonadeWhisperModelDefault: 'Whisper-Base', // NUXT_PUBLIC_LEMONADE_WHISPER_MODEL_DEFAULT
-      lemonadeTtsModelDefault: 'kokoro-v1', // NUXT_PUBLIC_LEMONADE_TTS_MODEL_DEFAULT
       enableThinkingDefault: false, // NUXT_PUBLIC_ENABLE_THINKING_DEFAULT
       transparentBackgroundDefault: false, // NUXT_PUBLIC_TRANSPARENT_BACKGROUND_DEFAULT
       emotionDisplay3dDefault: true, // NUXT_PUBLIC_EMOTION_DISPLAY_3D_DEFAULT

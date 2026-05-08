@@ -108,44 +108,29 @@ import { getCurrentWindow } from '@tauri-apps/api/window'
 import { stripEmotionEmoji } from '~/types/emotion'
 
 const config = useConfig()
-
-// Both backends always initialized — Vue composables cannot be called conditionally
-const lemonadeChat = useLemonadeChat()
 const webgpuChat = useWebGpuChat()
-
-const lemonadeSpeak = useLemonadeSpeak()
 const webgpuSpeak = useWebGpuSpeak()
 
-const isWebGpu = computed(() => config.backendMode === 'webgpu')
-
-const isSpeaking = computed(() => isWebGpu.value ? webgpuSpeak.isSpeaking.value : lemonadeSpeak.isSpeaking.value)
+const isSpeaking = computed(() => webgpuSpeak.isSpeaking.value)
 
 function stopTts() {
-  lemonadeSpeak.stop()
   webgpuSpeak.stop()
 }
 
 function handleTranscriptComplete(text: string) {
-  console.log('[index] Transcription completed → Sending to Chat API:', text)
-  lemonadeChat.sendMessage(text)
+  webgpuChat.sendMessage(text)
 }
 
-const lemonadeListen = useLemonadeListen({ onTranscriptComplete: handleTranscriptComplete })
-const webgpuListen = useWebGpuListen({
-  onTranscriptComplete: (text) => {
-    webgpuChat.sendMessage(text)
-  },
-})
+const webgpuListen = useWebGpuListen({ onTranscriptComplete: handleTranscriptComplete })
 
-// Unified reactive accessors that delegate to the active backend
-const messages = computed(() => isWebGpu.value ? webgpuChat.messages.value : lemonadeChat.messages.value)
-const isLoading = computed(() => isWebGpu.value ? webgpuChat.isLoading.value : lemonadeChat.isLoading.value)
-const chatError = computed(() => isWebGpu.value ? webgpuChat.error.value : lemonadeChat.error.value)
-const isListening = computed(() => isWebGpu.value ? webgpuListen.isListening.value : lemonadeListen.isListening.value)
-const isUserSpeaking = computed(() => isWebGpu.value ? webgpuListen.isSpeaking.value : lemonadeListen.isSpeaking.value)
-const isTranscribing = computed(() => isWebGpu.value ? webgpuListen.isTranscribing.value : false)
-const transcript = computed(() => isWebGpu.value ? webgpuListen.transcript.value : lemonadeListen.transcript.value)
-const speechError = computed(() => isWebGpu.value ? webgpuListen.error.value : lemonadeListen.error.value)
+const messages = computed(() => webgpuChat.messages.value)
+const isLoading = computed(() => webgpuChat.isLoading.value)
+const chatError = computed(() => webgpuChat.error.value)
+const isListening = computed(() => webgpuListen.isListening.value)
+const isUserSpeaking = computed(() => webgpuListen.isSpeaking.value)
+const isTranscribing = computed(() => webgpuListen.isTranscribing.value)
+const transcript = computed(() => webgpuListen.transcript.value)
+const speechError = computed(() => webgpuListen.error.value)
 
 const ttsEnabled = ref(true)
 
@@ -154,9 +139,7 @@ function toggleTts() {
   if (!ttsEnabled.value) stopTts()
 }
 
-const activeModelName = computed(() =>
-  isWebGpu.value ? 'Gemma-4-E2B (WebGPU)' : config.lemonadeModel,
-)
+const activeModelName = 'Gemma-4-E2B (WebGPU)'
 
 const { emotionState, detectEmotionFromText } = useAiEmotion()
 
@@ -186,28 +169,17 @@ watch(
       detectEmotionFromText(lastMsg.content)
       // Speak with TTS when voice mode is active and TTS is enabled
       if (isListening.value && ttsEnabled.value) {
-        if (isWebGpu.value) {
-          webgpuSpeak.speak(lastMsg.content)
-        }
-        else {
-          lemonadeSpeak.speak(lastMsg.content)
-        }
+        webgpuSpeak.speak(lastMsg.content)
       }
     }
   },
 )
 
 function handleSend(message: string) {
-  if (isWebGpu.value) {
-    webgpuChat.sendMessage(message)
-  }
-  else {
-    lemonadeChat.sendMessage(message)
-  }
+  webgpuChat.sendMessage(message)
 }
 
 function clearHistory() {
-  lemonadeChat.clearHistory()
   webgpuChat.clearHistory()
 }
 
@@ -220,14 +192,10 @@ async function closeApp() {
 function toggleVoice() {
   if (isListening.value) {
     stopTts()
-    if (isWebGpu.value) webgpuListen.stop()
-    else lemonadeListen.stop()
-  }
-  else if (isWebGpu.value) {
-    webgpuListen.start()
+    webgpuListen.stop()
   }
   else {
-    lemonadeListen.start()
+    webgpuListen.start()
   }
 }
 </script>

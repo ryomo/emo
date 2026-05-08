@@ -12,11 +12,6 @@ import type { Store } from '@tauri-apps/plugin-store'
 import { detectBrowserLanguage } from '~/composables/useWhisperLanguage'
 
 export interface AppConfig {
-  backendMode: 'lemonade' | 'webgpu'
-  lemonadeBaseUrl: string
-  lemonadeModel: string
-  lemonadeWhisperModel: string
-  lemonadeTtsModel: string
   speechVoiceByLanguage: Record<string, string>
   systemPrompt: string
   enableThinking: boolean
@@ -29,11 +24,6 @@ export interface AppConfig {
 const CONFIG_FILE = 'emo.config.json'
 
 const _config = reactive<AppConfig>({
-  backendMode: 'webgpu',
-  lemonadeBaseUrl: '',
-  lemonadeModel: '',
-  lemonadeWhisperModel: '',
-  lemonadeTtsModel: '',
   speechVoiceByLanguage: {},
   systemPrompt: '',
   enableThinking: false,
@@ -93,11 +83,6 @@ export async function loadConfig(): Promise<void> {
 
   const runtimeConfig = useRuntimeConfig()
   const defaults: AppConfig = {
-    backendMode: (runtimeConfig.public.backendModeDefault || 'lemonade') as 'lemonade' | 'webgpu',
-    lemonadeBaseUrl: runtimeConfig.public.lemonadeBaseUrlDefault,
-    lemonadeModel: runtimeConfig.public.lemonadeModelDefault,
-    lemonadeWhisperModel: runtimeConfig.public.lemonadeWhisperModelDefault,
-    lemonadeTtsModel: runtimeConfig.public.lemonadeTtsModelDefault,
     speechVoiceByLanguage: {},
     systemPrompt: runtimeConfig.public.systemPromptDefault,
     enableThinking: runtimeConfig.public.enableThinkingDefault,

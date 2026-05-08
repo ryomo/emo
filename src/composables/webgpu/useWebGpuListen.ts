@@ -4,8 +4,6 @@
  * Captures microphone audio via AudioWorklet, runs client-side
  * energy-based VAD, and transcribes finalized speech segments
  * using Whisper large-v3 on WebGPU.
- *
- * Provides the same reactive interface as useLemonadeListen (Lemonade Server).
  */
 
 import { pipeline } from '@huggingface/transformers'

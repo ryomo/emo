@@ -1,8 +1,7 @@
 /**
  * Chat API composable using WebGPU (Gemma-4-E2B-it-ONNX via transformers.js).
  *
- * Provides the same interface as useLemonadeChat (Lemonade Server),
- * but runs inference entirely on-device using WebGPU.
+ * Runs inference entirely on-device using WebGPU.
  */
 
 import type { ChatMessage } from '~/types/chat'

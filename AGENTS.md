@@ -8,7 +8,7 @@ When making changes to the source code that affect architecture, directory struc
 
 **Emo** is a desktop AI chatbot application with real-time speech recognition, emotion expression, and TTS (text-to-speech) capabilities.
 The frontend is built with **Nuxt 4** (`src/`) and the desktop wrapper is **Tauri 2** (`src-tauri/`).
-An external **Lemonade Server** handles LLM, Whisper, and TTS model inference.
+LLM and speech processing run on-device using **WebGPU** and browser speech capabilities.
 
 ## Tech Stack
 
@@ -23,7 +23,6 @@ An external **Lemonade Server** handles LLM, Whisper, and TTS model inference.
 | Linter | ESLint (`@nuxt/eslint` + stylistic) |
 | CI/CD | GitHub Actions (release workflow) |
 | On-device AI | transformers.js (WebGPU, ONNX) |
-| Backend (external) | Lemonade Server (OpenAI-compatible API) |
 
 ## Directory Structure
 
@@ -37,11 +36,6 @@ An external **Lemonade Server** handles LLM, Whisper, and TTS model inference.
 │   ├── composables/        # Business logic (use*.ts)
 │   │   ├── useConfig.ts    #   App config read/write (Tauri Store / runtimeConfig)
 │   │   ├── useAiEmotion.ts #   Emotion detection from AI responses
-│   │   ├── lemonade/       #   Lemonade Server specific composables
-│   │   │   ├── useLemonadeChat.ts     #   Chat Completions API calls
-│   │   │   ├── useLemonadeListen.ts   #   WebSocket real-time speech recognition (listen)
-│   │   │   ├── useLemonadeSpeak.ts    #   TTS API calls and playback (speak)
-│   │   │   └── useLemonadeModels.ts   #   Fetch model list from server
 │   │   └── webgpu/        #   WebGPU (transformers.js + Web Speech API) on-device composables
 │   │       ├── useWebGpuModel.ts      #   Shared model loader (Gemma-4-E2B-it-ONNX) + GPU lock
 │   │       ├── useWebGpuChat.ts       #   Chat via local WebGPU model (text-only)
@@ -101,6 +95,11 @@ There are currently no automated tests in this project.
 
 ## Architecture Notes
 
+### On-device Execution Scope
+- Emo is designed to run entirely on-device.
+- Chat inference, speech recognition, and speech synthesis are executed within the app runtime on the user's machine.
+- No external inference server is required.
+
 ### SSR Disabled
 `ssr: false` is set in `nuxt.config.ts`. The app runs as an SPA acting as the Tauri frontend.
 
@@ -114,11 +113,10 @@ There are currently no automated tests in this project.
 - `app.vue` subscribes to `useAppError()` and shows a dismissible banner at the top of the screen when an error is set.
 - Any composable or page can call `setAppError(message)` from `useAppError.ts` to surface an error to the user.
 
-### Communication with Lemonade Server
-- **Chat API**: `POST /api/v1/chat/completions` (OpenAI-compatible)
-- **TTS API**: `POST /api/v1/audio/speech`
-- **Speech recognition**: WebSocket `/realtime` (OpenAI Realtime API-compatible)
-- **Model list**: `GET /api/v1/models`
+### WebGPU Inference
+- **Chat**: Gemma 4 ONNX (`onnx-community/gemma-4-E2B-it-ONNX`) via `@huggingface/transformers`.
+- **Speech recognition**: Whisper large-v3 turbo (`onnx-community/whisper-large-v3-turbo`) via `@huggingface/transformers`.
+- **TTS**: Browser/OS voices via Web Speech API (`speechSynthesis`).
 
 ### Emotion Display
 - Emotions are detected from emojis (😐😊😢😠😲🤔) at the beginning of AI response text.
@@ -126,22 +124,21 @@ There are currently no automated tests in this project.
 - Two display modes: 2D (default) and 3D (Three.js WebGPU).
 - **3D mode** renders via `WebGPURenderer` (`three/webgpu`) on an `OffscreenCanvas` in a dedicated Worker (`src/workers/emotion3d.worker.ts`). The emoji is drawn onto a `CanvasTexture` (via OffscreenCanvas Canvas 2D API) and applied to a `PlaneGeometry` on the front face of the box. If WebGPU is unavailable, an error banner is shown via `useAppError`.
 
-### Speech Recognition (useLemonadeListen)
+### Speech Recognition (useWebGpuListen)
 - Microphone input is captured as PCM data via an AudioWorklet (`audio-worklet-processor.js`).
-- PCM is downsampled to 16kHz, Base64-encoded, and sent over WebSocket.
-- VAD (Voice Activity Detection) is handled server-side.
-- On transcription completion, the text is automatically sent to the Chat API.
+- PCM is downsampled to 16kHz and processed in the app runtime.
+- VAD (Voice Activity Detection) is handled in the app runtime.
+- On transcription completion, the text is automatically sent to the local chat inference pipeline.
 
 ### On-device Inference via WebGPU (composables/webgpu/)
 - Uses `@huggingface/transformers` with `onnx-community/gemma-4-E2B-it-ONNX` (q4f16, WebGPU) for chat and `onnx-community/whisper-large-v3-turbo` (encoder fp16 + decoder q4, WebGPU) for speech recognition.
 - **useWebGpuModel**: Singleton model loader. Loads `AutoProcessor` and `Gemma4ForConditionalGeneration` once and shares them across consumers. Also provides a GPU exclusion lock (`withGpuLock`) so that listen and chat inference do not run concurrently on the same WebGPU device.
-- **useWebGpuChat**: Text-only chat composable with the same interface as `useLemonadeChat`. Runs inference locally via `model.generate()` within `withGpuLock`.
-- **useWebGpuListen**: Speech recognition composable with the same reactive interface as `useLemonadeListen` (Lemonade). Captures microphone audio via AudioWorklet, runs client-side energy-based VAD, and transcribes finalized speech segments using Whisper large-v3 on WebGPU within `withGpuLock`. On transcription completion, text is sent to the Chat API. During voice recognition, text input is disabled.
-- **useWebGpuSpeak**: TTS composable using the browser's Web Speech API (`speechSynthesis`). Provides the same interface as `useLemonadeSpeak` (`isSpeaking`, `speak`, `stop`).
+- **useWebGpuChat**: Text-only chat composable. Runs inference locally via `model.generate()` within `withGpuLock`.
+- **useWebGpuListen**: Speech recognition composable. Captures microphone audio via AudioWorklet, runs energy-based VAD, and transcribes finalized speech segments using Whisper large-v3 on WebGPU within `withGpuLock`. On transcription completion, text is sent to chat inference. During voice recognition, text input is disabled.
+- **useWebGpuSpeak**: TTS composable using the browser's Web Speech API (`speechSynthesis`). Exposes `isSpeaking`, `speak`, and `stop`.
 - **useWebSpeechVoices**: Shared helper composable for voice discovery (`voiceschanged`) and language filtering. Settings can choose a voice per language.
 - `AppConfig.speechLanguage` — voice language used by both ASR (Whisper) and Web Speech TTS.
 - `AppConfig.speechVoiceByLanguage` — persisted per-language Web Speech voice selection (keyed by Whisper language name, value is `SpeechSynthesisVoice.voiceURI`).
-- Backend selection (`lemonade` | `webgpu`) is persisted in `AppConfig.backendMode` and switchable from the Settings page.
 
 ## Coding Conventions
 

@@ -6,21 +6,21 @@
   <img src="./screenshot-3d.png" width="600" alt="App Screenshot">
 </p>
 
-Emo is an expressive AI chatbot built with Nuxt on the frontend and [Lemonade Server](https://lemonade-server.ai/) on the backend. It transcribes your speech in real time and dynamically changes its facial expression based on the AI's response.
+Emo is an expressive AI chatbot built with Nuxt and Tauri. It transcribes your speech in real time and dynamically changes its facial expression based on the AI's response.
 
 **Features:**
 
-- Runs entirely on your local machine via Lemonade Server — no data sent to the cloud
+- Runs entirely on your local machine with on-device inference
 - Real-time speech recognition and transcription
 - Dynamic emotion display driven by AI responses
-- Thanks to Lemonade Server, you can use a GPU (NVIDIA/AMD) or a Ryzen AI NPU (AI 300 series and later) for better performance
+- Uses WebGPU for local chat/speech model inference
 
 **Limitations:**
 
-Due to the models currently supported by Lemonade Server, the following constraints apply:
+Current implementation constraints:
 
-- **English only** — The TTS model (`kokoro-v1`) is trained on English.
-- **Speech recognition latency** — Whisper currently runs on CPU only, so it can be hard to achieve both low latency and high accuracy at the same time
+- **WebGPU availability required** — Your environment must support WebGPU in the runtime used by Emo.
+- **Linux caveat** — Depending on your WebKitGTK/WebGPU support, WebGPU may be unavailable on Linux builds.
 
 <br>
 
@@ -68,20 +68,6 @@ Install Emo by downloading the latest release from the [Releases](https://github
   ---
 </details>
 
-### Start Lemonade Server
-
-Launch Lemonade Server and load the following models:
-
-| Role                  | Model                                                       |
-|-----------------------|-------------------------------------------------------------|
-| LLM with tool-calling | `Qwen3.5-9B-GGUF` (or any model suited to your environment) |
-| Speech Recognition    | `Whisper-Base`                                              |
-| TTS                   | `kokoro-v1`                                                 |
-
-NOTE: If you load different models in Lemonade Server, make sure to select them in Emo's **Settings**.
-
-<br>
-
 ## Uninstall
 
 You can uninstall Emo according to the standard procedure for your OS.
@@ -91,18 +77,6 @@ However, Emo's configuration file is stored separately and won't be removed auto
 - Windows: `C:\Users\<User>\AppData\Roaming\com.github.ryomo.emo`
 - Linux: `/home/<user>/.config/com.github.ryomo.emo`
 - macOS: `/Users/<user>/Library/Application Support/com.github.ryomo.emo`
-
-<br>
-
-## Troubleshooting
-
-### WSL networking issue
-
-If you run Lemonade Server on Windows and Emo inside WSL, Emo may not be able to reach the server. To fix this, open **WSL Settings** and set **Networking Mode** to `Mirrored`.
-
-### "Enable Thinking" option doesn't work
-
-If you disable "Enable Thinking" in settings, but the model still seems to be "thinking" and takes a long time to respond, set `--chat-template-kwargs '{"enable_thinking": false}'` to "LLAMACPP ARGUMENTS" in Lemonade Server's model configuration.
 
 <br>
 
