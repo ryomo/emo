@@ -6,7 +6,7 @@ When making changes to the source code that affect architecture, directory struc
 
 ## Project Overview
 
-**Emo** is a desktop AI chatbot application with real-time speech recognition, emotion expression, and TTS (text-to-speech) capabilities.
+**Emo** is a desktop AI chatbot application with real-time speech recognition, camera-assisted multimodal chat, emotion expression, and TTS (text-to-speech) capabilities.
 The frontend is built with **Nuxt 4** (`src/`) and the desktop wrapper is **Tauri 2** (`src-tauri/`).
 LLM and speech processing run on-device using **WebGPU** and browser speech capabilities.
 
@@ -31,10 +31,12 @@ LLM and speech processing run on-device using **WebGPU** and browser speech capa
 │   ├── pages/              # Pages (index.vue, settings.vue)
 │   ├── components/         # Vue components
 │   │   ├── chat/           #   Chat UI (ChatHistory, ChatInput)
+│   │   ├── camera/         #   Camera UI (CameraButton)
 │   │   ├── emotion/        #   Emotion display (EmotionDisplay2D, EmotionDisplay3D)
 │   │   └── voice/          #   Voice UI (VoiceButton, TranscriptArea)
 │   ├── composables/        # Business logic (use*.ts)
 │   │   ├── useConfig.ts    #   App config read/write (Tauri Store / runtimeConfig)
+│   │   ├── useCamera.ts    #   Camera start/stop + snapshot capture for multimodal chat
 │   │   ├── useAiEmotion.ts #   Emotion detection from AI responses
 │   │   ├── useSpeechLanguage.ts # Speech-language mapping/detection helpers
 │   │   ├── useWebSpeechVoices.ts # Web Speech voice discovery/filter helpers
@@ -115,9 +117,16 @@ There are currently no automated tests in this project.
 - Any composable or page can call `setAppError(message)` from `useAppError.ts` to surface an error to the user.
 
 ### WebGPU Inference
-- **Chat**: Gemma 4 ONNX (`onnx-community/gemma-4-E2B-it-ONNX`) via `@huggingface/transformers`.
+- **Chat**: Gemma 4 ONNX (`onnx-community/gemma-4-E2B-it-ONNX`) via `@huggingface/transformers` (text-only and image+text multimodal input).
 - **Speech recognition**: Whisper large-v3 turbo (`onnx-community/whisper-large-v3-turbo`) via `@huggingface/transformers`.
 - **TTS**: Browser/OS voices via Web Speech API (`speechSynthesis`).
+
+### Camera Input (useCamera + index.vue)
+- A camera toggle button is shown on the main page.
+- When camera mode is ON, the app shows a small live preview and captures the latest frame on each user send.
+- Captured frames are attached as image input to Gemma 4 along with user text.
+- The same behavior is used for both text submit and voice-transcript submit paths.
+- `AppConfig.cameraEnabled` controls whether camera mode starts ON at app launch.
 
 ### Emotion Display
 - Emotions are detected from emojis (😐😊😢😠😲🤔) at the beginning of AI response text.
@@ -134,13 +143,14 @@ There are currently no automated tests in this project.
 ### On-device Inference via WebGPU (composables/webgpu/)
 - Uses `@huggingface/transformers` with `onnx-community/gemma-4-E2B-it-ONNX` (q4f16, WebGPU) for chat and `onnx-community/whisper-large-v3-turbo` (encoder fp16 + decoder q4, WebGPU) for speech recognition.
 - **useWebGpuModel**: Singleton model loader. Loads `AutoProcessor` and `Gemma4ForConditionalGeneration` once and shares them across consumers. Also provides a GPU exclusion lock (`withGpuLock`) so that listen and chat inference do not run concurrently on the same WebGPU device.
-- **useWebGpuChat**: Text-only chat composable. Runs inference locally via `model.generate()` within `withGpuLock`.
+- **useWebGpuChat**: Chat composable with text-only and image+text multimodal send support. Runs inference locally via `model.generate()` within `withGpuLock`.
 - **useWebGpuListen**: Speech recognition composable. Captures microphone audio via AudioWorklet, runs energy-based VAD, and transcribes finalized speech segments using Whisper large-v3 on WebGPU within `withGpuLock`. On transcription completion, text is sent to chat inference. During voice recognition, text input is disabled.
 - **useWebSpeechSpeak** (`composables/useWebSpeechSpeak.ts`): TTS composable using the browser's Web Speech API (`speechSynthesis`). Exposes `isSpeaking`, `speak`, and `stop`.
 - **useWebSpeechVoices**: Shared helper composable for voice discovery (`voiceschanged`) and language filtering. Settings can choose a voice per language.
 - **useSpeechLanguage** (`composables/useSpeechLanguage.ts`): Shared speech-language list + locale mapping utilities for ASR/TTS.
 - `AppConfig.speechLanguage` — language key used by both ASR and Web Speech TTS.
 - `AppConfig.speechVoiceByLanguage` — persisted per-language Web Speech voice selection (keyed by speech-language name, value is `SpeechSynthesisVoice.voiceURI`).
+- `AppConfig.cameraEnabled` — persisted startup toggle for camera mode on the chat page.
 
 ## Coding Conventions
 
@@ -165,6 +175,7 @@ There are currently no automated tests in this project.
 - Window settings (decorations off, transparent, always on top) and bundle config are managed in `tauri.conf.json`.
 - Android generated Gradle project under `src-tauri/gen/android/` is configured for arm64-only app builds via `src-tauri/gen/android/gradle.properties` (`abiList=arm64-v8a`, `archList=arm64`, `targetList=aarch64`) to avoid 32-bit process selection on 64-bit devices, which reduces memory pressure for on-device WebGPU models.
 - Because `src-tauri/gen/android/` is generated by Tauri, re-running Android project initialization may overwrite these settings. Reapply the arm64-only `gradle.properties` values after regenerating the Android project.
+- Camera/microphone access in Android WebView requires permissions in `src-tauri/gen/android/app/src/main/AndroidManifest.xml` (`CAMERA`, `RECORD_AUDIO`, `MODIFY_AUDIO_SETTINGS`). If Android project files are regenerated, reapply these permissions.
 
 ## Release Process
 

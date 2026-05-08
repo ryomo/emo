@@ -18,6 +18,7 @@ export interface AppConfig {
   emotionDisplay3d: boolean
   speechLanguage: string
   debugSerialEnabled: boolean
+  cameraEnabled: boolean
 }
 
 const CONFIG_FILE = 'emo.config.json'
@@ -29,6 +30,7 @@ const _config = reactive<AppConfig>({
   emotionDisplay3d: true,
   speechLanguage: 'english',
   debugSerialEnabled: false,
+  cameraEnabled: false,
 })
 let _initialized = false
 let _defaults: AppConfig | null = null
@@ -87,6 +89,7 @@ export async function loadConfig(): Promise<void> {
     emotionDisplay3d: runtimeConfig.public.emotionDisplay3dDefault,
     speechLanguage: runtimeConfig.public.speechLanguageDefault || detectBrowserSpeechLanguage(),
     debugSerialEnabled: runtimeConfig.public.debugSerialEnabledDefault,
+    cameraEnabled: runtimeConfig.public.cameraEnabledDefault,
   }
   _defaults = defaults
   Object.assign(_config, defaults)

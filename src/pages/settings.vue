@@ -162,6 +162,22 @@
           </label>
         </div>
 
+        <!-- Camera Toggle -->
+        <div class="flex items-center gap-3">
+          <input
+            id="cameraEnabled"
+            v-model="form.cameraEnabled"
+            type="checkbox"
+            class="w-4 h-4 rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900"
+          >
+          <label
+            for="cameraEnabled"
+            class="text-sm font-medium text-gray-300"
+          >
+            Start Camera On Launch
+          </label>
+        </div>
+
         <!-- Debug Section -->
         <h2 class="text-sm font-medium text-gray-400 mt-6">
           Debug
@@ -203,6 +219,7 @@ const form = reactive<AppConfig>({
   emotionDisplay3d: config.emotionDisplay3d,
   speechLanguage: config.speechLanguage,
   debugSerialEnabled: config.debugSerialEnabled,
+  cameraEnabled: config.cameraEnabled,
 })
 
 const availableSpeechVoices = computed(() => getVoicesForSpeechLanguage(form.speechLanguage))

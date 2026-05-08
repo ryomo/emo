@@ -75,6 +75,22 @@
         />
       </div>
 
+      <!-- Camera Preview -->
+      <div
+        v-if="isCameraActive"
+        class="shrink-0 px-3 pb-2 sm:px-4 sm:pb-3"
+      >
+        <div class="w-40 sm:w-48 rounded-lg overflow-hidden border border-cyan-700/60 bg-black">
+          <video
+            ref="cameraPreviewEl"
+            autoplay
+            muted
+            playsinline
+            class="w-full h-auto"
+          />
+        </div>
+      </div>
+
       <!-- Bottom Bar: Voice Button + TTS Toggle + Text Input -->
       <div class="shrink-0 flex items-end gap-2 px-3 pb-3 sm:px-4 sm:pb-4 border-t border-gray-700">
         <VoiceButton
@@ -82,6 +98,11 @@
           :is-tts-speaking="isSpeaking"
           :disabled="isLoading"
           @toggle="toggleVoice"
+        />
+        <CameraButton
+          :is-active="isCameraActive"
+          :disabled="isLoading"
+          @toggle="toggleCamera"
         />
         <button
           class="text-sm border rounded px-2 py-2 transition-colors flex-none"
@@ -111,15 +132,32 @@ import { stripEmotionEmoji } from '~/types/emotion'
 const config = useConfig()
 const webgpuChat = useWebGpuChat()
 const webSpeechSpeak = useWebSpeechSpeak()
+const camera = useCamera()
+
+const cameraPreviewEl = ref<HTMLVideoElement | null>(null)
+
+watch(
+  () => cameraPreviewEl.value,
+  (el) => {
+    camera.setPreviewElement(el).catch(() => {
+      // preview attachment failures are non-fatal
+    })
+  },
+  { immediate: true },
+)
 
 const isSpeaking = computed(() => webSpeechSpeak.isSpeaking.value)
+const isCameraActive = computed(() => camera.isActive.value)
+const cameraError = computed(() => camera.error.value)
 
 function stopTts() {
   webSpeechSpeak.stop()
 }
 
 function handleTranscriptComplete(text: string) {
-  webgpuChat.sendMessage(text)
+  handleSend(text).catch(() => {
+    // send errors are surfaced via webgpuChat error state
+  })
 }
 
 const webgpuListen = useWebGpuListen({ onTranscriptComplete: handleTranscriptComplete })
@@ -156,8 +194,8 @@ const lastAssistantText = computed(() => {
 })
 
 // Watch for errors in chat and speech APIs to display in app-level notification
-watch([chatError, speechError], ([chat, speech]) => {
-  setAppError(chat || speech || '')
+watch([chatError, speechError, cameraError], ([chat, speech, cam]) => {
+  setAppError(chat || speech || cam || '')
 })
 
 // Detect emoji from assistant response text to update emotion; speak with TTS when in voice mode
@@ -176,8 +214,12 @@ watch(
   },
 )
 
-function handleSend(message: string) {
-  webgpuChat.sendMessage(message)
+async function handleSend(message: string) {
+  if (!message.trim()) return
+  const imageBlob = isCameraActive.value
+    ? await camera.captureLatestFrame()
+    : null
+  await webgpuChat.sendMessage(message, imageBlob)
 }
 
 function clearHistory() {
@@ -199,4 +241,23 @@ function toggleVoice() {
     webgpuListen.start()
   }
 }
+
+async function toggleCamera() {
+  if (isCameraActive.value) {
+    camera.stop()
+    return
+  }
+  try {
+    await camera.start()
+  }
+  catch {
+    // error state is already exposed by useCamera
+  }
+}
+
+onMounted(() => {
+  if (config.cameraEnabled) {
+    void toggleCamera()
+  }
+})
 </script>

@@ -17,9 +17,10 @@ export default defineNuxtConfig({
       emotionDisplay3dDefault: true, // NUXT_PUBLIC_EMOTION_DISPLAY_3D_DEFAULT
       speechLanguageDefault: '', // NUXT_PUBLIC_SPEECH_LANGUAGE_DEFAULT (empty = auto-detect from browser)
       debugSerialEnabledDefault: false, // NUXT_PUBLIC_DEBUG_SERIAL_ENABLED_DEFAULT
+      cameraEnabledDefault: false, // NUXT_PUBLIC_CAMERA_ENABLED_DEFAULT
       // NUXT_PUBLIC_SYSTEM_PROMPT_DEFAULT
       systemPromptDefault: [
-        'You are a helpful AI assistant.',
+        'You are a helpful AI robot.',
         'Please follow these rules when responding:',
         '- Keep responses to 1-3 sentences',
         '- Answer clearly and concisely',
