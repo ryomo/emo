@@ -71,7 +71,6 @@ export function useWebGpuChat() {
 
       // Build prompt via chat template
       const prompt = processor.apply_chat_template(requestMessages, {
-        enable_thinking: config.enableThinking,
         add_generation_prompt: true,
       })
 

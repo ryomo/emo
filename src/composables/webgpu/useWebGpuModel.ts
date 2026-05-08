@@ -9,16 +9,17 @@ import {
   AutoProcessor,
   Gemma4ForConditionalGeneration,
 } from '@huggingface/transformers'
+import type {
+  PreTrainedModel,
+  Processor } from '@huggingface/transformers'
 
 const LOG_PREFIX = '[WebGPU Model]'
 const MODEL_ID = 'onnx-community/gemma-4-E2B-it-ONNX'
 
 // --------------- Module-level singleton state ---------------
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let _processor: any = null
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let _model: any = null
+let _processor: Processor | null = null
+let _model: PreTrainedModel | null = null
 let _loadPromise: Promise<void> | null = null
 
 const _isLoaded = ref(false)

@@ -13,7 +13,6 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       // These are overridden by the following environment variables. And overridden again by the Tauri Store's file which is loaded in useConfig.ts.
-      enableThinkingDefault: false, // NUXT_PUBLIC_ENABLE_THINKING_DEFAULT
       transparentBackgroundDefault: false, // NUXT_PUBLIC_TRANSPARENT_BACKGROUND_DEFAULT
       emotionDisplay3dDefault: true, // NUXT_PUBLIC_EMOTION_DISPLAY_3D_DEFAULT
       speechLanguageDefault: '', // NUXT_PUBLIC_SPEECH_LANGUAGE_DEFAULT (empty = auto-detect from browser)

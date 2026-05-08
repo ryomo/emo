@@ -14,7 +14,6 @@ import { detectBrowserLanguage } from '~/composables/useWhisperLanguage'
 export interface AppConfig {
   speechVoiceByLanguage: Record<string, string>
   systemPrompt: string
-  enableThinking: boolean
   transparentBackground: boolean
   emotionDisplay3d: boolean
   speechLanguage: string
@@ -26,7 +25,6 @@ const CONFIG_FILE = 'emo.config.json'
 const _config = reactive<AppConfig>({
   speechVoiceByLanguage: {},
   systemPrompt: '',
-  enableThinking: false,
   transparentBackground: false,
   emotionDisplay3d: true,
   speechLanguage: 'english',
@@ -85,7 +83,6 @@ export async function loadConfig(): Promise<void> {
   const defaults: AppConfig = {
     speechVoiceByLanguage: {},
     systemPrompt: runtimeConfig.public.systemPromptDefault,
-    enableThinking: runtimeConfig.public.enableThinkingDefault,
     transparentBackground: runtimeConfig.public.transparentBackgroundDefault,
     emotionDisplay3d: runtimeConfig.public.emotionDisplay3dDefault,
     speechLanguage: runtimeConfig.public.speechLanguageDefault || detectBrowserLanguage(),
