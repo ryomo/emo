@@ -11,6 +11,15 @@ const allVoices = ref<SpeechSynthesisVoice[]>([])
 const isReady = ref(false)
 let initialized = false
 
+function getSpeechSynthesisSafe(): SpeechSynthesis | null {
+  if (!import.meta.client) return null
+  const maybeSpeech = globalThis.speechSynthesis
+  if (!maybeSpeech || typeof maybeSpeech.getVoices !== 'function') {
+    return null
+  }
+  return maybeSpeech
+}
+
 function normalizePrimaryTag(tag: string): string {
   return tag.toLowerCase().split('-')[0] || ''
 }
@@ -20,13 +29,18 @@ export function getLocaleForSpeechLanguage(speechLanguage: string): string {
 }
 
 function updateVoices() {
-  if (!import.meta.client || !('speechSynthesis' in globalThis)) return
-  allVoices.value = globalThis.speechSynthesis.getVoices()
+  const speechSynthesisApi = getSpeechSynthesisSafe()
+  if (!speechSynthesisApi) {
+    allVoices.value = []
+    isReady.value = false
+    return
+  }
+  allVoices.value = speechSynthesisApi.getVoices()
   isReady.value = allVoices.value.length > 0
 }
 
 function ensureVoicePolling() {
-  if (!import.meta.client || !('speechSynthesis' in globalThis)) return
+  if (!import.meta.client) return
 
   let tries = 0
   const maxTries = 8
@@ -64,7 +78,10 @@ export function useWebSpeechVoices() {
   if (import.meta.client && !initialized) {
     initialized = true
     updateVoices()
-    globalThis.speechSynthesis.addEventListener('voiceschanged', updateVoices)
+    const speechSynthesisApi = getSpeechSynthesisSafe()
+    if (speechSynthesisApi && typeof speechSynthesisApi.addEventListener === 'function') {
+      speechSynthesisApi.addEventListener('voiceschanged', updateVoices)
+    }
     ensureVoicePolling()
   }
 
