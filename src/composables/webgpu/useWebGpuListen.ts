@@ -7,6 +7,7 @@
  */
 
 import { pipeline } from '@huggingface/transformers'
+import type { AutomaticSpeechRecognitionPipeline } from '@huggingface/transformers'
 
 const LOG_PREFIX = '[WebGPU Listen]'
 const MODEL_ID = 'onnx-community/whisper-large-v3-turbo'
@@ -36,8 +37,7 @@ interface WebGpuListenOptions {
 
 // --------------- Module-level singleton (Whisper pipeline) ---------------
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let _pipe: any = null
+let _pipe: AutomaticSpeechRecognitionPipeline | null = null
 
 // --------------- Utility (outer scope) ---------------
 
@@ -160,7 +160,7 @@ export function useWebGpuListen(options: WebGpuListenOptions = {}) {
       const result = await _pipe(audioData, {
         language: config.speechLanguage || 'english',
       })
-      return (result.text as string).trim()
+      return result.text.trim()
     })
   }
 

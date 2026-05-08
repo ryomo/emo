@@ -5,6 +5,7 @@
  */
 
 import type { ChatMessage } from '~/types/chat'
+import type { Tensor } from '@huggingface/transformers'
 import { EMOTION_EMOJI } from '~/types/emotion'
 
 const LOG_PREFIX = '[WebGPU Chat]'
@@ -77,8 +78,7 @@ export function useWebGpuChat() {
       // Tokenize (text-only, no image/audio)
       const inputs = await processor(prompt, null, null, { add_special_tokens: false })
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const result: any = await withGpuLock(() => model.generate({
+      const result = await withGpuLock(() => model.generate({
         ...inputs,
         return_dict_in_generate: true,
         max_new_tokens: 1024,
@@ -88,9 +88,14 @@ export function useWebGpuChat() {
         top_k: 64,
       }))
 
+      if (!('sequences' in result)) {
+        throw new Error('Unexpected generation output format: sequences is missing')
+      }
+      const sequences = result.sequences as Tensor
+
       // Decode only generated tokens (strip prompt)
       const decoded = processor.batch_decode(
-        result.sequences.slice(null, [inputs.input_ids.dims.at(-1), null]),
+        sequences.slice(null, [inputs.input_ids.dims.at(-1), null]),
         { skip_special_tokens: true },
       )
 
