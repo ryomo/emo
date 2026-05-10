@@ -39,9 +39,12 @@ export function useWebGpuChat() {
     const maxMessagesToInclude = 9 // Reserve one slot for the current user turn
     const recentMessages = messages.value.slice(-maxMessagesToInclude)
 
-    const history: ChatRequestMessage[] = recentMessages
-      .filter(m => m.content != null && (m.role === 'user' || m.role === 'assistant'))
-      .map(m => ({ role: m.role, content: m.content! }))
+    const history: ChatRequestMessage[] = recentMessages.flatMap((m) => {
+      if (m.content == null || (m.role !== 'user' && m.role !== 'assistant')) {
+        return []
+      }
+      return [{ role: m.role, content: m.content }]
+    })
 
     const currentUserContent: string | ChatRequestContentPart[] = hasImage
       ? [{ type: 'image' }, { type: 'text', text: userText }]
