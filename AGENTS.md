@@ -164,6 +164,12 @@ There are currently no automated tests in this project.
 - **Styling**: Use Tailwind CSS utility classes. Keep custom CSS minimal.
 - **Linter**: Follow ESLint (`@nuxt/eslint` stylistic mode). Run `pnpm lint` before committing.
 
+### Git Commit Messages
+- After completing a task, suggest a commit message in English.
+- Follow [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `refactor:`, `chore:`, etc.).
+- Do **not** add a scope in parentheses (e.g. use `refactor:` not `refactor(components):`).
+- Unless instructed otherwise, keep messages to a single concise line.
+
 ### Composable Pattern
 - Place composables under `composables/` with `use*.ts` naming.
 - Manage reactive state with `ref` / `reactive`; wrap return values in `readonly()`.
