@@ -251,7 +251,7 @@ import { resetConfig, updateConfig } from '~/composables/useConfig'
 import { isTauri } from '@tauri-apps/api/core'
 
 const config = useConfig()
-const { isReady, getVoicesForSpeechLanguage, pickDefaultVoiceForSpeechLanguage } = useWebSpeechVoices()
+const { isReady, getVoicesForSpeechLanguage, pickDefaultVoiceForSpeechLanguage } = useWebSpeechSpeakCatalog()
 
 const form = reactive<AppConfig>({
   speechVoiceByLanguage: { ...config.speechVoiceByLanguage },

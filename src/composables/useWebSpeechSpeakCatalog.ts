@@ -1,5 +1,5 @@
 /**
- * Composable for Web Speech voice catalog management.
+ * Composable for Web Speech TTS voice catalog management.
  *
  * Keeps voice discovery/filter/default-picking in one place so
  * speech execution logic can stay focused in useWebSpeechSpeak.
@@ -74,7 +74,7 @@ export function pickDefaultVoiceForSpeechLanguage(voices: SpeechSynthesisVoice[]
   return voices[0] ?? null
 }
 
-export function useWebSpeechVoices() {
+export function useWebSpeechSpeakCatalog() {
   if (import.meta.client && !initialized) {
     initialized = true
     updateVoices()

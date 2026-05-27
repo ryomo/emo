@@ -1,7 +1,7 @@
 /**
  * Composable for Web Speech TTS execution.
  *
- * Uses shared voice-selection helpers from useWebSpeechVoices,
+ * Uses shared voice-selection helpers from useWebSpeechSpeakCatalog,
  * while handling playback state and utterance lifecycle here.
  */
 
@@ -16,7 +16,7 @@ function normalizeText(text: string): string {
 
 export function useWebSpeechSpeak() {
   const config = useConfig()
-  const { getVoicesForSpeechLanguage, pickDefaultVoiceForSpeechLanguage } = useWebSpeechVoices()
+  const { getVoicesForSpeechLanguage, pickDefaultVoiceForSpeechLanguage } = useWebSpeechSpeakCatalog()
   const isSpeaking = ref(false)
 
   function stop() {
