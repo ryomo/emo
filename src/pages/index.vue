@@ -66,7 +66,7 @@
         v-if="isListening"
         class="shrink-0 px-3 pb-2 sm:px-4 sm:pb-3"
       >
-        <VoiceTranscriptArea
+        <ListenTranscriptArea
           :transcript="transcript"
           :is-speaking="isUserSpeaking"
           :is-transcribing="isTranscribing"
@@ -93,7 +93,7 @@
 
       <!-- Bottom Bar: Voice Button + TTS Toggle + Text Input -->
       <div class="shrink-0 flex items-end gap-2 px-3 pb-3 sm:px-4 sm:pb-4 border-t border-gray-700">
-        <VoiceButton
+        <ListenButton
           :is-listening="isListening"
           :is-tts-speaking="isSpeaking"
           :disabled="isLoading"

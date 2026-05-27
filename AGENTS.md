@@ -33,7 +33,7 @@ LLM and speech processing run on-device using **WebGPU** and browser speech capa
 │   │   ├── chat/           #   Chat UI (ChatHistory, ChatInput)
 │   │   ├── camera/         #   Camera UI (CameraButton)
 │   │   ├── emotion/        #   Emotion display (EmotionDisplay2D, EmotionDisplay3D)
-│   │   └── voice/          #   Voice UI (VoiceButton, TranscriptArea)
+│   │   └── listen/         #   Speech recognition UI (ListenButton, TranscriptArea)
 │   ├── composables/        # Business logic (use*.ts)
 │   │   ├── useConfig.ts    #   App config read/write (Tauri Store / runtimeConfig)
 │   │   ├── useCamera.ts    #   Camera start/stop + snapshot capture for multimodal chat
