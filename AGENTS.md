@@ -107,6 +107,9 @@ There are currently no automated tests in this project.
 ### SSR Disabled
 `ssr: false` is set in `nuxt.config.ts`. The app runs as an SPA acting as the Tauri frontend.
 
+### No CSP
+Content Security Policy is disabled in `nuxt.config.ts` to allow transformers.js to load ONNX models from Hugging Face at runtime.
+
 ### Configuration Management (useConfig)
 - **Tauri environment**: Settings are persisted to `emo.config.json` via `@tauri-apps/plugin-store`. The config file location varies by OS (Windows: `%APPDATA%/com.github.ryomo.emo/`).
 - **Browser environment**: Uses default values from Nuxt's `runtimeConfig.public`, overridable via `NUXT_PUBLIC_*` environment variables.
