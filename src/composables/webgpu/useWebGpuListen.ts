@@ -33,6 +33,13 @@ const INTERIM_INTERVAL_MS = 1000
 interface WebGpuListenOptions {
   /** Callback called with transcribed text when a speech segment ends */
   onTranscriptComplete?: (text: string) => void
+  /**
+   * Returns true while the app is busy handling a previous turn
+   * (e.g. LLM generation or TTS playback). While busy, microphone input
+   * is ignored so a single utterance cannot spawn a second ASR/LLM run.
+   * No barge-in: the user cannot interrupt by speaking during this window.
+   */
+  isBusy?: () => boolean
 }
 
 // --------------- Module-level singleton (Whisper pipeline) ---------------
@@ -221,8 +228,26 @@ export function useWebGpuListen(options: WebGpuListenOptions = {}) {
 
   // --------------- VAD & Audio Processing ---------------
 
+  /** Reset all VAD accumulation state (discards any in-progress segment) */
+  function resetVadState() {
+    cancelInterim()
+    if (isSpeaking.value) isSpeaking.value = false
+    speechChunks = []
+    prefixBuffer = []
+    silenceStartTime = null
+    totalSpeechSamples = 0
+  }
+
   /** Process a raw audio chunk from the AudioWorklet */
   function processAudioChunk(rawChunk: Float32Array) {
+    // No barge-in: while a previous turn is still being transcribed,
+    // generated, or spoken, drop mic input and reset VAD so this audio
+    // cannot start a second ASR/LLM run.
+    if (isTranscribing.value || options.isBusy?.()) {
+      resetVadState()
+      return
+    }
+
     const chunk = downsampleBuffer(rawChunk, nativeSampleRate, TARGET_SAMPLE_RATE)
     const rms = calculateRms(chunk)
 
@@ -357,11 +382,7 @@ export function useWebGpuListen(options: WebGpuListenOptions = {}) {
       mediaStream = null
     }
 
-    // Reset VAD state
-    speechChunks = []
-    prefixBuffer = []
-    silenceStartTime = null
-    totalSpeechSamples = 0
+    resetVadState()
   }
 
   // --------------- Public Controls ---------------

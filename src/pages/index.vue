@@ -195,7 +195,11 @@ function handleTranscriptComplete(text: string) {
   })
 }
 
-const webgpuListen = useWebGpuListen({ onTranscriptComplete: handleTranscriptComplete })
+const webgpuListen = useWebGpuListen({
+  onTranscriptComplete: handleTranscriptComplete,
+  // No barge-in: ignore mic input while the chat is generating or TTS is speaking
+  isBusy: () => webgpuChat.isLoading.value || webSpeechSpeak.isSpeaking.value,
+})
 
 const messages = computed(() => webgpuChat.messages.value)
 const isLoading = computed(() => webgpuChat.isLoading.value)
