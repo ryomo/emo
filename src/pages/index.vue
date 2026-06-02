@@ -104,14 +104,11 @@
           :disabled="isLoading"
           @toggle="toggleCamera"
         />
-        <button
-          class="text-sm border rounded px-2 py-2 transition-colors flex-none"
-          :class="ttsEnabled ? 'text-blue-400 border-blue-600 hover:text-blue-300' : 'text-gray-500 border-gray-600 hover:text-gray-400'"
-          title="Toggle TTS"
-          @click="toggleTts"
-        >
-          {{ ttsEnabled ? '🔊' : '🔇' }}
-        </button>
+        <TtsButton
+          :is-enabled="ttsEnabled"
+          :disabled="isLoading"
+          @toggle="toggleTts"
+        />
         <ChatInput
           class="flex-1"
           :is-loading="isLoading"
