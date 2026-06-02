@@ -99,10 +99,13 @@
         <p class="text-xs text-gray-400 mb-2">
           Initializing on-device AI models…
         </p>
-        <div class="mb-1.5">
+        <div
+          v-if="isGemmaLoading"
+          class="mb-1.5"
+        >
           <div class="flex justify-between text-xs text-gray-400 mb-0.5">
             <span>Gemma 4 (Chat)</span>
-            <span>{{ isGemmaLoaded ? 'Ready' : isGemmaLoading ? gemmaProgress + '%' : 'Waiting…' }}</span>
+            <span>{{ isGemmaLoaded ? 'Ready' : gemmaProgress + '%' }}</span>
           </div>
           <div class="h-1 bg-gray-700 rounded-full overflow-hidden">
             <div
@@ -111,10 +114,10 @@
             />
           </div>
         </div>
-        <div>
+        <div v-if="isWhisperLoading">
           <div class="flex justify-between text-xs text-gray-400 mb-0.5">
             <span>Whisper (Voice)</span>
-            <span>{{ isWhisperLoaded ? 'Ready' : isWhisperLoading ? whisperProgress + '%' : 'Waiting…' }}</span>
+            <span>{{ isWhisperLoaded ? 'Ready' : whisperProgress + '%' }}</span>
           </div>
           <div class="h-1 bg-gray-700 rounded-full overflow-hidden">
             <div
