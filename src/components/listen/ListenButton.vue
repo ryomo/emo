@@ -30,19 +30,18 @@ defineEmits<{
 
 const buttonIcon = computed(() => {
   if (props.isListening && props.isTtsSpeaking) return '🔊'
-  if (props.isListening) return '⏹'
   return '🎤'
 })
 
 const label = computed(() => {
   if (props.isListening && props.isTtsSpeaking) return 'Speaking...'
-  if (props.isListening) return 'Stop'
+  if (props.isListening) return 'Voice On'
   return 'Voice'
 })
 
 const labelClass = computed(() => {
-  if (props.isTtsSpeaking) return 'text-blue-400'
-  if (props.isListening) return 'text-red-400'
+  if (props.isListening && props.isTtsSpeaking) return 'text-blue-400'
+  if (props.isListening) return 'text-green-400'
   return 'text-gray-500'
 })
 
@@ -54,8 +53,8 @@ const buttonClass = computed(() => {
     return 'bg-blue-600 hover:bg-blue-700 ring-2 ring-blue-400/50 animate-pulse'
   }
   if (props.isListening) {
-    return 'bg-red-600 hover:bg-red-700 ring-2 ring-red-400/50 animate-pulse'
+    return 'bg-green-600 hover:bg-green-700 ring-2 ring-green-400/50'
   }
-  return 'bg-green-600 hover:bg-green-700 hover:scale-105'
+  return 'bg-slate-600 hover:bg-slate-700 hover:scale-105'
 })
 </script>
