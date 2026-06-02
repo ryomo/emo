@@ -38,6 +38,10 @@ interface WebGpuListenOptions {
 // --------------- Module-level singleton (Whisper pipeline) ---------------
 
 let _pipe: AutomaticSpeechRecognitionPipeline | null = null
+const _isLoaded = ref(false)
+const _isLoading = ref(false)
+const _loadProgress = ref(0)
+let _loadPromise: Promise<void> | null = null
 
 // --------------- Utility (outer scope) ---------------
 
@@ -82,6 +86,48 @@ function mergeFloat32Arrays(arrays: Float32Array[]): Float32Array {
   return merged
 }
 
+// --------------- Whisper Model Loading (module-level) ---------------
+
+async function loadWhisperModel(): Promise<void> {
+  if (_isLoaded.value) return
+  if (_loadPromise) return _loadPromise
+
+  _isLoading.value = true
+  _loadProgress.value = 0
+
+  _loadPromise = (async () => {
+    try {
+      console.log(LOG_PREFIX, '📦 Loading Whisper model…')
+      _pipe = await pipeline('automatic-speech-recognition', MODEL_ID, {
+        // Some encoder-decoder models, like Whisper, are extremely sensitive to quantization settings: especially of the encoder.
+        // See: https://huggingface.co/docs/transformers.js/guides/dtypes#per-module-dtypes
+        dtype: {
+          encoder_model: 'fp16',
+          decoder_model_merged: 'q4',
+        },
+        device: 'webgpu',
+        progress_callback: (info: { status: string, progress?: number }) => {
+          if (info.progress != null) {
+            _loadProgress.value = Math.round(info.progress)
+          }
+        },
+      })
+      _isLoaded.value = true
+      console.log(LOG_PREFIX, '✅ Whisper model loaded')
+    }
+    catch (e) {
+      _loadPromise = null
+      console.error(LOG_PREFIX, '❌ Failed to load Whisper model:', e)
+      throw e
+    }
+    finally {
+      _isLoading.value = false
+    }
+  })()
+
+  return _loadPromise
+}
+
 export function useWebGpuListen(options: WebGpuListenOptions = {}) {
   const { withGpuLock } = useWebGpuModel()
   const config = useConfig()
@@ -91,8 +137,6 @@ export function useWebGpuListen(options: WebGpuListenOptions = {}) {
   const isSpeaking = ref(false)
   const isTranscribing = ref(false)
   const transcript = ref('')
-  const isLoaded = ref(_pipe !== null)
-  const isLoading = ref(false)
   const error = ref<string | null>(null)
 
   // --------------- Internal State ---------------
@@ -111,40 +155,6 @@ export function useWebGpuListen(options: WebGpuListenOptions = {}) {
   // Interim transcription state
   let interimTimer: ReturnType<typeof setTimeout> | null = null
   let isInterimRunning = false
-
-  // --------------- Whisper Model Loading ---------------
-
-  async function loadWhisperModel(): Promise<void> {
-    if (_pipe) {
-      isLoaded.value = true
-      return
-    }
-
-    isLoading.value = true
-    try {
-      console.log(LOG_PREFIX, '📦 Loading Whisper model…')
-      _pipe = await pipeline('automatic-speech-recognition', MODEL_ID, {
-        // Some encoder-decoder models, like Whisper, are extremely sensitive to quantization settings: especially of the encoder.
-        // See: https://huggingface.co/docs/transformers.js/guides/dtypes#per-module-dtypes
-        dtype: {
-          encoder_model: 'fp16',
-          decoder_model_merged: 'q4',
-        },
-        device: 'webgpu',
-      })
-      isLoaded.value = true
-      console.log(LOG_PREFIX, '✅ Whisper model loaded')
-    }
-    catch (e) {
-      const msg = e instanceof Error ? e.message : String(e)
-      error.value = `Failed to load Whisper model: ${msg}`
-      console.error(LOG_PREFIX, '❌ Failed to load Whisper model:', e)
-      throw e
-    }
-    finally {
-      isLoading.value = false
-    }
-  }
 
   // --------------- Transcription ---------------
 
@@ -388,11 +398,15 @@ export function useWebGpuListen(options: WebGpuListenOptions = {}) {
     }
   }
 
-  /** Stop listening and release resources */
+  /** Stop listening and release Whisper model from memory */
   function stop() {
     cleanupAudio()
     isListening.value = false
     isSpeaking.value = false
+    _pipe = null
+    _isLoaded.value = false
+    _loadPromise = null
+    _loadProgress.value = 0
     console.log(LOG_PREFIX, '🛑 Listening stopped')
   }
 
@@ -401,9 +415,11 @@ export function useWebGpuListen(options: WebGpuListenOptions = {}) {
     isSpeaking: readonly(isSpeaking),
     isTranscribing: readonly(isTranscribing),
     transcript: readonly(transcript),
-    isLoaded: readonly(isLoaded),
-    isLoading: readonly(isLoading),
+    isLoaded: readonly(_isLoaded),
+    isLoading: readonly(_isLoading),
+    loadProgress: readonly(_loadProgress),
     error: readonly(error),
+    loadWhisperModel,
     start,
     stop,
   }

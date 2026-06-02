@@ -91,27 +91,61 @@
         </div>
       </div>
 
+      <!-- Model Loading Status -->
+      <div
+        v-if="isAnyModelLoading"
+        class="shrink-0 px-4 py-3 border-t border-gray-700 bg-gray-800/30"
+      >
+        <p class="text-xs text-gray-400 mb-2">
+          Initializing on-device AI models…
+        </p>
+        <div class="mb-1.5">
+          <div class="flex justify-between text-xs text-gray-400 mb-0.5">
+            <span>Gemma 4 (Chat)</span>
+            <span>{{ isGemmaLoaded ? 'Ready' : isGemmaLoading ? gemmaProgress + '%' : 'Waiting…' }}</span>
+          </div>
+          <div class="h-1 bg-gray-700 rounded-full overflow-hidden">
+            <div
+              class="h-full bg-blue-500 transition-all duration-300"
+              :style="{ width: isGemmaLoaded ? '100%' : gemmaProgress + '%' }"
+            />
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs text-gray-400 mb-0.5">
+            <span>Whisper (Voice)</span>
+            <span>{{ isWhisperLoaded ? 'Ready' : isWhisperLoading ? whisperProgress + '%' : 'Waiting…' }}</span>
+          </div>
+          <div class="h-1 bg-gray-700 rounded-full overflow-hidden">
+            <div
+              class="h-full bg-purple-500 transition-all duration-300"
+              :style="{ width: isWhisperLoaded ? '100%' : whisperProgress + '%' }"
+            />
+          </div>
+        </div>
+      </div>
+
       <!-- Bottom Bar: Voice Button + TTS Toggle + Text Input -->
       <div class="shrink-0 flex items-end gap-2 px-3 pb-3 sm:px-4 sm:pb-4 border-t border-gray-700">
         <ListenButton
           :is-listening="isListening"
           :is-tts-speaking="isSpeaking"
-          :disabled="isLoading"
+          :disabled="isLoading || isAnyModelLoading"
           @toggle="toggleVoice"
         />
         <CameraButton
           :is-active="isCameraActive"
-          :disabled="isLoading"
+          :disabled="isLoading || isAnyModelLoading"
           @toggle="toggleCamera"
         />
         <TtsButton
           :is-enabled="ttsEnabled"
-          :disabled="isLoading"
+          :disabled="isLoading || isAnyModelLoading"
           @toggle="toggleTts"
         />
         <ChatInput
           class="flex-1"
-          :is-loading="isLoading"
+          :is-loading="isLoading || isAnyModelLoading"
           :disabled="isListening"
           @send="handleSend"
         />
@@ -130,6 +164,7 @@ const config = useConfig()
 const webgpuChat = useWebGpuChat()
 const webSpeechSpeak = useWebSpeechSpeak()
 const camera = useCamera()
+const { isLoading: isGemmaLoading, loadProgress: gemmaProgress, isLoaded: isGemmaLoaded, loadModel, error: gemmaModelError } = useWebGpuModel()
 
 const cameraPreviewEl = ref<HTMLVideoElement | null>(null)
 
@@ -167,6 +202,10 @@ const isUserSpeaking = computed(() => webgpuListen.isSpeaking.value)
 const isTranscribing = computed(() => webgpuListen.isTranscribing.value)
 const transcript = computed(() => webgpuListen.transcript.value)
 const speechError = computed(() => webgpuListen.error.value)
+const isWhisperLoading = computed(() => webgpuListen.isLoading.value)
+const whisperProgress = computed(() => webgpuListen.loadProgress.value)
+const isWhisperLoaded = computed(() => webgpuListen.isLoaded.value)
+const isAnyModelLoading = computed(() => isGemmaLoading.value || isWhisperLoading.value)
 
 const ttsEnabled = ref(true)
 
@@ -190,9 +229,9 @@ const lastAssistantText = computed(() => {
   return ''
 })
 
-// Watch for errors in chat and speech APIs to display in app-level notification
-watch([chatError, speechError, cameraError], ([chat, speech, cam]) => {
-  setAppError(chat || speech || cam || '')
+// Watch for errors in chat, speech, camera, and model loading to display in app-level notification
+watch([chatError, speechError, cameraError, gemmaModelError], ([chat, speech, cam, model]) => {
+  setAppError(chat || speech || cam || model || '')
 })
 
 // Detect emoji from assistant response text to update emotion; speak with TTS when in voice mode
@@ -256,5 +295,7 @@ onMounted(() => {
   if (config.cameraEnabled) {
     void toggleCamera()
   }
+
+  loadModel().catch(() => {})
 })
 </script>
